@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"elegantGo/lession01/repository/entity"
+	"elegantGo/lession01/model"
 	"time"
 )
 
@@ -13,8 +13,8 @@ func NewUser() *User {
 	return repo
 }
 
-func (repo *User) All() entity.Users {
-	user1 := &entity.User{
+func (repo *User) All() model.Users {
+	user1 := &model.User{
 		ID:         1,
 		Level:      10,
 		Amount:     1100,
@@ -24,7 +24,7 @@ func (repo *User) All() entity.Users {
 		CreateTime: time.Now(),
 	}
 
-	user2 := &entity.User{
+	user2 := &model.User{
 		ID:         2,
 		Level:      20,
 		Amount:     2000,
@@ -34,7 +34,7 @@ func (repo *User) All() entity.Users {
 		CreateTime: time.Now(),
 	}
 
-	var users entity.Users
+	var users model.Users
 	users = append(users, user1, user2)
 	return users
 }

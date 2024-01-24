@@ -12,7 +12,8 @@ func main() {
 	repoUser := repository.NewUser()
 	ctrUser := controller.NewUser(repoUser)
 
-	r.GET("/user/export", ctrUser.Export)
+	r.GET("/user/exportV1", ctrUser.ExportV1)
+	r.GET("/user/exportV2", ctrUser.ExportV2)
 
 	r.Run()
 }
