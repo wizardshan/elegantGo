@@ -1,14 +1,15 @@
 package main
 
 import (
-	"elegantGo/lession01/controller"
-	"elegantGo/lession01/repository"
+	"elegantGo/lession02/controller"
+	"elegantGo/lession02/repository"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 
 	r := gin.Default()
+
 	repoUser := repository.NewUser()
 	ctrUserV1 := controller.NewUserV1(repoUser)
 	ctrUserV2 := controller.NewUserV2(repoUser)

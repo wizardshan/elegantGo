@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"elegantGo/lession01/model"
+	"elegantGo/lession02/model"
 	"time"
 )
 
@@ -17,22 +17,20 @@ func (repo *User) All() model.Users {
 	user1 := &model.User{
 		ID:         1,
 		Level:      10,
-		Balance:    1000,
-		Mobile:     "MTMwMDAwMDAwMDE=",
+		Amount:     1100,
+		Mobile:     "13000000001",
 		Nickname:   "user1",
 		Avatar:     "avatar-default.png",
-		Status:     0,
 		CreateTime: time.Now(),
 	}
 
 	user2 := &model.User{
 		ID:         2,
 		Level:      20,
-		Balance:    2000,
-		Mobile:     "MTMwMDAwMDAwMDI=",
+		Amount:     2000,
+		Mobile:     "13000000002",
 		Nickname:   "user2",
 		Avatar:     "avatar-default.png",
-		Status:     0,
 		CreateTime: time.Now(),
 	}
 

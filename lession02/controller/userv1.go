@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bytes"
+	"elegantGo/lession02/repository"
 	"encoding/csv"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -10,7 +11,17 @@ import (
 	"time"
 )
 
-func (ctr *User) ExportV1(c *gin.Context) {
+type UserV1 struct {
+	repo *repository.User
+}
+
+func NewUserV1(repo *repository.User) *UserV1 {
+	ctr := new(UserV1)
+	ctr.repo = repo
+	return ctr
+}
+
+func (ctr *UserV1) Export(c *gin.Context) {
 	users := ctr.repo.All()
 
 	var buff = new(bytes.Buffer)

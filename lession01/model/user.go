@@ -1,8 +1,8 @@
 package model
 
-import "time"
-
-type Users []*User
+import (
+	"time"
+)
 
 type User struct {
 	ID         int
@@ -10,7 +10,8 @@ type User struct {
 	Mobile     string
 	Nickname   string
 	Avatar     string
-	Amount     int
+	Balance    int
+	Status     int
 	LoginTime  time.Time
 	CreateTime time.Time
 }

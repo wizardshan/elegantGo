@@ -2,7 +2,8 @@ package controller
 
 import (
 	"bytes"
-	"elegantGo/lession01/model"
+	"elegantGo/lession02/model"
+	"elegantGo/lession02/repository"
 	"encoding/csv"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -11,7 +12,17 @@ import (
 	"time"
 )
 
-func (ctr *User) ExportV2(c *gin.Context) {
+type UserV3 struct {
+	repo *repository.User
+}
+
+func NewUserV3(repo *repository.User) *UserV3 {
+	ctr := new(UserV3)
+	ctr.repo = repo
+	return ctr
+}
+
+func (ctr *UserV3) Export(c *gin.Context) {
 	// 从数据库获取数据
 	users := ctr.repo.All()
 
@@ -23,7 +34,7 @@ func (ctr *User) ExportV2(c *gin.Context) {
 	ctr.ToCsv(c, csvName, csvContent)
 }
 
-func (ctr *User) BuildCsv(users model.Users) string {
+func (ctr *UserV3) BuildCsv(users model.Users) string {
 	var buff = new(bytes.Buffer)
 	wr := csv.NewWriter(buff)
 	heads := []string{"用户id", "等级", "余额", "手机号码", "昵称", "创建时间"}
@@ -64,7 +75,7 @@ func (ctr *User) BuildCsv(users model.Users) string {
 	return buff.String()
 }
 
-func (ctr *User) ToCsv(c *gin.Context, name string, content string) {
+func (ctr *UserV3) ToCsv(c *gin.Context, name string, content string) {
 	c.Writer.Header().Set("Content-type", "application/octet-stream")
 	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=%s.csv", name))
 	c.String(http.StatusOK, content)
