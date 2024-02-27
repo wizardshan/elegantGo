@@ -4,6 +4,15 @@ import (
 	"time"
 )
 
+const UserStatusCanceled = 20
+
+const (
+	UserLevelDescNormal   = 0
+	UserLevelDescSilver   = 10
+	UserLevelDescGold     = 20
+	UserLevelDescPlatinum = 30
+)
+
 type User struct {
 	ID         int
 	Level      int

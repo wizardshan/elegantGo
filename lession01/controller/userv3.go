@@ -1,14 +1,12 @@
 package controller
 
 import (
-	"bytes"
 	"elegantGo/lession01/model"
+	"elegantGo/lession01/pkg/util"
 	"elegantGo/lession01/repository"
-	"encoding/csv"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"strconv"
+	"github.com/xuri/excelize/v2"
 	"time"
 )
 
@@ -26,57 +24,72 @@ func (ctr *UserV3) Export(c *gin.Context) {
 	// 从数据库获取数据
 	users := ctr.repo.All()
 
-	// 构建csv内容
-	csvContent := ctr.BuildCsv(users)
+	excelFile := excelize.NewFile()
+	defer excelFile.Close()
 
-	// 返回csv文件
-	csvName := fmt.Sprintf("users-%s", time.Now().Format("20060102150405"))
-	ctr.ToCsv(c, csvName, csvContent)
+	// 构建excel文件内容
+	ctr.BuildExcel(users, excelFile)
+
+	// 返回excel文件
+	excelName := fmt.Sprintf("users-%s", time.Now().Format("20060102150405"))
+	ctr.ToExcel(c, excelName, excelFile)
 }
 
-func (ctr *UserV3) BuildCsv(users model.Users) string {
-	var buff = new(bytes.Buffer)
-	wr := csv.NewWriter(buff)
-	heads := []string{"用户id", "等级", "余额", "手机号码", "昵称", "创建时间"}
-	wr.Write(heads)
+func (ctr *UserV3) BuildExcel(users model.Users, excelFile *excelize.File) *excelize.File {
+	sheetName := "Sheet1"
+	sheetIndex, _ := excelFile.NewSheet(sheetName)
 
-	amountTotal := 0
+	cellIndex := 1
+	excelFile.SetCellValue(sheetName, fmt.Sprintf("A%d", cellIndex), "用户id")
+	excelFile.SetCellValue(sheetName, fmt.Sprintf("B%d", cellIndex), "等级")
+	excelFile.SetCellValue(sheetName, fmt.Sprintf("C%d", cellIndex), "余额")
+	excelFile.SetCellValue(sheetName, fmt.Sprintf("D%d", cellIndex), "手机号码")
+	excelFile.SetCellValue(sheetName, fmt.Sprintf("E%d", cellIndex), "昵称")
+	excelFile.SetCellValue(sheetName, fmt.Sprintf("F%d", cellIndex), "创建时间")
+
+	balanceSum := 0
 	for _, u := range users {
-		levelDesc := ""
-		switch u.Level {
-		case 0:
-			levelDesc = "普通"
-		case 10:
-			levelDesc = "白银"
-		case 20:
-			levelDesc = "黄金"
-		case 30:
-			levelDesc = "铂金"
+		if u.Status == model.UserStatusCanceled {
+			continue
 		}
 
-		wr.Write([]string{
-			strconv.Itoa(u.ID),
-			levelDesc,
-			strconv.Itoa(u.Balance / 100),
-			fmt.Sprintf("%s****%s", u.Mobile[0:4], u.Mobile[8:11]),
-			u.Nickname,
-			u.CreateTime.Format(time.DateTime),
-		})
+		cellIndex++
+		levelDesc := ""
+		switch u.Level {
+		case model.UserLevelDescNormal:
+			levelDesc = "普通"
+		case model.UserLevelDescSilver:
+			levelDesc = "白银"
+		case model.UserLevelDescGold:
+			levelDesc = "黄金"
+		case model.UserLevelDescPlatinum:
+			levelDesc = "铂金"
+		default:
+			levelDesc = "未知等级"
+		}
 
-		amountTotal += u.Balance
+		mobile, _ := util.Decrypt(u.Mobile)
+
+		excelFile.SetCellValue(sheetName, fmt.Sprintf("A%d", cellIndex), u.ID)
+		excelFile.SetCellValue(sheetName, fmt.Sprintf("B%d", cellIndex), levelDesc)
+		excelFile.SetCellValue(sheetName, fmt.Sprintf("C%d", cellIndex), u.Balance/100)
+		excelFile.SetCellValue(sheetName, fmt.Sprintf("D%d", cellIndex), fmt.Sprintf("%s****%s", mobile[0:4], mobile[8:11]))
+		excelFile.SetCellValue(sheetName, fmt.Sprintf("E%d", cellIndex), u.Nickname)
+		excelFile.SetCellValue(sheetName, fmt.Sprintf("F%d", cellIndex), u.CreateTime.Format(time.DateTime))
+
+		balanceSum += u.Balance
 	}
 
-	wr.Write([]string{
-		fmt.Sprintf("用户总数：%d 用户总余额：%d", len(users), amountTotal/100),
-	})
+	cellIndex++
+	excelFile.SetCellValue(sheetName, fmt.Sprintf("A%d", cellIndex), fmt.Sprintf("用户总数：%d 用户总余额：%d", len(users), balanceSum/100))
+	excelFile.SetActiveSheet(sheetIndex)
 
-	wr.Flush()
-
-	return buff.String()
+	return excelFile
 }
 
-func (ctr *UserV3) ToCsv(c *gin.Context, name string, content string) {
-	c.Writer.Header().Set("Content-type", "application/octet-stream")
-	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=%s.csv", name))
-	c.String(http.StatusOK, content)
+func (ctr *UserV3) ToExcel(c *gin.Context, name string, excelFile *excelize.File) {
+	c.Writer.Header().Add("Content-Type", "application/octet-stream")
+	c.Writer.Header().Add("Content-disposition", fmt.Sprintf("attachment;filename=%s.xlsx", name))
+	c.Writer.Header().Add("Content-Transfer-Encoding", "binary")
+	excelFile.Write(c.Writer)
 }
