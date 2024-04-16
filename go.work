@@ -1,3 +1,7 @@
 go 1.22.2
 
-use ./app
+use (
+	./app
+	./github.com/gin-gonic/gin@v1.9.1
+	./pkg
+)
