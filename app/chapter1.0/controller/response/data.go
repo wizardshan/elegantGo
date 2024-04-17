@@ -13,7 +13,7 @@ const (
 
 	InternalError = 1000
 
-	ParamError = 10000
+	ParamError = 2000
 )
 
 var Msg = map[int]string{

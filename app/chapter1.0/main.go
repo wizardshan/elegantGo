@@ -1,7 +1,7 @@
 package main
 
 import (
-	"app/chapter1/controller"
+	"app/chapter1.0/controller"
 	"github.com/gin-gonic/gin"
 )
 
