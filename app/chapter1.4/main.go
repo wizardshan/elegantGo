@@ -17,5 +17,9 @@ func main() {
 	ctrCaptcha := controller.NewCaptcha()
 	engine.POST("/captcha/send", handler.Wrapper(ctrCaptcha.Send))
 
+	ctrColumn := controller.NewColumn()
+	engine.POST("/column/create", handler.Wrapper(ctrColumn.Create))
+	engine.GET("/column", handler.Wrapper(ctrColumn.Detail))
+
 	engine.Run()
 }

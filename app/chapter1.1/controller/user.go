@@ -24,5 +24,5 @@ func (ctr *User) Login(c *gin.Context) (response.Data, error) {
 		return nil, gin.NewParamError(err.Error())
 	}
 
-	return nil, nil
+	return request, nil
 }

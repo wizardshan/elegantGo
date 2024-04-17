@@ -6,15 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type User struct{}
+type Column struct{}
 
-func NewUser() *User {
-	ctr := new(User)
+func NewColumn() *Column {
+	ctr := new(Column)
 	return ctr
 }
 
-func (ctr *User) Login(c *gin.Context) (response.Data, error) {
-	request := new(request.UserLogin)
+func (ctr *Column) Create(c *gin.Context) (response.Data, error) {
+	request := new(request.ColumnCreate)
 	if err := c.Validate(request); err != nil {
 		return nil, err
 	}
@@ -22,8 +22,8 @@ func (ctr *User) Login(c *gin.Context) (response.Data, error) {
 	return request, nil
 }
 
-func (ctr *User) Register(c *gin.Context) (response.Data, error) {
-	request := new(request.UserRegister)
+func (ctr *Column) Detail(c *gin.Context) (response.Data, error) {
+	request := new(request.ColumnDetail)
 	if err := c.Validate(request); err != nil {
 		return nil, err
 	}

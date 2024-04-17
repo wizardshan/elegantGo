@@ -20,5 +20,5 @@ func (ctr *Captcha) Send(c *gin.Context) (response.Data, error) {
 		return nil, err
 	}
 
-	return nil, nil
+	return request, nil
 }

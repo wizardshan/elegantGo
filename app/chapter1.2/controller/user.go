@@ -19,5 +19,5 @@ func (ctr *User) Login(c *gin.Context) (response.Data, error) {
 		return nil, err
 	}
 
-	return nil, nil
+	return request, nil
 }
