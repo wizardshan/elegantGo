@@ -1,5 +1,6 @@
 package request
 
 type CaptchaSend struct {
-	MobileField
+	//MobileField
+	Mobile string `form:"mobile"`
 }

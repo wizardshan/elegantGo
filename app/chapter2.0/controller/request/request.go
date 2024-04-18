@@ -11,3 +11,7 @@ type CaptchaField struct {
 type IDField struct {
 	ID int `form:"id" valid:"required~id不能为空,int~id应该为数字型"`
 }
+
+type HashIDField struct {
+	HashID int `form:"hashID" valid:"required~hashID不能为空,alphanum~hashID必须为字母和数字,stringlength(8|15)~hashID长度错误"`
+}

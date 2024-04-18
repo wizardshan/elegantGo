@@ -1,7 +1,7 @@
 package request
 
 type MobileField struct {
-	Mobile string `form:"mobile" valid:"required~手机号不能为空,numeric~手机号码应该为数字型,stringlength(11|11)~手机号码长度错误,mobile~手机号码格式错误"`
+	Mobile string `form:"mobile" valid:"required~手机号不能为空,numeric~手机号码应该为数字型,stringlength(11|11)~手机号码长度错误,IsMobile~手机号码格式错误"`
 }
 
 type CaptchaField struct {
