@@ -31,5 +31,6 @@ func (ctr *Article) Search(c *gin.Context) {
 
 	c.HTML(http.StatusOK, "search.tmpl", gin.H{
 		"keyword": template.HTML(request.Keyword), // 为了方便演示，template.HTML会显示原始字符串，默认会自动对特殊符号转义，
+		//"keyword": request.Keyword,
 	})
 }
