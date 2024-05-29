@@ -1,9 +1,18 @@
 ### entGo框架实现ORM
 上文说到手工实现ORM框架所需的代码量是联表方式的两倍或更多，并且实现过程都是大同小异，所以代码开发中的搬砖活，为了提高效率我们引入entGo框架来解决重复工作的低效问题。
 
-entGo ORM官网：https://entgo.io/
+entGo教程请参照官网，有中文文档：https://entgo.io/
 
-使用entGo实现上文中的三个接口：
+需要注意的是ent生成过程会与golang工作区模式冲突，提示：
+```
+go: -mod may only be set to readonly or vendor when in workspace mode, but it is set to "mod"
+        Remove the -mod flag to use the default readonly value, 
+        or set GOWORK=off to disable workspace mode.
+```
+暂时未找到合适方法，可以把go.work暂时改为go1.work，ent生成成功再改回来。
+
+
+回到正文，使用entGo实现上文中的三个接口：
 ```json
 帖子列表：
 func (repo *Post) FetchMany(ctx context.Context) []*ent.Post {

@@ -401,7 +401,7 @@ ios swift：MJExtension： [链接](https://github.com/CoderMJLee/MJExtension)  
 android kotlin java.：Moshi： [链接](https://github.com/square/moshi)  <br/>
 
 
-凡事有利有弊，遵循ORM规范的代码存在什么问题呢？
+回到正文，凡事有利有弊，遵循ORM规范的代码存在什么问题呢？
 
 通过帖子列表代码实现过程可以发现，遵循ORM规范的代码量差不多联表实现代码量的两倍：<br/>
 步骤一：获取帖子列表<br/>
