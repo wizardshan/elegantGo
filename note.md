@@ -9,15 +9,7 @@ go work use -r github.com
 运行：
 go run ./app
 
-https://github.com/typestack/class-transformer
-https://github.com/CoderMJLee/MJExtension
-https://github.com/square/moshi
 
-Java中有很多实现比如Gson FastJson
-
-python https://github.com/lidatong/dataclasses-json
-
-golang 原生支持
 
 
 go build -tags=jsoniter .

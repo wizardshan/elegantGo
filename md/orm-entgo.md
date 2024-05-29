@@ -1,338 +1,236 @@
-### 什么是ORM?
-对象关系映射（Object Relational Mapping，简称ORM），是一种程序技术，用于实现面向对象编程里不同类型系统的数据之间的转换。
+### entGo框架实现ORM
+上文说到手工实现ORM框架所需的代码量是联表方式的两倍或更多，并且实现过程都是大同小异，所以代码开发中的搬砖活，为了提高效率我们引入entGo框架来解决重复工作的低效问题。
 
-**ORM是一种程序技术用于实现面向对象编程里在不同类型系统的数据转换时保持对象之间的映射关系。**
+entGo ORM官网：https://entgo.io/
 
->关键词：不同类型系统、数据转换、保持对象之间的映射关系
-
-很多同学认为ORM就是使用ORM框架实现数据的增删改查操作，但是根据ORM的定义，ORM是强调在不同类型的系统数据转换时要保持正确的对象映射关系，不同类型的系统并不仅仅是数据库系统的数据和应用程序的数据相互转换，也包括应用程序中的数据和客户端的数据相互转换；
-
-**什么是对象关系？**
-论坛网站，用户可以发多个帖子，所以用户可以拥有多个帖子，所以用户对帖子是一对多关系，帖子只能拥有一个发表他的用户，所以帖子对用户是一对一关系；
-同时帖子可以拥有多个评论，帖子对评论是一对多关系，评论只能拥有针对一个帖子发表，所以评论对帖子是一对一关系。
-
-**思考：为什么要保持对象之间的映射关系？**
-
-下面用代码来探索这个问题
-```
-帖子表posts：
-id(自增) hash_id(加密id) user_id(用户id) title(标题) content(内容) times_of_read(浏览量) create_time(创建时间) update_time(更新时间)
-
-用户表users：
-id(自增)  mobile(手机号) password(密码) nickname(昵称) avatar(头像) bio(个人简介) create_time(创建时间) update_time(更新时间)
-
-评论表comments：
-id(自增)  user_id(用户id) post_id(帖子id) content(内容) create_time(创建时间) update_time(更新时间)
-```
-
-需求1：帖子列表，需要用户头像、用户昵称数据 <br/>
-需求2：帖子详情，需要用户头像、用户昵称数据；需要评论列表数据，评论需要用户头像、用户昵称数据 <br/>
-
-先用手写SQL的方式来实现：
-```json
-帖子列表:
-posts表联users表查询：SELECT posts.`id`, posts.`hash_id`, posts.`user_id`, posts.`title`, posts.`content`, posts.`times_of_read`, posts.`create_time`, posts.`update_time`, users.`nickname`, users.`avatar` FROM posts, users WHERE posts.user_id=users.id ORDER BY posts.create_time DESC
-[
-  {
-    "ID": 1,
-    "HashID": "oKqk6tMl7z",
-    "UserID": 1,
-    "Title": "标题1",
-    "Content": "内容1",
-    "TimesOfRead": 100,
-    "CreateTime": "2024-04-18T11:03:46Z",
-    "UpdateTime": "2024-04-18T11:03:46Z",
-    "Nickname": "昵称1",
-    "Avatar": "头像1.png",
-    "Comments": null
-  },
-  {
-    "ID": 2,
-    "HashID": "02qN7SQyOb",
-    "UserID": 2,
-    "Title": "标题2",
-    "Content": "内容2",
-    "TimesOfRead": 200,
-    "CreateTime": "2024-04-18T11:03:46Z",
-    "UpdateTime": "2024-04-18T11:03:46Z",
-    "Nickname": "昵称2",
-    "Avatar": "头像2.png",
-    "Comments": null
-  }
-]
-
-帖子详情：
-posts表联users表查询：SELECT posts.`id`, posts.`hash_id`, posts.`user_id`, posts.`title`, posts.`content`, posts.`times_of_read`, posts.`create_time`, posts.`update_time`, users.`nickname`, users.`avatar` FROM posts, users WHERE posts.user_id=users.id AND posts.`id`= %d
-comments表联users表查询：SELECT comments.`id`, comments.`user_id`, comments.`post_id`, comments.`content`, comments.`create_time`, comments.`update_time`, users.`nickname`, users.`avatar` FROM comments, users WHERE comments.user_id=users.id AND comments.`post_id`= %d ORDER BY comments.create_time DESC
-{
-    "ID": 1,
-    "HashID": "oKqk6tMl7z",
-    "UserID": 1,
-    "Title": "标题1",
-    "Content": "内容1",
-    "TimesOfRead": 100,
-    "CreateTime": "2024-04-18T11:03:46Z",
-    "UpdateTime": "2024-04-18T11:03:46Z",
-    "Nickname": "昵称1",
-    "Avatar": "头像1.png",
-    "Comments": [
-        {
-            "ID": 1,
-            "UserID": 1,
-            "PostID": 1,
-            "Content": "评论1",
-            "CreateTime": "2024-05-21T15:22:06Z",
-            "UpdateTime": "2024-05-21T15:22:06Z",
-            "Nickname": "昵称1",
-            "Avatar": "头像1.png"
-        }
-    ]
-}
-```
-[源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter-orm-1)
-
-当对接接口的程序员看到这两个JSON结构，会有两个疑问：<br/>
-1、post数据里包含Nickname、Avatar属性，这两个属性是post自带属性吗？<br/>
-2、同上，comment数据里也包含Nickname、Avatar属性，这两个属性是comment自带属性吗？<br/>
-
-通过跟接口开发程序员沟通或者看接口注释才能确定，这两个属性是user数据的属性，这样就增加的沟通成本。
-
-我们可以通过增加属性前缀解决属性归属的不确定性，例如帖子详情JSON数据格式改成如下：
-```json
-{
-    "ID": 1,
-    "HashID": "oKqk6tMl7z",
-    "UserID": 1,
-    "Title": "标题1",
-    "Content": "内容1",
-    "TimesOfRead": 100,
-    "CreateTime": "2024-04-18T11:03:46Z",
-    "UpdateTime": "2024-04-18T11:03:46Z",
-    "UserNickname": "昵称1",
-    "UserAvatar": "头像1.png",
-    "Comments": [
-        {
-            "ID": 1,
-            "UserID": 1,
-            "PostID": 1,
-            "Content": "评论1",
-            "CreateTime": "2024-05-21T15:22:06Z",
-            "UpdateTime": "2024-05-21T15:22:06Z",
-            "UserNickname": "昵称1",
-            "UserAvatar": "头像1.png"
-        }
-    ]
-}
-```
-[源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter-orm-2)
-
-Nickname、Avatar属性名称加上模型名称前缀User，重新命名为UserNickname、UserAvatar，从而解决了属性归属的不确定性。
-
-这样还会有什么问题呢？我们先看一下客户端如何对接帖子详情接口：
-```java
-//客户端对接帖子详情接口过程（Android举例）
-
-// Comment模型
-public class Comment {
-    public Integer ID;   
-    public Integer UserID;
-    public Integer PostID;
-    public String Content;   
-    public String CreateTime;
-    public String UpdateTime;
-    
-    public String UserNickname;
-    public String UserAvatar;
-}
-
-// Post模型
-public class Post {
-    public Integer ID;   
-    public String HashID;   
-    public Integer UserID;   
-    public String Title;    
-    public String Content;    
-    public Integer TimesOfRead;
-    public String CreateTime;
-    public String UpdateTime;
-    
-    public String UserNickname;
-    public String UserAvatar;
-    
-    public ArrayList<Comment> Comments; 
-}
-```
-[源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter-orm-3)
-
-对接完成之后，过了一段时间，产品经理提出新需求：
-> 增加用户等级功能，帖子和评论增加用户等级字段
-
-服务端程序开发过程：<br/>
-步骤一：用户表增加level字段<br/>
-步骤二：3条SQL增加users.`level`<br/>
-步骤三：Post、Comment模型增加UserLevel属性<br/>
-
-客户端开发过程：<br/>
-Post、Comment模型，增加UserLevel属性
-
-思考：为什么users表增加1个level字段导致服务端要修改3条SQL、2个模型，并且客户端还要修改2个模型？
-
-解析：本质上是代码实现的接口数据格式没有遵循ORM标准，破坏了对象关系映射，本来实现业务需求底层数据用到了三张表(posts、comments、users)，到了代码层只有Post和Comment两个模型，并且这两个模型错误的拥有了用户的部分属性。
-
-我们看一下遵循ORM规范的接口数据结构是什么样子的，以及如何应对这样的需求变化
-
+使用entGo实现上文中的三个接口：
 ```json
 帖子列表：
+func (repo *Post) FetchMany(ctx context.Context) []*ent.Post {
+    return repo.db.Post.Query().WithUser().AllX(ctx)
+}
+// http://127.0.0.1:8080/posts
 [
   {
-    "ID": 1,
-    "HashID": "oKqk6tMl7z",
-    "UserID": 1,
-    "Title": "标题1",
-    "Content": "内容1",
-    "TimesOfRead": 100,
-    "CreateTime": "2024-04-18T11:03:46Z",
-    "UpdateTime": "2024-04-18T11:03:46Z",
-    "User": {
-      "ID": 1,
-      "Mobile": "13000000001",
-      "Password": "a906449d5769fa7361d7ecc6aa3f6d28",
-      "Nickname": "昵称1",
-      "Avatar": "头像1.png",
-      "Bio": "个人介绍1",
-      "CreateTime": "2024-04-11T20:02:32Z",
-      "UpdateTime": "2024-04-11T20:02:32Z"
-    },
-    "Comments": null
+    "id": 1,
+    "create_time": "2024-04-18T11:03:46+08:00",
+    "update_time": "2024-04-18T11:03:46+08:00",
+    "hash_id": "oKqk6tMl7z",
+    "user_id": 1,
+    "title": "标题1",
+    "content": "内容1",
+    "times_of_read": 100,
+    "edges": {
+      "user": {
+        "id": 1,
+        "create_time": "2024-04-11T20:02:32+08:00",
+        "update_time": "2024-04-11T20:02:32+08:00",
+        "mobile": "13000000001",
+        "password": "a906449d5769fa7361d7ecc6aa3f6d28",
+        "level": 10,
+        "nickname": "昵称1",
+        "avatar": "头像1.png",
+        "bio": "个人介绍1",
+        "edges": {
+          
+        }
+      }
+    }
   },
   {
-    "ID": 2,
-    "HashID": "02qN7SQyOb",
-    "UserID": 2,
-    "Title": "标题2",
-    "Content": "内容2",
-    "TimesOfRead": 200,
-    "CreateTime": "2024-04-18T11:03:46Z",
-    "UpdateTime": "2024-04-18T11:03:46Z",
-    "User": {
-      "ID": 2,
-      "Mobile": "13000000002",
-      "Password": "a906449d5769fa7361d7ecc6aa3f6d28",
-      "Nickname": "昵称2",
-      "Avatar": "头像2.png",
-      "Bio": "个人介绍2",
-      "CreateTime": "2024-04-11T20:02:32Z",
-      "UpdateTime": "2024-04-11T20:02:32Z"
-    },
-    "Comments": null
+    "id": 2,
+    "create_time": "2024-04-18T11:03:46+08:00",
+    "update_time": "2024-04-18T11:03:46+08:00",
+    "hash_id": "02qN7SQyOb",
+    "user_id": 2,
+    "title": "标题2",
+    "content": "内容2",
+    "times_of_read": 200,
+    "edges": {
+      "user": {
+        "id": 2,
+        "create_time": "2024-04-11T20:02:32+08:00",
+        "update_time": "2024-04-11T20:02:32+08:00",
+        "mobile": "13000000002",
+        "password": "a906449d5769fa7361d7ecc6aa3f6d28",
+        "level": 20,
+        "nickname": "昵称2",
+        "avatar": "头像2.png",
+        "bio": "个人介绍2",
+        "edges": {
+          
+        }
+      }
+    }
   }
 ]
 
 帖子详情：
+func (repo *Post) FetchByID(ctx context.Context, id int) *ent.Post {
+    return repo.db.Post.Query().WithUser().WithComments(func(ops *ent.CommentQuery) {
+        ops.WithUser()
+    }).Where(post.ID(id)).FirstX(ctx)
+}
+// http://127.0.0.1:8080/post
 {
-  "ID": 1,
-  "HashID": "oKqk6tMl7z",
-  "UserID": 1,
-  "Title": "标题1",
-  "Content": "内容1",
-  "TimesOfRead": 100,
-  "CreateTime": "2024-04-18T11:03:46Z",
-  "UpdateTime": "2024-04-18T11:03:46Z",
-  "User": {
-    "ID": 1,
-    "Mobile": "13000000001",
-    "Password": "a906449d5769fa7361d7ecc6aa3f6d28",
-    "Nickname": "昵称1",
-    "Avatar": "头像1.png",
-    "Bio": "个人介绍1",
-    "CreateTime": "2024-04-11T20:02:32Z",
-    "UpdateTime": "2024-04-11T20:02:32Z"
-  },
-  "Comments": [
-    {
-      "ID": 1,
-      "UserID": 1,
-      "PostID": 1,
-      "Content": "评论1",
-      "CreateTime": "2024-05-21T15:22:06Z",
-      "UpdateTime": "2024-05-21T15:22:06Z",
-      "User": {
-        "ID": 1,
-        "Mobile": "13000000001",
-        "Password": "a906449d5769fa7361d7ecc6aa3f6d28",
-        "Nickname": "昵称1",
-        "Avatar": "头像1.png",
-        "Bio": "个人介绍1",
-        "CreateTime": "2024-04-11T20:02:32Z",
-        "UpdateTime": "2024-04-11T20:02:32Z"
-      },
-      "Post": null
+  "id": 1,
+  "create_time": "2024-04-18T11:03:46+08:00",
+  "update_time": "2024-04-18T11:03:46+08:00",
+  "hash_id": "oKqk6tMl7z",
+  "user_id": 1,
+  "title": "标题1",
+  "content": "内容1",
+  "times_of_read": 100,
+  "edges": {
+    "comments": [
+      {
+        "id": 1,
+        "create_time": "2024-05-21T15:22:06+08:00",
+        "update_time": "2024-05-21T15:22:06+08:00",
+        "user_id": 1,
+        "post_id": 1,
+        "content": "评论1",
+        "edges": {
+          "user": {
+            "id": 1,
+            "create_time": "2024-04-11T20:02:32+08:00",
+            "update_time": "2024-04-11T20:02:32+08:00",
+            "mobile": "13000000001",
+            "password": "a906449d5769fa7361d7ecc6aa3f6d28",
+            "level": 10,
+            "nickname": "昵称1",
+            "avatar": "头像1.png",
+            "bio": "个人介绍1",
+            "edges": {
+              
+            }
+          }
+        }
+      }
+    ],
+    "user": {
+      "id": 1,
+      "create_time": "2024-04-11T20:02:32+08:00",
+      "update_time": "2024-04-11T20:02:32+08:00",
+      "mobile": "13000000001",
+      "password": "a906449d5769fa7361d7ecc6aa3f6d28",
+      "level": 10,
+      "nickname": "昵称1",
+      "avatar": "头像1.png",
+      "bio": "个人介绍1",
+      "edges": {
+        
+      }
     }
-  ]
+  }
 }
+
+最新评论接口：
+func (repo *Post) LatestComments(ctx context.Context) []*ent.Comment {
+    return repo.db.Comment.Query().WithUser().WithPost().AllX(ctx)
+}
+// http://127.0.0.1:8080/latestComments
+[
+  {
+    "id": 1,
+    "create_time": "2024-05-21T15:22:06+08:00",
+    "update_time": "2024-05-21T15:22:06+08:00",
+    "user_id": 1,
+    "post_id": 1,
+    "content": "评论1",
+    "edges": {
+      "post": {
+        "id": 1,
+        "create_time": "2024-04-18T11:03:46+08:00",
+        "update_time": "2024-04-18T11:03:46+08:00",
+        "hash_id": "oKqk6tMl7z",
+        "user_id": 1,
+        "title": "标题1",
+        "content": "内容1",
+        "times_of_read": 100,
+        "edges": {
+          
+        }
+      },
+      "user": {
+        "id": 1,
+        "create_time": "2024-04-11T20:02:32+08:00",
+        "update_time": "2024-04-11T20:02:32+08:00",
+        "mobile": "13000000001",
+        "password": "a906449d5769fa7361d7ecc6aa3f6d28",
+        "level": 10,
+        "nickname": "昵称1",
+        "avatar": "头像1.png",
+        "bio": "个人介绍1",
+        "edges": {
+          
+        }
+      }
+    }
+  },
+  {
+    "id": 2,
+    "create_time": "2024-05-21T15:22:06+08:00",
+    "update_time": "2024-05-21T15:22:06+08:00",
+    "user_id": 2,
+    "post_id": 2,
+    "content": "评论2",
+    "edges": {
+      "post": {
+        "id": 2,
+        "create_time": "2024-04-18T11:03:46+08:00",
+        "update_time": "2024-04-18T11:03:46+08:00",
+        "hash_id": "02qN7SQyOb",
+        "user_id": 2,
+        "title": "标题2",
+        "content": "内容2",
+        "times_of_read": 200,
+        "edges": {
+          
+        }
+      },
+      "user": {
+        "id": 2,
+        "create_time": "2024-04-11T20:02:32+08:00",
+        "update_time": "2024-04-11T20:02:32+08:00",
+        "mobile": "13000000002",
+        "password": "a906449d5769fa7361d7ecc6aa3f6d28",
+        "level": 20,
+        "nickname": "昵称2",
+        "avatar": "头像2.png",
+        "bio": "个人介绍2",
+        "edges": {
+          
+        }
+      }
+    }
+  }
+]
+
+edges属性是entgo框架定义对象关系的一个概念，后文会消除edges属性。
 ```
-[源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter-orm-4)
+[源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter-orm-entgo)
 
-```java
-//客户端对接帖子详情接口过程（Android举例）
+可以看到我们只使用了1-3行就实现了上文中几十行代码的工作量，减少了手写SQL的机械单调的过程，大大提高了开发效率。
 
-// User模型
-public class User {
-    public Integer ID;   
-    public String Nickname;    
-    public String Avatar;
-}
+**代码符合ORM规范的优势**<br>
+一、提高服务器开发效率，使用ORM框架不用手写效率低下SQL语句；<br>
+二、提高接口对接效率，客户端模型与服务器模型一一对应，不同业务就是不同模型的组合；<br>
+三、降低客户端与服务器端人员的沟通成本，都在相同的模型上讨论业务需求，不容易产生歧义；<br>
+四、使用ORM框架，避免了关联查询，针对单表sql的慢查询优化比多表关联sql要简单；<br>
+五、ORM框架都实现了SQL预编译，从而避免了SQL注入（后文详解）；<br>
+六、避免关联查询会带来很多好处，参照<<高性能MySQL第3版 6.3.3章节：分解关联查询>>：
+<img src="../images/orm-mysql6-3-3.jpg" width="100%">
 
-// Comment模型
-public class Comment {
-    public Integer ID;   
-    public Integer UserID;
-    public Integer PostID;
-    public String Content;   
-    public String CreateTime;
-    public String UpdateTime;
-    
-    public User User; 
-}
+ORM带来的问题：<br>
+问题1：ORM框架默认查询都会把所有字段查出来，也支持部分字段查询，需要手动指定具体字段名，但这样又降低了开发效率;<br>
+例如不需要大字段的时候也被查出来，比如帖子列表接口，content字段为text类型，手写sql的可以不写content，但是ORM框架每次都是全部查出来；<br>
+分析：sql规范没有某种语法糖，比如SELECT NOT(content) FROM posts可以把排除content字段的剩余所有字段全部查询出来；<br>
+解决：增加postContents表，把content放在这张表中，通过post_id关联，需要content的时候再加载进来；<br>
 
-// Post模型
-public class Post {
-    public Integer ID;   
-    public String HashID;   
-    public Integer UserID;   
-    public String Title;    
-    public String Content;    
-    public Integer TimesOfRead;
-    public String CreateTime;
-    public String UpdateTime;
-    
-    public User User; 
-    public ArrayList<Comment> Comments; 
-}
-```
-实现增加用户等级功能<br/>
-服务端程序开发过程：<br/>
-步骤一：用户表增加level字段<br/>
-步骤二：查询users表SQL增加level<br/>
-步骤三：User模型增加Level属性<br/>
-
-客户端开发过程：<br/>
-User模型增加Level属性<br/>
-
-相对于联表实现方式，遵循ORM规范的JSON数据格式应对需求变更减少了服务器端和客户端代码改动范围，同时在服务器端和客户端保持了对象关系映射，对接接口的程序员可以很容易理解数据之间的层级结构和属性范围，减少了沟通成本。
-
-凡事有利有弊，遵循ORM规范的代码存在什么问题呢？
-
-通过帖子列表代码实现过程可以发现，遵循ORM规范的代码量差不多联表实现代码量的两倍：<br/>
-步骤一：获取帖子列表<br/>
-步骤二：通过帖子列表得到用户ID数组<br/>
-步骤三：通过用户ID数组获取用户列表<br/>
-步骤四：格式化用户列表，得到用户ID和用户信息的映射map<br/>
-步骤五：循环帖子列表，通过映射map获取到用户信息，赋值给帖子对象中的用户对象<br/>
-
-这还只两张表实现ORM的代码量，如果三张表或者更多表参与，代码量更多，参照latestComments接口。
-
-那有什么好方法来解决这个问题呢？请看下文分解。
+问题2：统计业务怎么用ORM，统计业务主要是数据汇总、分类操作，可以用ORM框架也可以手写，看哪种方便；ORM说的是对象映射关系，跟统计业务没关系；
 
 
 
+
+todo:可以通过服务器模型生成对应的客户端模型文件，参照Apache Thrift和gRPC；

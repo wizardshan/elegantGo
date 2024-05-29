@@ -293,6 +293,7 @@ public class Comment {
     public String UpdateTime;
     
     public User User; 
+    public User Post; 
 }
 
 // Post模型
@@ -321,13 +322,92 @@ User模型增加Level属性<br/>
 
 相对于联表实现方式，遵循ORM规范的JSON数据格式应对需求变更减少了服务器端和客户端代码改动范围，同时在服务器端和客户端保持了对象关系映射，对接接口的程序员可以很容易理解数据之间的层级结构和属性范围，减少了沟通成本。
 
+再看一个稍微复杂的例子加深理解<br/>
+需求：最新评论接口，需要评论内容、帖子主题、用户昵称数据
+```json
+[
+  {
+    "ID": 1,
+    "UserID": 1,
+    "PostID": 1,
+    "Content": "评论1",
+    "CreateTime": "2024-05-21T15:22:06Z",
+    "UpdateTime": "2024-05-21T15:22:06Z",
+    "User": {
+      "ID": 1,
+      "Mobile": "13000000001",
+      "Password": "a906449d5769fa7361d7ecc6aa3f6d28",
+      "Nickname": "昵称1",
+      "Avatar": "头像1.png",
+      "Bio": "个人介绍1",
+      "CreateTime": "2024-04-11T20:02:32Z",
+      "UpdateTime": "2024-04-11T20:02:32Z"
+    },
+    "Post": {
+      "ID": 1,
+      "HashID": "oKqk6tMl7z",
+      "UserID": 1,
+      "Title": "标题1",
+      "Content": "内容1",
+      "TimesOfRead": 100,
+      "CreateTime": "2024-04-18T11:03:46Z",
+      "UpdateTime": "2024-04-18T11:03:46Z",
+      "User": null,
+      "Comments": null
+    }
+  },
+  {
+    "ID": 2,
+    "UserID": 2,
+    "PostID": 2,
+    "Content": "评论2",
+    "CreateTime": "2024-05-21T15:22:06Z",
+    "UpdateTime": "2024-05-21T15:22:06Z",
+    "User": {
+      "ID": 2,
+      "Mobile": "13000000002",
+      "Password": "a906449d5769fa7361d7ecc6aa3f6d28",
+      "Nickname": "昵称2",
+      "Avatar": "头像2.png",
+      "Bio": "个人介绍2",
+      "CreateTime": "2024-04-11T20:02:32Z",
+      "UpdateTime": "2024-04-11T20:02:32Z"
+    },
+    "Post": {
+      "ID": 2,
+      "HashID": "02qN7SQyOb",
+      "UserID": 2,
+      "Title": "标题2",
+      "Content": "内容2",
+      "TimesOfRead": 200,
+      "CreateTime": "2024-04-18T11:03:46Z",
+      "UpdateTime": "2024-04-18T11:03:46Z",
+      "User": null,
+      "Comments": null
+    }
+  }
+]
+```
+
+> 思考：这种模型嵌套模型的json数据格式，在客户端、服务器都容易解析吗，会增加对接的工作量吗？<br/>
+
+不同语言、不同平台对于模型嵌套数据格式都有很成熟的解析库：<br/>
+python：Dataclasses JSON：[链接](https://github.com/lidatong/dataclasses-json)  <br/>
+java：Gson FastJson <br/>
+golang：原生支持 <br/>
+typescript：class-transformer [链接](https://github.com/typestack/class-transformer)  <br/>
+
+ios swift：MJExtension： [链接](https://github.com/CoderMJLee/MJExtension)  <br/>
+android kotlin java.：Moshi： [链接](https://github.com/square/moshi)  <br/>
+
+
 凡事有利有弊，遵循ORM规范的代码存在什么问题呢？
 
 通过帖子列表代码实现过程可以发现，遵循ORM规范的代码量差不多联表实现代码量的两倍：<br/>
 步骤一：获取帖子列表<br/>
 步骤二：通过帖子列表得到用户ID数组<br/>
 步骤三：通过用户ID数组获取用户列表<br/>
-步骤四：格式化用户列表，得到用户ID和用户信息的映射map<br/>
+步骤四：格式化用户列表，得到用户ID和用户信息的映射map，目的是避免双循环，提高执行效率<br/>
 步骤五：循环帖子列表，通过映射map获取到用户信息，赋值给帖子对象中的用户对象<br/>
 
 这还只两张表实现ORM的代码量，如果三张表或者更多表参与，代码量更多，参照latestComments接口。
