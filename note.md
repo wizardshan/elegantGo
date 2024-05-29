@@ -17,6 +17,8 @@ Java中有很多实现比如Gson FastJson
 
 python https://github.com/lidatong/dataclasses-json
 
+golang 原生支持
+
 
 go build -tags=jsoniter .
 https://github.com/json-iterator/go

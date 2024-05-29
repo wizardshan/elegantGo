@@ -1,7 +1,7 @@
 # elegantGo
 Go编程：优雅永不过时
 - 1、被误解的ORM，只是单纯的不手写SQL？
-- 8、entGo框架实现ORM
+- 2、entGo框架实现ORM
 - 9、entGo框架的特殊用法 事务 insertupdate rand 分表
 - 10、通过控制反转的思路来提高CRUD效率
 - 
