@@ -34,6 +34,6 @@ func main() {
 	ctrPost := controller.NewPost(repoPost)
 	engine.GET("/posts", ctrPost.Many)
 	engine.GET("/post", ctrPost.One)
-	engine.GET("/latestComments", ctrPost.LatestComments)
+	engine.GET("/post/latestComments", ctrPost.LatestComments)
 	engine.Run()
 }

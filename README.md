@@ -1,10 +1,12 @@
 # elegantGo
 Go编程：优雅永不过时
 - 1、被误解的ORM，只是单纯的不手写SQL？
-- 2、entGo框架实现ORM
+- 2、entGo框架高效实现ORM
+- 3、控制反转思想来提高CRUD效率
 - 9、entGo框架的特殊用法 事务 insertupdate rand 分表
-- 10、通过控制反转的思路来提高CRUD效率
-- 
+
+https://help.aliyun.com/document_detail/472991.html
+
 - 1、参数校验三种方式的最优解
 - 2、参数相关的三种安全漏洞之一：SQL注入
 - 3、参数相关的三种安全漏洞之二：XSS （去空格 支付宝账号只能绑定一个账号）
@@ -22,6 +24,8 @@ Go编程：优雅永不过时
 
 最后一章 应付差事的CodeReview
 
+MySQL事务隔离级别？ 扣库存的合适级别 为什么MySQL 默认隔离级别是RR，又被阿里设置为RC    RC级别需要程序员乐观锁解决
+SELECT @@global.transaction_isolation
 
 
 console.log(new Date("2024-05-14T17:23:52.418905+08:00").toLocaleString())

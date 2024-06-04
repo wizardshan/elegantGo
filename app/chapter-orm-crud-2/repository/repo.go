@@ -34,23 +34,27 @@ func (repo *repoDB) withTx(ctx context.Context, client *ent.Client, fn func(tx *
 	return nil
 }
 
-func (repo *repoDB) QueryMany(ctx context.Context, query string, args []any, option func(rows *sql.Rows)) error {
-	return repo.queryMany(ctx, repo.db, query, args, option)
-}
-
-func (repo *repoDB) queryMany(ctx context.Context, db *ent.Client, query string, args []any, option func(rows *sql.Rows)) error {
-	rows, err := db.DB().QueryContext(ctx, query, args...)
+func (repo *repoDB) QueryMany(ctx context.Context, query string, args []any, optionFunc func(rows *sql.Rows) error) error {
+	rows, err := repo.db.DB().QueryContext(ctx, query, args...)
 	if err != nil {
 		return err
 	}
 
 	for rows.Next() {
-		option(rows)
+		err = optionFunc(rows)
+		if err != nil {
+			break
+		}
 	}
 
 	// Check for errors during rows "Close".
 	if closeErr := rows.Close(); closeErr != nil {
 		return closeErr
+	}
+
+	// Check for row scan error.
+	if err != nil {
+		return err
 	}
 
 	// Check for errors during row iteration.
@@ -61,19 +65,7 @@ func (repo *repoDB) queryMany(ctx context.Context, db *ent.Client, query string,
 	return nil
 }
 
-func (repo *repoDB) QueryOne(ctx context.Context, query string, args []any, option func(rows *sql.Rows)) error {
-	return repo.queryOne(ctx, repo.db, query, args, option)
-}
-
-func (repo *repoDB) queryOne(ctx context.Context, db *ent.Client, query string, args []any, option func(rows *sql.Rows)) error {
-	rows, err := db.DB().QueryContext(ctx, query, args...)
-	defer rows.Close()
-	if err != nil {
-		return err
-	}
-
-	for rows.Next() {
-		option(rows)
-	}
-	return nil
+func (repo *repoDB) QueryOne(ctx context.Context, query string, args []any, optionFunc func(row *sql.Row) error) error {
+	row := repo.db.DB().QueryRowContext(ctx, query, args...)
+	return optionFunc(row)
 }

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"app/chapter-orm-crud-2/repository/ent/comment"
 	"app/chapter-orm-entgo/repository/ent"
 	"app/chapter-orm-entgo/repository/ent/post"
 	"context"
@@ -27,5 +28,5 @@ func (repo *Post) FetchMany(ctx context.Context) []*ent.Post {
 }
 
 func (repo *Post) LatestComments(ctx context.Context) []*ent.Comment {
-	return repo.db.Comment.Query().WithUser().WithPost().AllX(ctx)
+	return repo.db.Comment.Query().WithUser().WithPost().Order(ent.Desc(comment.FieldCreateTime)).AllX(ctx)
 }

@@ -34,9 +34,17 @@ func main() {
 
 	engine := gin.New()
 	repoUser := repository.NewUser(db)
+	repoPost := repository.NewPost(db)
+	repoComment := repository.NewComment(db)
+	ctrPost := controller.NewPost(repoPost, repoComment)
 	ctrUser := controller.NewUser(repoUser)
 	engine.GET("/user", ctrUser.One)
 	engine.GET("/users", ctrUser.Many)
 	engine.GET("/user/register", ctrUser.Register)
+
+	engine.GET("/posts", ctrPost.Many)
+	engine.GET("/post", ctrPost.One)
+	engine.GET("/post/latestComments", ctrPost.LatestComments)
+
 	engine.Run()
 }

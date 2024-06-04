@@ -4,6 +4,7 @@ import (
 	"app/chapter-orm-crud-2/repository"
 	"app/chapter-orm-crud-2/repository/ent"
 	"database/sql"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -19,21 +20,31 @@ func NewUser(repo *repository.User) *User {
 }
 
 func (ctr *User) One(c *gin.Context) {
-	//id := 1
-	//query := "select hash_id, title, content from articles where `id`=%d"
-	//ctr.repo.QueryOne(c.Request.Context(), query, []any{id})
-	//var entUser ent.User
-	//if row.Err() != nil {
-	//	article.Err = row.Err().Error()
-	//}
-	//row.Scan(&article.HashID, &article.Title, &article.Content)
-	//return &article
+	id := 1
+	query := "select `id`, `hash_id`, `mobile`, `nickname`, `create_time`, `update_time` from users where `id`=?"
 
-	//entUser := ctr.repo.FetchByID(c.Request.Context(), id)
-	//c.JSON(http.StatusOK, entUser)
+	var entUser ent.User
+	err := ctr.repo.QueryOne(c.Request.Context(), query, []any{id}, func(row *sql.Row) error {
+		return row.Scan(
+			&entUser.ID,
+			&entUser.HashID,
+			&entUser.Mobile,
+			&entUser.Nickname,
+			&entUser.CreateTime,
+			&entUser.UpdateTime,
+		)
+	})
 
-	//c.JSON(http.StatusOK, entUser)
+	if errors.Is(err, sql.ErrNoRows) {
+		c.JSON(http.StatusOK, gin.H{
+			"user": nil,
+		})
+		return
+	}
 
+	c.JSON(http.StatusOK, gin.H{
+		"user": entUser,
+	})
 }
 
 func (ctr *User) Many(c *gin.Context) {
@@ -41,7 +52,7 @@ func (ctr *User) Many(c *gin.Context) {
 	nickname := "昵称1"
 	query := "select `id`, `hash_id`, `mobile`, `nickname`, `create_time`, `update_time` from users where `nickname`=?"
 	var entUsers ent.Users
-	err := ctr.repo.QueryMany(c.Request.Context(), query, []any{nickname}, func(rows *sql.Rows) {
+	err := ctr.repo.QueryMany(c.Request.Context(), query, []any{nickname}, func(rows *sql.Rows) error {
 		var entUser ent.User
 		err := rows.Scan(
 			&entUser.ID,
@@ -52,22 +63,37 @@ func (ctr *User) Many(c *gin.Context) {
 			&entUser.UpdateTime,
 		)
 		if err != nil {
-			panic(err.Error())
+			return err
 		}
 
 		entUsers = append(entUsers, &entUser)
+
+		return nil
 	})
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"users": entUsers,
-		"error": err,
 	})
 }
 
 func (ctr *User) Register(c *gin.Context) {
 	entUser, err := ctr.repo.Register(c.Request.Context())
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"user":  entUser,
-		"error": err,
+		"user": entUser,
 	})
 }

@@ -19,14 +19,19 @@ func NewUser(repo *repository.User) *User {
 }
 
 func (ctr *User) One(c *gin.Context) {
-	//id := 1
+	id := 1
 	//entUser := ctr.repo.FetchByID(c.Request.Context(), id)
 	//c.JSON(http.StatusOK, entUser)
+
+	entUser := ctr.repo.FetchOne(c.Request.Context(), func(builder *ent.UserQuery) {
+		builder.Where(user.ID(id))
+	})
+	c.JSON(http.StatusOK, entUser)
 
 	// FetchByID实现
 	//entUser := ctr.repo.Fetch(c.Request.Context(), id)
 	//c.JSON(http.StatusOK, entUser)
-
+	//
 	// FetchByMobile实现
 	//mobile := "13000000001"
 	//entUser := ctr.repo.FetchOne(c.Request.Context(), func(builder *ent.UserQuery) {
@@ -35,12 +40,12 @@ func (ctr *User) One(c *gin.Context) {
 	//c.JSON(http.StatusOK, entUser)
 
 	// FetchByMobileAndPassword实现
-	mobile := "13000000001"
-	password := "a906449d5769fa7361d7ecc6aa3f6d28"
-	entUser := ctr.repo.FetchOne(c.Request.Context(), func(builder *ent.UserQuery) {
-		builder.Where(user.Mobile(mobile), user.Password(password))
-	})
-	c.JSON(http.StatusOK, entUser)
+	//mobile := "13000000001"
+	//password := "a906449d5769fa7361d7ecc6aa3f6d28"
+	//entUser := ctr.repo.FetchOne(c.Request.Context(), func(builder *ent.UserQuery) {
+	//	builder.Where(user.Mobile(mobile), user.Password(password))
+	//})
+	//c.JSON(http.StatusOK, entUser)
 
 }
 
@@ -87,6 +92,13 @@ func (ctr *User) CUD(c *gin.Context) {
 }
 
 func (ctr *User) Register(c *gin.Context) {
-	entUser := ctr.repo.Register(c.Request.Context())
+	entUser, err := ctr.repo.Register(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, entUser)
 }
