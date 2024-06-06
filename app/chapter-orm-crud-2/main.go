@@ -41,6 +41,8 @@ func main() {
 	engine.GET("/user", ctrUser.One)
 	engine.GET("/users", ctrUser.Many)
 	engine.GET("/user/register", ctrUser.Register)
+	engine.GET("/user/upsert", ctrUser.Upsert)
+	engine.GET("/user/rand", ctrUser.Rand)
 
 	engine.GET("/posts", ctrPost.Many)
 	engine.GET("/post", ctrPost.One)

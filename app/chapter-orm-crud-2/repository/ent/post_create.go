@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -20,6 +21,7 @@ type PostCreate struct {
 	config
 	mutation *PostMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetCreateTime sets the "create_time" field.
@@ -251,6 +253,7 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 		_node = &Post{config: pc.config}
 		_spec = sqlgraph.NewCreateSpec(post.Table, sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt))
 	)
+	_spec.OnConflict = pc.conflict
 	if value, ok := pc.mutation.CreateTime(); ok {
 		_spec.SetField(post.FieldCreateTime, field.TypeTime, value)
 		_node.CreateTime = value
@@ -311,11 +314,321 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Post.Create().
+//		SetCreateTime(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.PostUpsert) {
+//			SetCreateTime(v+v).
+//		}).
+//		Exec(ctx)
+func (pc *PostCreate) OnConflict(opts ...sql.ConflictOption) *PostUpsertOne {
+	pc.conflict = opts
+	return &PostUpsertOne{
+		create: pc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Post.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (pc *PostCreate) OnConflictColumns(columns ...string) *PostUpsertOne {
+	pc.conflict = append(pc.conflict, sql.ConflictColumns(columns...))
+	return &PostUpsertOne{
+		create: pc,
+	}
+}
+
+type (
+	// PostUpsertOne is the builder for "upsert"-ing
+	//  one Post node.
+	PostUpsertOne struct {
+		create *PostCreate
+	}
+
+	// PostUpsert is the "OnConflict" setter.
+	PostUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetUpdateTime sets the "update_time" field.
+func (u *PostUpsert) SetUpdateTime(v time.Time) *PostUpsert {
+	u.Set(post.FieldUpdateTime, v)
+	return u
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *PostUpsert) UpdateUpdateTime() *PostUpsert {
+	u.SetExcluded(post.FieldUpdateTime)
+	return u
+}
+
+// SetHashID sets the "hash_id" field.
+func (u *PostUpsert) SetHashID(v string) *PostUpsert {
+	u.Set(post.FieldHashID, v)
+	return u
+}
+
+// UpdateHashID sets the "hash_id" field to the value that was provided on create.
+func (u *PostUpsert) UpdateHashID() *PostUpsert {
+	u.SetExcluded(post.FieldHashID)
+	return u
+}
+
+// SetUserID sets the "user_id" field.
+func (u *PostUpsert) SetUserID(v int) *PostUpsert {
+	u.Set(post.FieldUserID, v)
+	return u
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *PostUpsert) UpdateUserID() *PostUpsert {
+	u.SetExcluded(post.FieldUserID)
+	return u
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (u *PostUpsert) ClearUserID() *PostUpsert {
+	u.SetNull(post.FieldUserID)
+	return u
+}
+
+// SetTitle sets the "title" field.
+func (u *PostUpsert) SetTitle(v string) *PostUpsert {
+	u.Set(post.FieldTitle, v)
+	return u
+}
+
+// UpdateTitle sets the "title" field to the value that was provided on create.
+func (u *PostUpsert) UpdateTitle() *PostUpsert {
+	u.SetExcluded(post.FieldTitle)
+	return u
+}
+
+// SetContent sets the "content" field.
+func (u *PostUpsert) SetContent(v string) *PostUpsert {
+	u.Set(post.FieldContent, v)
+	return u
+}
+
+// UpdateContent sets the "content" field to the value that was provided on create.
+func (u *PostUpsert) UpdateContent() *PostUpsert {
+	u.SetExcluded(post.FieldContent)
+	return u
+}
+
+// SetTimesOfRead sets the "times_of_read" field.
+func (u *PostUpsert) SetTimesOfRead(v int) *PostUpsert {
+	u.Set(post.FieldTimesOfRead, v)
+	return u
+}
+
+// UpdateTimesOfRead sets the "times_of_read" field to the value that was provided on create.
+func (u *PostUpsert) UpdateTimesOfRead() *PostUpsert {
+	u.SetExcluded(post.FieldTimesOfRead)
+	return u
+}
+
+// AddTimesOfRead adds v to the "times_of_read" field.
+func (u *PostUpsert) AddTimesOfRead(v int) *PostUpsert {
+	u.Add(post.FieldTimesOfRead, v)
+	return u
+}
+
+// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// Using this option is equivalent to using:
+//
+//	client.Post.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (u *PostUpsertOne) UpdateNewValues() *PostUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.CreateTime(); exists {
+			s.SetIgnore(post.FieldCreateTime)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.Post.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
+func (u *PostUpsertOne) Ignore() *PostUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *PostUpsertOne) DoNothing() *PostUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the PostCreate.OnConflict
+// documentation for more info.
+func (u *PostUpsertOne) Update(set func(*PostUpsert)) *PostUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&PostUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *PostUpsertOne) SetUpdateTime(v time.Time) *PostUpsertOne {
+	return u.Update(func(s *PostUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *PostUpsertOne) UpdateUpdateTime() *PostUpsertOne {
+	return u.Update(func(s *PostUpsert) {
+		s.UpdateUpdateTime()
+	})
+}
+
+// SetHashID sets the "hash_id" field.
+func (u *PostUpsertOne) SetHashID(v string) *PostUpsertOne {
+	return u.Update(func(s *PostUpsert) {
+		s.SetHashID(v)
+	})
+}
+
+// UpdateHashID sets the "hash_id" field to the value that was provided on create.
+func (u *PostUpsertOne) UpdateHashID() *PostUpsertOne {
+	return u.Update(func(s *PostUpsert) {
+		s.UpdateHashID()
+	})
+}
+
+// SetUserID sets the "user_id" field.
+func (u *PostUpsertOne) SetUserID(v int) *PostUpsertOne {
+	return u.Update(func(s *PostUpsert) {
+		s.SetUserID(v)
+	})
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *PostUpsertOne) UpdateUserID() *PostUpsertOne {
+	return u.Update(func(s *PostUpsert) {
+		s.UpdateUserID()
+	})
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (u *PostUpsertOne) ClearUserID() *PostUpsertOne {
+	return u.Update(func(s *PostUpsert) {
+		s.ClearUserID()
+	})
+}
+
+// SetTitle sets the "title" field.
+func (u *PostUpsertOne) SetTitle(v string) *PostUpsertOne {
+	return u.Update(func(s *PostUpsert) {
+		s.SetTitle(v)
+	})
+}
+
+// UpdateTitle sets the "title" field to the value that was provided on create.
+func (u *PostUpsertOne) UpdateTitle() *PostUpsertOne {
+	return u.Update(func(s *PostUpsert) {
+		s.UpdateTitle()
+	})
+}
+
+// SetContent sets the "content" field.
+func (u *PostUpsertOne) SetContent(v string) *PostUpsertOne {
+	return u.Update(func(s *PostUpsert) {
+		s.SetContent(v)
+	})
+}
+
+// UpdateContent sets the "content" field to the value that was provided on create.
+func (u *PostUpsertOne) UpdateContent() *PostUpsertOne {
+	return u.Update(func(s *PostUpsert) {
+		s.UpdateContent()
+	})
+}
+
+// SetTimesOfRead sets the "times_of_read" field.
+func (u *PostUpsertOne) SetTimesOfRead(v int) *PostUpsertOne {
+	return u.Update(func(s *PostUpsert) {
+		s.SetTimesOfRead(v)
+	})
+}
+
+// AddTimesOfRead adds v to the "times_of_read" field.
+func (u *PostUpsertOne) AddTimesOfRead(v int) *PostUpsertOne {
+	return u.Update(func(s *PostUpsert) {
+		s.AddTimesOfRead(v)
+	})
+}
+
+// UpdateTimesOfRead sets the "times_of_read" field to the value that was provided on create.
+func (u *PostUpsertOne) UpdateTimesOfRead() *PostUpsertOne {
+	return u.Update(func(s *PostUpsert) {
+		s.UpdateTimesOfRead()
+	})
+}
+
+// Exec executes the query.
+func (u *PostUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for PostCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *PostUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *PostUpsertOne) ID(ctx context.Context) (id int, err error) {
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *PostUpsertOne) IDX(ctx context.Context) int {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // PostCreateBulk is the builder for creating many Post entities in bulk.
 type PostCreateBulk struct {
 	config
 	err      error
 	builders []*PostCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the Post entities in the database.
@@ -345,6 +658,7 @@ func (pcb *PostCreateBulk) Save(ctx context.Context) ([]*Post, error) {
 					_, err = mutators[i+1].Mutate(root, pcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = pcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, pcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -395,6 +709,215 @@ func (pcb *PostCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (pcb *PostCreateBulk) ExecX(ctx context.Context) {
 	if err := pcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Post.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.PostUpsert) {
+//			SetCreateTime(v+v).
+//		}).
+//		Exec(ctx)
+func (pcb *PostCreateBulk) OnConflict(opts ...sql.ConflictOption) *PostUpsertBulk {
+	pcb.conflict = opts
+	return &PostUpsertBulk{
+		create: pcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Post.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (pcb *PostCreateBulk) OnConflictColumns(columns ...string) *PostUpsertBulk {
+	pcb.conflict = append(pcb.conflict, sql.ConflictColumns(columns...))
+	return &PostUpsertBulk{
+		create: pcb,
+	}
+}
+
+// PostUpsertBulk is the builder for "upsert"-ing
+// a bulk of Post nodes.
+type PostUpsertBulk struct {
+	create *PostCreateBulk
+}
+
+// UpdateNewValues updates the mutable fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.Post.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (u *PostUpsertBulk) UpdateNewValues() *PostUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.CreateTime(); exists {
+				s.SetIgnore(post.FieldCreateTime)
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.Post.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+func (u *PostUpsertBulk) Ignore() *PostUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *PostUpsertBulk) DoNothing() *PostUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the PostCreateBulk.OnConflict
+// documentation for more info.
+func (u *PostUpsertBulk) Update(set func(*PostUpsert)) *PostUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&PostUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *PostUpsertBulk) SetUpdateTime(v time.Time) *PostUpsertBulk {
+	return u.Update(func(s *PostUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *PostUpsertBulk) UpdateUpdateTime() *PostUpsertBulk {
+	return u.Update(func(s *PostUpsert) {
+		s.UpdateUpdateTime()
+	})
+}
+
+// SetHashID sets the "hash_id" field.
+func (u *PostUpsertBulk) SetHashID(v string) *PostUpsertBulk {
+	return u.Update(func(s *PostUpsert) {
+		s.SetHashID(v)
+	})
+}
+
+// UpdateHashID sets the "hash_id" field to the value that was provided on create.
+func (u *PostUpsertBulk) UpdateHashID() *PostUpsertBulk {
+	return u.Update(func(s *PostUpsert) {
+		s.UpdateHashID()
+	})
+}
+
+// SetUserID sets the "user_id" field.
+func (u *PostUpsertBulk) SetUserID(v int) *PostUpsertBulk {
+	return u.Update(func(s *PostUpsert) {
+		s.SetUserID(v)
+	})
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *PostUpsertBulk) UpdateUserID() *PostUpsertBulk {
+	return u.Update(func(s *PostUpsert) {
+		s.UpdateUserID()
+	})
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (u *PostUpsertBulk) ClearUserID() *PostUpsertBulk {
+	return u.Update(func(s *PostUpsert) {
+		s.ClearUserID()
+	})
+}
+
+// SetTitle sets the "title" field.
+func (u *PostUpsertBulk) SetTitle(v string) *PostUpsertBulk {
+	return u.Update(func(s *PostUpsert) {
+		s.SetTitle(v)
+	})
+}
+
+// UpdateTitle sets the "title" field to the value that was provided on create.
+func (u *PostUpsertBulk) UpdateTitle() *PostUpsertBulk {
+	return u.Update(func(s *PostUpsert) {
+		s.UpdateTitle()
+	})
+}
+
+// SetContent sets the "content" field.
+func (u *PostUpsertBulk) SetContent(v string) *PostUpsertBulk {
+	return u.Update(func(s *PostUpsert) {
+		s.SetContent(v)
+	})
+}
+
+// UpdateContent sets the "content" field to the value that was provided on create.
+func (u *PostUpsertBulk) UpdateContent() *PostUpsertBulk {
+	return u.Update(func(s *PostUpsert) {
+		s.UpdateContent()
+	})
+}
+
+// SetTimesOfRead sets the "times_of_read" field.
+func (u *PostUpsertBulk) SetTimesOfRead(v int) *PostUpsertBulk {
+	return u.Update(func(s *PostUpsert) {
+		s.SetTimesOfRead(v)
+	})
+}
+
+// AddTimesOfRead adds v to the "times_of_read" field.
+func (u *PostUpsertBulk) AddTimesOfRead(v int) *PostUpsertBulk {
+	return u.Update(func(s *PostUpsert) {
+		s.AddTimesOfRead(v)
+	})
+}
+
+// UpdateTimesOfRead sets the "times_of_read" field to the value that was provided on create.
+func (u *PostUpsertBulk) UpdateTimesOfRead() *PostUpsertBulk {
+	return u.Update(func(s *PostUpsert) {
+		s.UpdateTimesOfRead()
+	})
+}
+
+// Exec executes the query.
+func (u *PostUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PostCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for PostCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *PostUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

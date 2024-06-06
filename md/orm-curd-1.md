@@ -72,5 +72,61 @@ func (repo *User) Update(ctx context.Context, optionFunc func(builder *ent.UserU
 }
 ```
 
+前文中的帖子需求优化如下：
+```go
+func (ctr *Post) Many(c *gin.Context) {
 
+	entPosts := ctr.repo.FetchMany(c.Request.Context(), func(builder *ent.PostQuery) {
+		builder.WithUser()
+	})
+	c.JSON(http.StatusOK, entPosts)
+}
+
+func (ctr *Post) One(c *gin.Context) {
+	id := 1
+	posts := ctr.repo.FetchOne(c.Request.Context(), func(builder *ent.PostQuery) {
+		builder.WithUser().WithComments(func(ops *ent.CommentQuery) {
+			ops.WithUser()
+		}).Where(post.ID(id))
+	})
+	c.JSON(http.StatusOK, posts)
+}
+
+func (ctr *Post) LatestComments(c *gin.Context) {
+	comments := ctr.repoComment.FetchMany(c.Request.Context(), func(builder *ent.CommentQuery) {
+		builder.WithUser().WithPost().Order(ent.Desc(comment.FieldCreateTime))
+	})
+	c.JSON(http.StatusOK, comments)
+}
+```
 [源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter-orm-crud-1)
+
+众所周知增删改查在日常开发中占了很大的工作量，搬砖活不可避免，但通过控制反转的思想提高增删改查的开发效率，做一个高效的CRUD程序员。
+
+### entGo事务
+```go
+func (repo *User) Register(ctx context.Context) (*ent.User, error) {
+	mobile := "13000000003"
+	password := "a906449d5769fa7361d7ecc6aa3f6d28"
+	level := 30
+	nickname := "昵称3"
+	avatar := "头像3.png"
+	bio := "个人介绍3"
+
+	entUser := repo.Create(ctx, func(builder *ent.UserCreate) {
+		builder.SetMobile(mobile).SetPassword(password).SetLevel(level).SetNickname(nickname).SetAvatar(avatar).SetBio(bio)
+	})
+
+	hashID, err := hashid.EncodeUserID(entUser.ID)
+	if err != nil {
+		return nil, err
+	}
+	repo.Update(ctx, func(builder *ent.UserUpdate) {
+		builder.SetHashID(hashID).Where(user.ID(entUser.ID))
+	})
+
+	return entUser, nil
+}
+```
+如上，这是一段用户注册的代码，第一步用户信息保存在数据库中，获取到自增id，然后对自增id进行加密操作，然后再把id加密结果保存在用户表里，我们使用了刚刚定义的CRUD函数，但是又需要使用事务来保持数据一致性，这又如何实现呢，请看下文分解。
+

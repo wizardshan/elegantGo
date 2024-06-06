@@ -4,6 +4,7 @@ import (
 	"app/chapter-orm-crud-2/repository"
 	"app/chapter-orm-crud-2/repository/ent"
 	"database/sql"
+	entsql "entgo.io/ent/dialect/sql"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -95,5 +96,46 @@ func (ctr *User) Register(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"user": entUser,
+	})
+}
+
+func (ctr *User) Upsert(c *gin.Context) {
+
+	mobile := "13000000003"
+	password := "a906449d5769fa7361d7ecc6aa3f6d28"
+	level := 30
+	nickname := "昵称3"
+	avatar := "头像3.png"
+	bio := "个人介绍3"
+
+	entUser := ctr.repo.Create(c.Request.Context(), func(builder *ent.UserCreate) {
+		builder.
+			SetMobile(mobile).
+			SetPassword(password).
+			SetLevel(level).
+			SetNickname(nickname).
+			SetAvatar(avatar).
+			SetBio(bio).
+			OnConflict().
+			UpdateNewValues().
+			Update(func(u *ent.UserUpsert) {
+				u.SetBio("个人介绍33")
+			})
+	})
+
+	c.JSON(http.StatusOK, gin.H{
+		"user": entUser,
+	})
+}
+
+func (ctr *User) Rand(c *gin.Context) {
+	entUsers := ctr.repo.FetchMany(c.Request.Context(), func(builder *ent.UserQuery) {
+		builder.Order(func(s *entsql.Selector) {
+			s.OrderBy("rand()")
+		})
+	})
+
+	c.JSON(http.StatusOK, gin.H{
+		"users": entUsers,
 	})
 }
