@@ -103,7 +103,7 @@ func (ctr *Post) LatestComments(c *gin.Context) {
 
 众所周知增删改查在日常开发中占了很大的工作量，搬砖活不可避免，但通过控制反转的思想提高增删改查的开发效率，做一个高效的CRUD程序员。
 
-### entGo事务
+### entGo框架事务
 ```go
 func (repo *User) Register(ctx context.Context) (*ent.User, error) {
 	mobile := "13000000003"

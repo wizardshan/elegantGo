@@ -2,8 +2,8 @@
 Go编程：优雅永不过时
 - 1、被误解的ORM，只是单纯的不手写SQL？
 - 2、entGo框架高效实现ORM
-- 3、控制反转思想来提高CRUD效率
-- 9、entGo框架的特殊用法 事务 insertupdate rand 分表
+- 3、控制反转思想来提高CRUD开发效率
+- 4、entGo框架事务优化 的特殊用法 事务 insertupdate rand
 
 https://help.aliyun.com/document_detail/472991.html
 
