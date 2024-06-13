@@ -6,11 +6,15 @@ import (
 )
 
 type MobileField struct {
-	Mobile string `binding:"required,number,mobile" label:"手机号码"`
+	Mobile string `binding:"required,number,mobile"`
 }
 
 type CaptchaField struct {
-	Captcha string `binding:"required,number,len=4" label:"手机验证码"`
+	Captcha string `binding:"required,number,len=4"`
+}
+
+type IDField struct {
+	ID string `binding:"required,number"`
 }
 
 type IDSField struct {
@@ -34,4 +38,17 @@ func (req *IDSField) Validate() error {
 
 func (req *IDSField) GetIDS() []int {
 	return req.ids
+}
+
+type Query struct {
+	Sort     string
+	Order    string
+	Page     int
+	PageSize int
+	Filter   string
+	Operator string
+}
+
+func (req *Query) Validate() error {
+	return nil
 }

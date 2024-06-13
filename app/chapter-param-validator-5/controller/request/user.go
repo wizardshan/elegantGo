@@ -36,3 +36,18 @@ func (req *UserRegister) Validate() error {
 	}
 	return nil
 }
+
+type UserMany struct {
+	Sort string
+	CaptchaField
+	user.NicknameField
+	user.PasswordField
+	user.RePasswordField
+}
+
+func (req *UserMany) Validate() error {
+	if req.Password != req.RePassword {
+		return errors.New("两次密码不一致")
+	}
+	return nil
+}
