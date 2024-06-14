@@ -11,14 +11,22 @@ import (
 	"regexp"
 )
 
-var trans ut.Translator
+var (
+	trans    ut.Translator
+	Validate = binding.Validator.Engine().(*validator.Validate)
+)
 
 func init() {
-	v := binding.Validator.Engine().(*validator.Validate)
-	// 自定义验证函数
-	v.RegisterValidation("mobile", func(fl validator.FieldLevel) bool {
+
+	// 自定义手机号验证函数
+	Validate.RegisterValidation("mobile", func(fl validator.FieldLevel) bool {
 		matched, _ := regexp.MatchString(`^(1[1-9][0-9]\d{8})$`, fl.Field().String())
 		return matched
+	})
+
+	// 自定义正整数验证函数
+	Validate.RegisterValidation("positivenumber", func(fl validator.FieldLevel) bool {
+		return fl.Field().Int() > 0
 	})
 
 	//return
@@ -29,10 +37,10 @@ func init() {
 	if !found {
 		log.Fatal("translator not found")
 	}
-	zhTranslations.RegisterDefaultTranslations(v, trans)
+	zhTranslations.RegisterDefaultTranslations(Validate, trans)
 
 	// 设置错误提示语
-	v.RegisterTranslation("mobile", trans, func(ut ut.Translator) error {
+	Validate.RegisterTranslation("mobile", trans, func(ut ut.Translator) error {
 		return ut.Add("mobile", "{0}格式不正确", true) // see universal-translator for details
 	}, func(ut ut.Translator, fe validator.FieldError) string {
 		t, _ := ut.T("mobile", fe.Field())
@@ -40,7 +48,7 @@ func init() {
 	})
 
 	// 设置字段名名称
-	v.RegisterTagNameFunc(func(field reflect.StructField) string {
+	Validate.RegisterTagNameFunc(func(field reflect.StructField) string {
 		tagName := field.Name
 		label := field.Tag.Get("label")
 		if label != "" {
@@ -71,7 +79,7 @@ func (c *Context) Validate(data interface{}) error {
 	if err := c.ShouldBind(data); err != nil {
 		validationErrors, ok := err.(validator.ValidationErrors)
 		if !ok {
-			return err
+			return NewParamError(err.Error())
 		}
 		validationErrorsTranslations := validationErrors.Translate(trans)
 		errorText := ""

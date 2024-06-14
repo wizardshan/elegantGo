@@ -38,16 +38,25 @@ func (req *UserRegister) Validate() error {
 }
 
 type UserMany struct {
-	Sort string
-	CaptchaField
-	user.NicknameField
-	user.PasswordField
-	user.RePasswordField
+	QueryField
+	Filter struct {
+		ID         *int
+		Username   *string
+		Gender     *NumbersBySeparatorField
+		Status     *StringsBySeparatorField
+		Level      *NumberRangeField
+		CreateTime *TimeRangeField
+	}
+	Operator struct {
+		ID         *EqualField
+		Username   *LikeField
+		Gender     *InField
+		Status     *InField
+		Level      *BetweenField
+		CreateTime *BetweenField
+	}
 }
 
 func (req *UserMany) Validate() error {
-	if req.Password != req.RePassword {
-		return errors.New("两次密码不一致")
-	}
 	return nil
 }
