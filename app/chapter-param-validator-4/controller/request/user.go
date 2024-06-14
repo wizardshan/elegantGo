@@ -56,7 +56,3 @@ type UserMany struct {
 		CreateTime *BetweenField
 	}
 }
-
-func (req *UserMany) Validate() error {
-	return nil
-}

@@ -2,6 +2,8 @@ package request
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"strings"
@@ -52,14 +54,106 @@ type QueryField struct {
 }
 
 type TimeRangeField string
-type NumberRangeField string
-type NumbersBySeparatorField string
-type StringsBySeparatorField string
 
 type EqualField string
 type LikeField string
 type BetweenField string
 type InField string
+
+type NumberRangeField struct {
+	Start     int
+	End       int
+	startAble bool
+	endAble   bool
+}
+
+func (req *NumberRangeField) UnmarshalJSON(b []byte) error {
+
+	var data string
+	if err := json.Unmarshal(b, &data); err != nil {
+		return err
+	}
+
+	if data == "" {
+		req.startAble = false
+		req.endAble = false
+		return nil
+	}
+
+	numbers := strings.Split(data, ",")
+	capacity := len(numbers)
+	if capacity != 2 {
+		return errors.New(fmt.Sprintf("the rangeField capacity expected value is 2, the result is %d", capacity))
+	}
+
+	for i, numStr := range numbers {
+		if numStr == "" {
+			continue
+		}
+
+		num, err := strconv.Atoi(numStr)
+		if err != nil {
+			return err
+		}
+
+		if i == 0 {
+			req.startAble = true
+			req.Start = num
+		} else {
+			req.endAble = true
+			req.End = num
+		}
+	}
+	return nil
+}
+
+func (req *NumberRangeField) StartAble() bool {
+	if req == nil {
+		return false
+	}
+
+	return req.startAble
+}
+
+func (req *NumberRangeField) EndAble() bool {
+	if req == nil {
+		return false
+	}
+
+	return req.endAble
+}
+
+type StringsBySeparatorField struct {
+	Values []string
+}
+
+func (req *StringsBySeparatorField) UnmarshalJSON(b []byte) error {
+
+	var data string
+	if err := json.Unmarshal(b, &data); err != nil {
+		return err
+	}
+
+	req.Values = strings.Split(data, ",")
+
+	return nil
+}
+
+func (req *StringsBySeparatorField) Able() bool {
+	if req == nil || req.Values == nil {
+		return false
+	}
+
+	if len(req.Values) == 0 {
+		return false
+	}
+
+	return true
+}
+
+type NumbersBySeparatorField struct {
+	Values []int
+}
 
 func (req *NumbersBySeparatorField) UnmarshalJSON(b []byte) error {
 
@@ -68,42 +162,25 @@ func (req *NumbersBySeparatorField) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	if data == "" {
-		return nil
+	numbers := strings.Split(data, ",")
+	for _, numStr := range numbers {
+		num, err := strconv.Atoi(numStr)
+		if err != nil {
+			return nil
+		}
+		req.Values = append(req.Values, num)
 	}
-	s := req.split(data)
-	err := Validate.Var(s, "dive,number")
-	if err != nil {
-		return err
-	}
-
-	*req = NumbersBySeparatorField(data)
 	return nil
 }
 
-func (req *NumbersBySeparatorField) split(s string) []string {
-	return strings.Split(s, ",")
-}
-
 func (req *NumbersBySeparatorField) Able() bool {
-	if req == nil {
+	if req == nil || req.Values == nil {
 		return false
 	}
 
-	if *req == "" {
+	if len(req.Values) == 0 {
 		return false
 	}
 
 	return true
-}
-
-func (req *NumbersBySeparatorField) Numbers() []int {
-	data := string(*req)
-	result := strings.Split(data, ",")
-	var numbers []int
-	for _, item := range result {
-		num, _ := strconv.Atoi(item)
-		numbers = append(numbers, num)
-	}
-	return numbers
 }
