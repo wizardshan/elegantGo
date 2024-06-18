@@ -80,11 +80,7 @@ func (req *NumbersBySeparatorField) UnmarshalJSON(b []byte) error {
 }
 
 func (req *NumbersBySeparatorField) Able() bool {
-	if req == nil || req.Values == nil {
-		return false
-	}
-
-	return true
+	return req != nil
 }
 
 type StringsBySeparatorField struct {
@@ -111,11 +107,7 @@ func (req *StringsBySeparatorField) UnmarshalJSON(b []byte) error {
 }
 
 func (req *StringsBySeparatorField) Able() bool {
-	if req == nil || req.Values == nil {
-		return false
-	}
-
-	return true
+	return req != nil
 }
 
 type NumberRangeField struct {

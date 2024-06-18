@@ -69,6 +69,9 @@ func (req *NumbersBySeparatorField) UnmarshalJSON(b []byte) error {
 	}
 
 	numbers := strings.Split(data, ",")
+	if err := validate.Var(numbers, "dive,required"); err != nil {
+		return err
+	}
 	for _, numStr := range numbers {
 		num, err := strconv.Atoi(numStr)
 		if err != nil {
@@ -80,11 +83,7 @@ func (req *NumbersBySeparatorField) UnmarshalJSON(b []byte) error {
 }
 
 func (req *NumbersBySeparatorField) Able() bool {
-	if req == nil || req.Values == nil {
-		return false
-	}
-
-	return true
+	return req != nil
 }
 
 type StringsBySeparatorField struct {
@@ -111,11 +110,7 @@ func (req *StringsBySeparatorField) UnmarshalJSON(b []byte) error {
 }
 
 func (req *StringsBySeparatorField) Able() bool {
-	if req == nil || req.Values == nil {
-		return false
-	}
-
-	return true
+	return req != nil
 }
 
 type NumberRangeField struct {
@@ -146,6 +141,7 @@ func (req *NumberRangeField) UnmarshalJSON(b []byte) error {
 		if numStr == "" {
 			continue
 		}
+
 		num, err := strconv.Atoi(numStr)
 		if err != nil {
 			return err
