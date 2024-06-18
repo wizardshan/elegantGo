@@ -36,23 +36,3 @@ func (req *UserRegister) Validate() error {
 	}
 	return nil
 }
-
-type UserMany struct {
-	QueryField
-	Filter struct {
-		ID         *int
-		Username   *string
-		Gender     *NumbersBySeparatorField
-		Status     *StringsBySeparatorField
-		Level      *NumberRangeField
-		CreateTime *TimeRangeField
-	}
-	Operator struct {
-		ID         *EqualField
-		Username   *LikeField
-		Gender     *InField
-		Status     *InField
-		Level      *BetweenField
-		CreateTime *BetweenField
-	}
-}

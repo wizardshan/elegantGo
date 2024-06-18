@@ -1,8 +1,8 @@
 package request
 
 import (
-	"app/chapter-param-validator-5/controller/request/article"
-	"app/chapter-param-validator-5/controller/request/column"
+	"app/chapter-param-validator-4/controller/request/article"
+	"app/chapter-param-validator-4/controller/request/column"
 )
 
 type ColumnCreateArticle struct {

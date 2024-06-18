@@ -1,53 +1,62 @@
 package request
 
-import (
-	"app/chapter-param-validator-5/controller/request/user"
-	"errors"
-)
-
-type UserLogin struct {
-	MobileField
-	CaptchaField
+type GenderBySeparatorField struct {
+	NumbersBySeparatorField
 }
 
-type UserDelete struct {
-	IDSField
-}
-
-//type UserRegister struct {
-//	MobileField
-//	CaptchaField
-//	user.NicknameField
-//	Password   string `binding:"required,min=6" label:"密码"`
-//	RePassword string `binding:"eqfield=Password" label:"重复密码"`
-//}
-
-type UserRegister struct {
-	MobileField
-	CaptchaField
-	user.NicknameField
-	user.PasswordField
-	user.RePasswordField
-}
-
-func (req *UserRegister) Validate() error {
-	if req.Password != req.RePassword {
-		return errors.New("两次密码不一致")
+func (req *GenderBySeparatorField) UnmarshalJSON(b []byte) error {
+	if err := req.NumbersBySeparatorField.UnmarshalJSON(b); err != nil {
+		return err
 	}
+
+	if err := validate.Var(req.Values, "dive,oneof=0 1 2"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+type StatusBySeparatorField struct {
+	StringsBySeparatorField
+}
+
+func (req *StatusBySeparatorField) UnmarshalJSON(b []byte) error {
+	if err := req.StringsBySeparatorField.UnmarshalJSON(b); err != nil {
+		return err
+	}
+
+	if err := validate.Var(req.Values, "dive,oneof=normal cancel invalid"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+type LevelRangeField struct {
+	NumberRangeField
+}
+
+func (req *LevelRangeField) UnmarshalJSON(b []byte) error {
+	if err := req.NumberRangeField.UnmarshalJSON(b); err != nil {
+		return err
+	}
+
+	if err := validate.Var([]int{req.Start, req.End}, "dive,oneof=0 10 20 30 40 50"); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 type UserMany struct {
-	Sort string
-	CaptchaField
-	user.NicknameField
-	user.PasswordField
-	user.RePasswordField
-}
+	QueryField
 
-func (req *UserMany) Validate() error {
-	if req.Password != req.RePassword {
-		return errors.New("两次密码不一致")
+	Filter struct {
+		ID         *int `binding:"omitempty,positivenumber"`
+		Nickname   *string
+		Level      *NumbersBySeparatorField
+		Status     *StringsBySeparatorField
+		Amount     *NumberRangeField
+		CreateTime *DateTimeRangeField
 	}
-	return nil
 }

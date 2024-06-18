@@ -3,9 +3,9 @@
 package ent
 
 import (
-	"app/chapter-orm-crud-1/repository/ent/comment"
-	"app/chapter-orm-crud-1/repository/ent/post"
-	"app/chapter-orm-crud-1/repository/ent/user"
+	"app/chapter-param-validator-5/repository/ent/comment"
+	"app/chapter-param-validator-5/repository/ent/post"
+	"app/chapter-param-validator-5/repository/ent/user"
 	"context"
 	"errors"
 	"fmt"
@@ -150,6 +150,34 @@ func (uc *UserCreate) SetNillableBio(s *string) *UserCreate {
 	return uc
 }
 
+// SetAmount sets the "amount" field.
+func (uc *UserCreate) SetAmount(i int) *UserCreate {
+	uc.mutation.SetAmount(i)
+	return uc
+}
+
+// SetNillableAmount sets the "amount" field if the given value is not nil.
+func (uc *UserCreate) SetNillableAmount(i *int) *UserCreate {
+	if i != nil {
+		uc.SetAmount(*i)
+	}
+	return uc
+}
+
+// SetStatus sets the "status" field.
+func (uc *UserCreate) SetStatus(s string) *UserCreate {
+	uc.mutation.SetStatus(s)
+	return uc
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (uc *UserCreate) SetNillableStatus(s *string) *UserCreate {
+	if s != nil {
+		uc.SetStatus(*s)
+	}
+	return uc
+}
+
 // AddCommentIDs adds the "comments" edge to the Comment entity by IDs.
 func (uc *UserCreate) AddCommentIDs(ids ...int) *UserCreate {
 	uc.mutation.AddCommentIDs(ids...)
@@ -251,6 +279,14 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultBio
 		uc.mutation.SetBio(v)
 	}
+	if _, ok := uc.mutation.Amount(); !ok {
+		v := user.DefaultAmount
+		uc.mutation.SetAmount(v)
+	}
+	if _, ok := uc.mutation.Status(); !ok {
+		v := user.DefaultStatus
+		uc.mutation.SetStatus(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -281,6 +317,12 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.Bio(); !ok {
 		return &ValidationError{Name: "bio", err: errors.New(`ent: missing required field "User.bio"`)}
+	}
+	if _, ok := uc.mutation.Amount(); !ok {
+		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "User.amount"`)}
+	}
+	if _, ok := uc.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "User.status"`)}
 	}
 	return nil
 }
@@ -344,6 +386,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Bio(); ok {
 		_spec.SetField(user.FieldBio, field.TypeString, value)
 		_node.Bio = value
+	}
+	if value, ok := uc.mutation.Amount(); ok {
+		_spec.SetField(user.FieldAmount, field.TypeInt, value)
+		_node.Amount = value
+	}
+	if value, ok := uc.mutation.Status(); ok {
+		_spec.SetField(user.FieldStatus, field.TypeString, value)
+		_node.Status = value
 	}
 	if nodes := uc.mutation.CommentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -531,6 +581,36 @@ func (u *UserUpsert) UpdateBio() *UserUpsert {
 	return u
 }
 
+// SetAmount sets the "amount" field.
+func (u *UserUpsert) SetAmount(v int) *UserUpsert {
+	u.Set(user.FieldAmount, v)
+	return u
+}
+
+// UpdateAmount sets the "amount" field to the value that was provided on create.
+func (u *UserUpsert) UpdateAmount() *UserUpsert {
+	u.SetExcluded(user.FieldAmount)
+	return u
+}
+
+// AddAmount adds v to the "amount" field.
+func (u *UserUpsert) AddAmount(v int) *UserUpsert {
+	u.Add(user.FieldAmount, v)
+	return u
+}
+
+// SetStatus sets the "status" field.
+func (u *UserUpsert) SetStatus(v string) *UserUpsert {
+	u.Set(user.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *UserUpsert) UpdateStatus() *UserUpsert {
+	u.SetExcluded(user.FieldStatus)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -692,6 +772,41 @@ func (u *UserUpsertOne) SetBio(v string) *UserUpsertOne {
 func (u *UserUpsertOne) UpdateBio() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateBio()
+	})
+}
+
+// SetAmount sets the "amount" field.
+func (u *UserUpsertOne) SetAmount(v int) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetAmount(v)
+	})
+}
+
+// AddAmount adds v to the "amount" field.
+func (u *UserUpsertOne) AddAmount(v int) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.AddAmount(v)
+	})
+}
+
+// UpdateAmount sets the "amount" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateAmount() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateAmount()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *UserUpsertOne) SetStatus(v string) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateStatus() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateStatus()
 	})
 }
 
@@ -1022,6 +1137,41 @@ func (u *UserUpsertBulk) SetBio(v string) *UserUpsertBulk {
 func (u *UserUpsertBulk) UpdateBio() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateBio()
+	})
+}
+
+// SetAmount sets the "amount" field.
+func (u *UserUpsertBulk) SetAmount(v int) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetAmount(v)
+	})
+}
+
+// AddAmount adds v to the "amount" field.
+func (u *UserUpsertBulk) AddAmount(v int) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.AddAmount(v)
+	})
+}
+
+// UpdateAmount sets the "amount" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateAmount() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateAmount()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *UserUpsertBulk) SetStatus(v string) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateStatus() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateStatus()
 	})
 }
 

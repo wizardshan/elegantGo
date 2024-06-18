@@ -3,9 +3,9 @@
 package ent
 
 import (
-	"app/chapter-orm-crud-1/repository/ent/comment"
-	"app/chapter-orm-crud-1/repository/ent/post"
-	"app/chapter-orm-crud-1/repository/ent/user"
+	"app/chapter-param-validator-5/repository/ent/comment"
+	"app/chapter-param-validator-5/repository/ent/post"
+	"app/chapter-param-validator-5/repository/ent/user"
 	"context"
 	"errors"
 	"fmt"
