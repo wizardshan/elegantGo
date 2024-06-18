@@ -146,6 +146,7 @@ func (req *NumberRangeField) UnmarshalJSON(b []byte) error {
 		if numStr == "" {
 			continue
 		}
+
 		num, err := strconv.Atoi(numStr)
 		if err != nil {
 			return err

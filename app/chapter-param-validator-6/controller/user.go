@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"app/chapter-param-validator-5/controller/request"
-	"app/chapter-param-validator-5/controller/response"
+	"app/chapter-param-validator-6/controller/request"
+	"app/chapter-param-validator-6/controller/response"
 	"github.com/gin-gonic/gin"
 )
 

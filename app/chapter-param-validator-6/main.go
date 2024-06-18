@@ -1,7 +1,7 @@
 package main
 
 import (
-	"app/chapter-param-validator-5/controller"
+	"app/chapter-param-validator-6/controller"
 	"github.com/gin-gonic/gin"
 )
 
