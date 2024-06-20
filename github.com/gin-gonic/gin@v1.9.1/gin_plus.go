@@ -24,11 +24,6 @@ func init() {
 		return matched
 	})
 
-	// 自定义正整数验证函数
-	Validate.RegisterValidation("positivenumber", func(fl validator.FieldLevel) bool {
-		return fl.Field().Int() > 0
-	})
-
 	//return
 
 	zh := zh.New()

@@ -52,7 +52,7 @@ type UserMany struct {
 	QueryField
 
 	Filter struct {
-		ID         *int `binding:"omitempty,positivenumber"`
+		ID         *int `binding:"omitempty,min=1"`
 		Nickname   *string
 		Level      *NumbersBySeparatorField
 		Status     *StringsBySeparatorField

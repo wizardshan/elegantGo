@@ -3,6 +3,7 @@ package controller
 import (
 	"app/chapter-param-validator-5/controller/request"
 	"app/chapter-param-validator-5/controller/response"
+	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,6 +20,8 @@ func (ctr *User) Many(c *gin.Context) (response.Data, error) {
 	if err := c.Validate(request); err != nil {
 		return nil, err
 	}
+
+	fmt.Println("request.Page.Value=", request.Page.Value())
 
 	return request, nil
 }

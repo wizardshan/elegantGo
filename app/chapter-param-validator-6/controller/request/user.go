@@ -1,11 +1,11 @@
 package request
 
 type GenderBySeparatorField struct {
-	NumbersBySeparatorField
+	NumberBySeparatorFieldV1
 }
 
 func (req *GenderBySeparatorField) UnmarshalJSON(b []byte) error {
-	if err := req.NumbersBySeparatorField.UnmarshalJSON(b); err != nil {
+	if err := req.NumberBySeparatorFieldV1.UnmarshalJSON(b); err != nil {
 		return err
 	}
 
@@ -17,11 +17,11 @@ func (req *GenderBySeparatorField) UnmarshalJSON(b []byte) error {
 }
 
 type StatusBySeparatorField struct {
-	StringsBySeparatorField
+	StringBySeparatorFieldV1
 }
 
 func (req *StatusBySeparatorField) UnmarshalJSON(b []byte) error {
-	if err := req.StringsBySeparatorField.UnmarshalJSON(b); err != nil {
+	if err := req.StringBySeparatorFieldV1.UnmarshalJSON(b); err != nil {
 		return err
 	}
 
@@ -33,11 +33,11 @@ func (req *StatusBySeparatorField) UnmarshalJSON(b []byte) error {
 }
 
 type LevelRangeField struct {
-	NumberRangeField
+	NumberRangeFieldV1
 }
 
 func (req *LevelRangeField) UnmarshalJSON(b []byte) error {
-	if err := req.NumberRangeField.UnmarshalJSON(b); err != nil {
+	if err := req.NumberRangeFieldV1.UnmarshalJSON(b); err != nil {
 		return err
 	}
 
@@ -52,11 +52,11 @@ type UserMany struct {
 	QueryField
 
 	Filter struct {
-		ID         *int `binding:"omitempty,positivenumber"`
-		Nickname   *string
-		Level      *NumbersBySeparatorField
-		Status     *StringsBySeparatorField
-		Amount     *NumberRangeField
-		CreateTime *DateTimeRangeField
+		ID         *int    `binding:"omitempty,min=1"`
+		Nickname   *string `binding:"omitempty,min=2"`
+		Level      NumberBySeparatorFieldV7
+		Status     StringBySeparatorFieldV7
+		Amount     NumberRangeFieldV1
+		CreateTime TimeRangeFieldV7
 	}
 }

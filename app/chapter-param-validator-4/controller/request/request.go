@@ -14,7 +14,7 @@ type CaptchaField struct {
 }
 
 type IDField struct {
-	ID int `binding:"required,positivenumber"`
+	ID int `binding:"required,min=1"`
 }
 
 type IDSField struct {
