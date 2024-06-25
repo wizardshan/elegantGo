@@ -9,8 +9,8 @@ import (
 )
 
 type TimeRangeFieldV1 struct {
-	Start     *time.Time
-	End       *time.Time
+	Start     time.Time
+	End       time.Time
 	startAble bool
 	endAble   bool
 }
@@ -53,23 +53,24 @@ func (req *TimeRangeFieldV1) UnmarshalJSON(b []byte) error {
 		req.End = t
 	}
 
-	if req.startAble && req.endAble && req.Start.After(*req.End) {
+	if req.startAble && req.endAble && req.Start.After(req.End) {
 		return errors.New("the rangeField start must lt end")
 	}
 
 	return nil
 }
 
-func (req *TimeRangeFieldV1) parse(value string) (*time.Time, error) {
+func (req *TimeRangeFieldV1) parse(value string) (t time.Time, err error) {
 	layouts := []string{time.DateTime, time.DateOnly}
 	for _, layout := range layouts {
-		t, err := time.Parse(layout, value)
+		t, err = time.Parse(layout, value)
 		if err == nil {
-			return &t, nil
+			return
 		}
 	}
 
-	return nil, errors.New(fmt.Sprintf("the time layout should be one of `%s` and `%s`", layouts))
+	err = errors.New(fmt.Sprintf("the time layout should be one of `%s` and `%s`", layouts))
+	return
 }
 
 func (req *TimeRangeFieldV1) StartAble() bool {

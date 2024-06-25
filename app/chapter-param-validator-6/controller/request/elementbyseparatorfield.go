@@ -12,7 +12,7 @@ func (req *ElementBySeparatorField[T]) unmarshalJSON(b []byte, validateTag strin
 		return err
 	}
 
-	if err := validate.Var(elements, validateTag); err != nil {
+	if err = validate.Var(elements, validateTag); err != nil {
 		return err
 	}
 	req.values = parse(elements)

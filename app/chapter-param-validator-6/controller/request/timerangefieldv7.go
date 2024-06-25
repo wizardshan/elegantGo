@@ -26,6 +26,7 @@ func (req *TimeRangeFieldV7) parseElement(value string) (t time.Time, err error)
 			return
 		}
 	}
-
-	return t, errors.New(fmt.Sprintf("the time layout should be one of %s", strings.Join(layouts, " and ")))
+	
+	err = errors.New(fmt.Sprintf("the time layout should be one of %s", strings.Join(layouts, " and ")))
+	return
 }
