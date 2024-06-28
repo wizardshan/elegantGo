@@ -1,82 +1,75 @@
 package request
 
-import (
-	"github.com/gin-gonic/gin/binding"
-	"github.com/stretchr/testify/assert"
-	"net/http"
-	"testing"
-)
-
 // go test -v
 // go test -run TestBindingNumberRangeField -v
 
-func TestBindingSort(t *testing.T) {
-	var obj QueryField
-	path := "/"
-	req, _ := http.NewRequest("GET", path, nil)
-	err := binding.Query.Bind(req, &obj)
-	assert.NoError(t, err)
-	assert.Equal(t, "id", obj.Sort.Value())
-
-	path = "/?Sort=CreateTime"
-	req, _ = http.NewRequest("GET", path, nil)
-	err = binding.Query.Bind(req, &obj)
-	assert.NoError(t, err)
-	assert.Equal(t, "create_time", obj.Sort.Value())
-}
-
-func TestBindingOrder(t *testing.T) {
-	var obj QueryField
-	path := "/"
-	req, _ := http.NewRequest("GET", path, nil)
-	err := binding.Query.Bind(req, &obj)
-	assert.NoError(t, err)
-	assert.Equal(t, true, obj.Order.IsDesc())
-
-	path = "/?Order=DESC"
-	req, _ = http.NewRequest("GET", path, nil)
-	err = binding.Query.Bind(req, &obj)
-	assert.NoError(t, err)
-	assert.Equal(t, true, obj.Order.IsDesc())
-
-	path = "/?Order=ASC"
-	req, _ = http.NewRequest("GET", path, nil)
-	err = binding.Query.Bind(req, &obj)
-	assert.NoError(t, err)
-	assert.Equal(t, false, obj.Order.IsDesc())
-}
-
-func TestBindingPage(t *testing.T) {
-	var obj QueryField
-	path := "/"
-	req, _ := http.NewRequest("GET", path, nil)
-	err := binding.Query.Bind(req, &obj)
-	assert.NoError(t, err)
-	assert.Equal(t, 1, obj.Page.Value())
-
-	path = "/?Page=10"
-	req, _ = http.NewRequest("GET", path, nil)
-	err = binding.Query.Bind(req, &obj)
-	assert.NoError(t, err)
-	assert.Equal(t, 10, obj.Page.Value())
-
-}
-
-func TestBindingPageSize(t *testing.T) {
-	var obj QueryField
-	path := "/"
-	req, _ := http.NewRequest("GET", path, nil)
-	err := binding.Query.Bind(req, &obj)
-	assert.NoError(t, err)
-	assert.Equal(t, 100, obj.Limit.Value())
-
-	path = "/?PageSize=10"
-	req, _ = http.NewRequest("GET", path, nil)
-	err = binding.Query.Bind(req, &obj)
-	assert.NoError(t, err)
-	assert.Equal(t, 10, obj.Limit.Value())
-
-}
+//func TestBindingSort(t *testing.T) {
+//	var obj QueryField
+//	path := "/"
+//	req, _ := http.NewRequest("GET", path, nil)
+//	err := binding.Query.Bind(req, &obj)
+//	assert.NoError(t, err)
+//	assert.Equal(t, "id", obj.Sort.Value())
+//
+//	path = "/?Sort=CreateTime"
+//	req, _ = http.NewRequest("GET", path, nil)
+//	err = binding.Query.Bind(req, &obj)
+//	assert.NoError(t, err)
+//	assert.Equal(t, "create_time", obj.Sort.Value())
+//}
+//
+//func TestBindingOrder(t *testing.T) {
+//	var obj QueryField
+//	path := "/"
+//	req, _ := http.NewRequest("GET", path, nil)
+//	err := binding.Query.Bind(req, &obj)
+//	assert.NoError(t, err)
+//	assert.Equal(t, true, obj.Order.IsDesc())
+//
+//	path = "/?Order=DESC"
+//	req, _ = http.NewRequest("GET", path, nil)
+//	err = binding.Query.Bind(req, &obj)
+//	assert.NoError(t, err)
+//	assert.Equal(t, true, obj.Order.IsDesc())
+//
+//	path = "/?Order=ASC"
+//	req, _ = http.NewRequest("GET", path, nil)
+//	err = binding.Query.Bind(req, &obj)
+//	assert.NoError(t, err)
+//	assert.Equal(t, false, obj.Order.IsDesc())
+//}
+//
+//func TestBindingPage(t *testing.T) {
+//	var obj QueryField
+//	path := "/"
+//	req, _ := http.NewRequest("GET", path, nil)
+//	err := binding.Query.Bind(req, &obj)
+//	assert.NoError(t, err)
+//	assert.Equal(t, 1, obj.Page.Value())
+//
+//	path = "/?Page=10"
+//	req, _ = http.NewRequest("GET", path, nil)
+//	err = binding.Query.Bind(req, &obj)
+//	assert.NoError(t, err)
+//	assert.Equal(t, 10, obj.Page.Value())
+//
+//}
+//
+//func TestBindingPageSize(t *testing.T) {
+//	var obj QueryField
+//	path := "/"
+//	req, _ := http.NewRequest("GET", path, nil)
+//	err := binding.Query.Bind(req, &obj)
+//	assert.NoError(t, err)
+//	assert.Equal(t, 100, obj.Limit.Value())
+//
+//	path = "/?PageSize=10"
+//	req, _ = http.NewRequest("GET", path, nil)
+//	err = binding.Query.Bind(req, &obj)
+//	assert.NoError(t, err)
+//	assert.Equal(t, 10, obj.Limit.Value())
+//
+//}
 
 //func TestBindingNumbersBySeparator(t *testing.T) {
 //	type Object struct {

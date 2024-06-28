@@ -14,7 +14,6 @@ type DateTimeRangeFieldV1 struct {
 }
 
 func (req *DateTimeRangeFieldV1) UnmarshalJSON(b []byte) error {
-
 	// 解析json字符串
 	var data string
 	if err := json.Unmarshal(b, &data); err != nil {
@@ -41,14 +40,14 @@ func (req *DateTimeRangeFieldV1) UnmarshalJSON(b []byte) error {
 	if startStr != "" {
 		req.Start, err = time.Parse(time.DateTime, startStr)
 		if err != nil {
-			return errors.New(fmt.Sprintf(fmt.Sprintf("the time layout should be `%s`", time.DateTime)))
+			return errors.New(fmt.Sprintf("the time layout should be `%s`", time.DateTime))
 		}
 	}
 
 	if endStr != "" {
 		req.End, err = time.Parse(time.DateTime, endStr)
 		if err != nil {
-			return errors.New(fmt.Sprintf(fmt.Sprintf("the time layout should be `%s`", time.DateTime)))
+			return errors.New(fmt.Sprintf("the time layout should be `%s`", time.DateTime))
 		}
 	}
 
