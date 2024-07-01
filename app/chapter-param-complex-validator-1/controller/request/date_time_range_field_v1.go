@@ -58,11 +58,3 @@ func (req *DateTimeRangeFieldV1) UnmarshalJSON(b []byte) error {
 
 	return nil
 }
-
-func (req *DateTimeRangeFieldV1) StartAble() bool {
-	return !req.Start.IsZero()
-}
-
-func (req *DateTimeRangeFieldV1) EndAble() bool {
-	return !req.End.IsZero()
-}

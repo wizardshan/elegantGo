@@ -71,11 +71,3 @@ func (req *DateTimeRangeFieldV4) layout() string {
 func (req *DateTimeRangeFieldV4) valid() bool {
 	return !req.Start.IsZero() && !req.End.IsZero() && req.Start.Before(req.End)
 }
-
-func (req *DateTimeRangeFieldV4) StartAble() bool {
-	return !req.Start.IsZero()
-}
-
-func (req *DateTimeRangeFieldV4) EndAble() bool {
-	return !req.End.IsZero()
-}

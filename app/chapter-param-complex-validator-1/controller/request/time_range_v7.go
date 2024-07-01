@@ -66,11 +66,3 @@ func (req *TimeRangeV7) parse(elements []string) {
 func (req *TimeRangeV7) valid() bool {
 	return !req.Start.IsZero() && !req.End.IsZero() && req.Start.Before(req.End)
 }
-
-func (req *TimeRangeV7) StartAble() bool {
-	return !req.Start.IsZero()
-}
-
-func (req *TimeRangeV7) EndAble() bool {
-	return !req.End.IsZero()
-}

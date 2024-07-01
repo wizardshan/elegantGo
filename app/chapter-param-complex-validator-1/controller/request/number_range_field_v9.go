@@ -11,7 +11,7 @@ type NumberRangeFieldV9 struct {
 }
 
 func (req *NumberRangeFieldV9) UnmarshalJSON(b []byte) (err error) {
-	req.Start, req.End, err = req.RangeV9.parse(b, "number", req.parseElementFunc(), req.valid)
+	req.Start, req.End, err = req.parse(b, "number", req.parseElementFunc(), req.valid)
 	return
 }
 

@@ -68,11 +68,3 @@ func (req *DateRangeFieldV6) layout() string {
 func (req *DateRangeFieldV6) valid() bool {
 	return !req.Start.IsZero() && !req.End.IsZero() && req.Start.After(req.End)
 }
-
-func (req *DateRangeFieldV6) StartAble() bool {
-	return !req.Start.IsZero()
-}
-
-func (req *DateRangeFieldV6) EndAble() bool {
-	return !req.End.IsZero()
-}

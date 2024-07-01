@@ -78,11 +78,3 @@ func (req *DateTimeRangeFieldV2) parse(elements []string) (err error) {
 func (req *DateTimeRangeFieldV2) valid() bool {
 	return !req.Start.IsZero() && !req.End.IsZero() && req.Start.Before(req.End)
 }
-
-func (req *DateTimeRangeFieldV2) StartAble() bool {
-	return !req.Start.IsZero()
-}
-
-func (req *DateTimeRangeFieldV2) EndAble() bool {
-	return !req.End.IsZero()
-}

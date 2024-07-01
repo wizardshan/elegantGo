@@ -65,11 +65,3 @@ func (req *TimeRangeV8) parseElement(s string, layout string) (t time.Time) {
 func (req *TimeRangeV8) valid() bool {
 	return !req.Start.IsZero() && !req.End.IsZero() && req.Start.Before(req.End)
 }
-
-func (req *TimeRangeV8) StartAble() bool {
-	return !req.Start.IsZero()
-}
-
-func (req *TimeRangeV8) EndAble() bool {
-	return !req.End.IsZero()
-}
