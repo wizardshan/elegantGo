@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"app/chapter-param-complex-validator-1/controller/request"
-	"app/chapter-param-complex-validator-1/controller/response"
+	"app/chapter-param-complex-validator-2/controller/request"
+	"app/chapter-param-complex-validator-2/controller/response"
 	"github.com/gin-gonic/gin"
 )
 

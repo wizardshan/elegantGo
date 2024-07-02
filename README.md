@@ -31,6 +31,31 @@ SELECT @@global.transaction_isolation
 
 console.log(new Date("2024-05-14T17:23:52.418905+08:00").toLocaleString())
 
+function rfc3339(d) {
+
+    function pad(n) {
+        return n < 10 ? "0" + n : n;
+    }
+
+    function timezoneOffset(offset) {
+        var sign;
+        if (offset === 0) {
+            return "Z";
+        }
+        sign = (offset > 0) ? "-" : "+";
+        offset = Math.abs(offset);
+        return sign + pad(Math.floor(offset / 60)) + ":" + pad(offset % 60);
+    }
+
+    return d.getFullYear() + "-" +
+        pad(d.getMonth() + 1) + "-" +
+        pad(d.getDate()) + "T" +
+        pad(d.getHours()) + ":" +
+        pad(d.getMinutes()) + ":" +
+        pad(d.getSeconds()) + 
+        timezoneOffset(d.getTimezoneOffset());
+}
+
 1、理解ORM，减少多端沟通成本，避免效率低下手写SQL
 2、控制反转优化增删改查
 3、共用参数校验模型，减少重复代码 

@@ -12,7 +12,7 @@ func (req *NumberBySepField) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	if err := validate.Var(req.Values, "dive,number"); err != nil {
+	if err := validate.Var(req.elements, "dive,number"); err != nil {
 		return err
 	}
 
