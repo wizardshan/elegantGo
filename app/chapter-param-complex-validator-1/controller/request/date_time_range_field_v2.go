@@ -11,24 +11,24 @@ import (
 type DateTimeRangeFieldV2 struct {
 	Start time.Time
 	End   time.Time
+	data  string
 }
 
 func (req *DateTimeRangeFieldV2) UnmarshalJSON(b []byte) error {
 
-	data, err := req.unmarshal(b)
-	if err != nil {
+	// 解析json字符串
+	if err := req.unmarshal(b); err != nil {
 		return err
 	}
-
-	elements, err := req.split(data)
-	if err != nil {
+	// 验证json字符串有效性
+	if !req.hasSep() {
+		return errors.New("parameter should be separated by commas")
+	}
+	// 解析json字符串到业务数据
+	if err := req.parse(); err != nil {
 		return err
 	}
-
-	if err = req.parse(elements); err != nil {
-		return err
-	}
-
+	// 验证业务数据有效性
 	if !req.valid() {
 		return errors.New("the rangeField start must lt end")
 	}
@@ -36,45 +36,39 @@ func (req *DateTimeRangeFieldV2) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (req *DateTimeRangeFieldV2) unmarshal(b []byte) (data string, err error) {
-	err = json.Unmarshal(b, &data)
-	return
+func (req *DateTimeRangeFieldV2) unmarshal(b []byte) error {
+	return json.Unmarshal(b, &req.data)
 }
 
-func (req *DateTimeRangeFieldV2) split(data string) (elements []string, err error) {
-	if find := strings.Contains(data, ","); !find {
-		err = errors.New("parameter should be separated by commas")
-		return
-	}
-	elements = strings.Split(data, ",")
-	capacity := len(elements)
-	if capacity != 2 {
-		err = errors.New(fmt.Sprintf("the rangeField capacity expected value is 2, the result is %d", capacity))
-	}
-	return
+func (req *DateTimeRangeFieldV2) hasSep() bool {
+	return strings.Contains(req.data, ",")
 }
 
-func (req *DateTimeRangeFieldV2) parse(elements []string) (err error) {
+func (req *DateTimeRangeFieldV2) parse() error {
+	elements := strings.Split(req.data, ",")
+	if capacity := len(elements); capacity != 2 {
+		return errors.New(fmt.Sprintf("the rangeField capacity expected value is 2, the result is %d", capacity))
+	}
+
 	startStr := elements[0]
 	endStr := elements[1]
 
 	if startStr != "" {
-		req.Start, err = time.Parse(time.DateTime, startStr)
-		if err != nil {
+		var err error
+		if req.Start, err = time.Parse(time.DateTime, startStr); err != nil {
 			return errors.New(fmt.Sprintf("the time layout should be `%s`", time.DateTime))
 		}
 	}
 
 	if endStr != "" {
-		req.End, err = time.Parse(time.DateTime, endStr)
-		if err != nil {
+		var err error
+		if req.End, err = time.Parse(time.DateTime, endStr); err != nil {
 			return errors.New(fmt.Sprintf("the time layout should be `%s`", time.DateTime))
 		}
 	}
-
-	return
+	return nil
 }
 
 func (req *DateTimeRangeFieldV2) valid() bool {
-	return !req.Start.IsZero() && !req.End.IsZero() && req.Start.Before(req.End)
+	return req.Start.Before(req.End)
 }

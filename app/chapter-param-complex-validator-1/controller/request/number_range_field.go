@@ -1,24 +1,25 @@
 package request
 
 import (
+	"app/chapter-param-complex-validator-1/controller/pkg/mapper"
 	"github.com/elliotchance/pie/v2"
 	"strconv"
 )
 
-type NumberRangeFieldV9 struct {
-	RangeV9[*int]
+type NumberRangeField struct {
+	Range[*int]
 }
 
-func (req *NumberRangeFieldV9) UnmarshalJSON(b []byte) error {
+func (req *NumberRangeField) UnmarshalJSON(b []byte) error {
 	return req.Parse(
 		b,
 		req.validateTag("number"),
-		req.mapperFunc(),
+		mapper.PtrInts,
 		req.valid,
 	)
 }
 
-func (req *NumberRangeFieldV9) mapperFunc() func([]string) []*int {
+func (req *NumberRangeField) mapperFunc() func([]string) []*int {
 	return func(elems []string) []*int {
 		return pie.Map(elems, func(s string) *int {
 			num, err := strconv.Atoi(s)
@@ -30,6 +31,6 @@ func (req *NumberRangeFieldV9) mapperFunc() func([]string) []*int {
 	}
 }
 
-func (req *NumberRangeFieldV9) valid(start *int, end *int) bool {
+func (req *NumberRangeField) valid(start *int, end *int) bool {
 	return !(start != nil && end != nil && *start >= *end)
 }

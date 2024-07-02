@@ -7,5 +7,5 @@ type DateTimeRangeFieldV7 struct {
 }
 
 func (req *DateTimeRangeFieldV7) UnmarshalJSON(b []byte) error {
-	return req.unmarshalJSON(b, time.DateTime)
+	return req.Parse(b, time.DateTime)
 }

@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+func Ints(ss []string) []int {
+	return pie.Ints(ss)
+}
+
 func PtrInts(ss []string) []*int {
 	return pie.Map(ss, func(s string) *int {
 		num, err := strconv.Atoi(s)

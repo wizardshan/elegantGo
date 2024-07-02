@@ -12,22 +12,24 @@ import (
 type DateRangeFieldV6 struct {
 	Start time.Time
 	End   time.Time
+	data  string
 }
 
 func (req *DateRangeFieldV6) UnmarshalJSON(b []byte) error {
 
-	data, err := req.unmarshal(b)
-	if err != nil {
+	// 解析json字符串
+	if err := req.unmarshal(b); err != nil {
 		return err
 	}
-
-	elements, err := req.split(data)
-	if err != nil {
+	// 验证json字符串有效性
+	if !req.hasSep() {
+		return errors.New("parameter should be separated by commas")
+	}
+	// 解析json字符串到业务数据
+	if err := req.parse(); err != nil {
 		return err
 	}
-
-	req.parse(elements)
-
+	// 验证业务数据有效性
 	if !req.valid() {
 		return errors.New("the rangeField start must lt end")
 	}
@@ -35,36 +37,35 @@ func (req *DateRangeFieldV6) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (req *DateRangeFieldV6) unmarshal(b []byte) (data string, err error) {
-	err = json.Unmarshal(b, &data)
-	return
+func (req *DateRangeFieldV6) unmarshal(b []byte) error {
+	return json.Unmarshal(b, &req.data)
 }
 
-func (req *DateRangeFieldV6) split(data string) (elements []string, err error) {
-	separator := ","
-	if find := strings.Contains(data, separator); !find {
-		err = errors.New("parameter should be separated by commas")
-		return
+func (req *DateRangeFieldV6) hasSep() bool {
+	return strings.Contains(req.data, req.separator())
+}
+
+func (req *DateRangeFieldV6) parse() error {
+	elements := strings.Split(req.data, req.separator())
+	layout := time.DateOnly
+	err := validate.Var(elements, fmt.Sprintf("len=2,dive,omitempty,datetime=%s", layout))
+	if err != nil {
+		return err
 	}
-	elements = strings.Split(data, separator)
-	err = validate.Var(elements, fmt.Sprintf("len=2,dive,omitempty,datetime=%s", req.layout()))
-	return
-}
-
-func (req *DateRangeFieldV6) parse(elements []string) {
 
 	times := pie.Map(elements, func(s string) (t time.Time) {
-		t, _ = time.Parse(req.layout(), s)
+		t, _ = time.Parse(layout, s)
 		return
 	})
 
 	req.Start, req.End = times[0], times[1]
-}
-
-func (req *DateRangeFieldV6) layout() string {
-	return time.DateOnly
+	return nil
 }
 
 func (req *DateRangeFieldV6) valid() bool {
-	return !req.Start.IsZero() && !req.End.IsZero() && req.Start.After(req.End)
+	return !req.Start.IsZero() && !req.End.IsZero() && req.Start.Before(req.End)
+}
+
+func (req *DateRangeFieldV6) separator() string {
+	return ","
 }

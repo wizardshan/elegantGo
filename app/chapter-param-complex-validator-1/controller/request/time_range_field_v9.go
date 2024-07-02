@@ -2,6 +2,7 @@ package request
 
 import (
 	"fmt"
+	"github.com/elliotchance/pie/v2"
 	"time"
 )
 
@@ -10,22 +11,25 @@ type TimeRangeFieldV9 struct {
 }
 
 func (req *TimeRangeFieldV9) UnmarshalJSON(b []byte) error {
-	return req.unmarshalJSON(
+	layouts := req.layouts()
+	return req.Parse(
 		b,
-		fmt.Sprintf("datetime=%s|datetime=%s", req.layouts()[0], req.layouts()[1]),
-		req.parseElementFunc(),
+		req.validateTag(fmt.Sprintf("datetime=%s|datetime=%s", layouts[0], layouts[1])),
+		req.mapperFunc(),
 	)
 }
 
-func (req *TimeRangeFieldV9) parseElementFunc() func(s string) time.Time {
-	return func(s string) (t time.Time) {
-		for _, layout := range req.layouts() {
-			t = req.parseElement(s, layout)
-			if !t.IsZero() {
-				break
+func (req *TimeRangeFieldV9) mapperFunc() func(elems []string) []time.Time {
+	return func(elems []string) []time.Time {
+		return pie.Map(elems, func(s string) (t time.Time) {
+			for _, layout := range req.layouts() {
+				t, _ = time.Parse(layout, s)
+				if !t.IsZero() {
+					return t
+				}
 			}
-		}
-		return
+			return
+		})
 	}
 }
 

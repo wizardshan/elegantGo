@@ -53,7 +53,7 @@ type UserMany struct {
 	Filter struct {
 		ID         *int    `binding:"omitempty,min=1"`
 		Nickname   *string `binding:"omitempty,min=2"`
-		CreateTime TimeRangeFieldV9
+		CreateTime TimeRangeFieldV91
 		Level      NumberRangeFieldV9
 	}
 }

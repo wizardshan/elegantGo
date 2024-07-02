@@ -10,16 +10,16 @@ type DateTimeRangeFieldV9 struct {
 }
 
 func (req *DateTimeRangeFieldV9) UnmarshalJSON(b []byte) error {
-	return req.unmarshalJSON(
+	return req.Parse(
 		b,
-		fmt.Sprintf("datetime=%s", req.layout()),
-		req.parseElementFunc(),
+		req.validateTag(fmt.Sprintf("datetime=%s", req.layout())),
+		req.mapperFunc(),
 	)
 }
 
-func (req *DateTimeRangeFieldV9) parseElementFunc() func(s string) time.Time {
-	return func(s string) time.Time {
-		return req.parseElement(s, req.layout())
+func (req *DateTimeRangeFieldV9) mapperFunc() func(elems []string) []time.Time {
+	return func(elems []string) []time.Time {
+		return req.mapper(elems, req.layout())
 	}
 }
 
