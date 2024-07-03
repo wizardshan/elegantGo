@@ -24,6 +24,20 @@ func init() {
 		return matched
 	})
 
+	Validate.RegisterValidation("nilfield", func(fl validator.FieldLevel) bool {
+		field, _, _, ok := fl.GetStructFieldOK2()
+		if !ok {
+			return false
+		}
+
+		switch field.Kind() {
+		case reflect.Slice, reflect.Map, reflect.Ptr, reflect.Interface, reflect.Chan, reflect.Func:
+			return field.IsNil()
+		default:
+			return !field.IsValid() || field.IsZero()
+		}
+	})
+
 	//return
 
 	zh := zh.New()

@@ -11,7 +11,7 @@ type QueryField struct {
 
 type TimeRange struct {
 	Start time.Time
-	End   time.Time
+	End   time.Time `binding:"omitempty,gtfield=Start"`
 }
 
 func (req TimeRange) StartAble() bool {
@@ -24,7 +24,7 @@ func (req TimeRange) EndAble() bool {
 
 type NumberRange struct {
 	Start *int
-	End   *int
+	End   *int `binding:"omitempty,nilfield=Start|gtfield=Start"`
 }
 
 func (req NumberRange) StartAble() bool {
@@ -38,11 +38,11 @@ func (req NumberRange) EndAble() bool {
 type Numbers []int
 
 func (req Numbers) Able() bool {
-	return len(req) != 0
+	return req != nil && len(req) != 0
 }
 
 type Strings []string
 
 func (req Strings) Able() bool {
-	return len(req) != 0
+	return req != nil && len(req) != 0
 }

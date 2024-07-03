@@ -50,6 +50,7 @@ func (ctr *User) One(c *gin.Context) {
 }
 
 func (ctr *User) Many(c *gin.Context) {
+
 	// FetchByNickname实现
 	//nickname := "昵称1"
 	//entUsers := ctr.repo.FetchMany(c.Request.Context(), func(builder *ent.UserQuery) {

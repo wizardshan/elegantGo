@@ -29,32 +29,9 @@ MySQL事务隔离级别？ 扣库存的合适级别 为什么MySQL 默认隔离�
 SELECT @@global.transaction_isolation
 
 
-console.log(new Date("2024-05-14T17:23:52.418905+08:00").toLocaleString())
+console.log(new Date("2024-07-03T08:00:10.325Z").toLocaleString())
+console.log(new Date().toISOString())
 
-function rfc3339(d) {
-
-    function pad(n) {
-        return n < 10 ? "0" + n : n;
-    }
-
-    function timezoneOffset(offset) {
-        var sign;
-        if (offset === 0) {
-            return "Z";
-        }
-        sign = (offset > 0) ? "-" : "+";
-        offset = Math.abs(offset);
-        return sign + pad(Math.floor(offset / 60)) + ":" + pad(offset % 60);
-    }
-
-    return d.getFullYear() + "-" +
-        pad(d.getMonth() + 1) + "-" +
-        pad(d.getDate()) + "T" +
-        pad(d.getHours()) + ":" +
-        pad(d.getMinutes()) + ":" +
-        pad(d.getSeconds()) + 
-        timezoneOffset(d.getTimezoneOffset());
-}
 
 1、理解ORM，减少多端沟通成本，避免效率低下手写SQL
 2、控制反转优化增删改查
@@ -94,3 +71,6 @@ UnmarshalJSON方法揉杂了数据的格式化、有效性校验、数据转化�
 跨结构体重复
 1、封装成包全局变量或常量
 2、封装成独立结构体
+
+
+TZ="Asia/Shanghai" go run main.go
