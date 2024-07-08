@@ -10,5 +10,6 @@ Create     // 增加记录
 Update     // 更新记录
 Delete     // 删除记录
 ```
+https://baomidou.com/guides/data-interface/
 
 [源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter-orm-crud-3)
