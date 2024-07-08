@@ -1,7 +1,7 @@
 package response
 
 import (
-	"app/chapter-struct-mapper/domain"
+	"elegantGo/chapter-struct-mapper/domain"
 	"time"
 )
 

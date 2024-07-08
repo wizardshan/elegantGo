@@ -1,8 +1,5 @@
 package request
 
-type ArticleGet struct {
+type Article struct {
 	IDField
-}
-
-type ArticleFind struct {
 }

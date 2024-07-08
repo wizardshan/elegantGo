@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"app/chapter-struct-mapper-pool/domain"
+	"elegantGo/chapter-struct-mapper-pool/domain"
 	"github.com/jinzhu/copier"
 )
 
@@ -20,7 +20,7 @@ func (entArticle *Article) Mapper() *domain.Article {
 	return domArticle
 }
 
-func (entArticle *Article) MapperWithPool() *domain.Article {
+func (entArticle *Article) MapperPool() *domain.Article {
 	if entArticle == nil {
 		return nil
 	}
@@ -35,7 +35,7 @@ func (entArticle *Article) MapperWithPool() *domain.Article {
 	return domArticle
 }
 
-func (entArticle *Article) MapperWithCopier() *domain.Article {
+func (entArticle *Article) MapperCopier() *domain.Article {
 	if entArticle == nil {
 		return nil
 	}
@@ -57,13 +57,13 @@ func (entArticles Articles) Mapper() domain.Articles {
 	return domArticles
 }
 
-func (entArticles Articles) MapperWithPool() domain.Articles {
+func (entArticles Articles) MapperPool() domain.Articles {
 
 	size := len(entArticles)
 	domArticles := make(domain.Articles, size)
 
 	for i := 0; i < size; i++ {
-		domArticles[i] = entArticles[i].MapperWithPool()
+		domArticles[i] = entArticles[i].MapperPool()
 	}
 
 	return domArticles

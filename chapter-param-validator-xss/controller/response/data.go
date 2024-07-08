@@ -3,23 +3,31 @@ package response
 type Data any
 
 type Response struct {
-	Code    int    `json:"code"`    // 业务响应状态码
-	Message string `json:"message"` // 提示信息
-	Data    Data   `json:"data"`    // 数据
+	Code    int
+	Message string
+	Success bool
+	Data    Data
+}
+
+type Error struct {
+	Code    int
+	Message string
+}
+
+func (e Error) Error() string {
+	return e.Message
 }
 
 const (
-	OK = 0
-
-	InternalError = 1000
-
-	ParamError = 2000
+	OK              = 0
+	UnKnown         = 100
+	InvalidArgument = 200
+	BusinessError   = 500
 )
 
 var Msg = map[int]string{
-	OK: "OK",
-
-	InternalError: "服务器出现未知错误，请稍后重试",
-
-	ParamError: "参数错误",
+	OK:              "OK",
+	UnKnown:         "出现未知错误，请稍后重试",
+	InvalidArgument: "参数错误",
+	BusinessError:   "业务出现错误",
 }

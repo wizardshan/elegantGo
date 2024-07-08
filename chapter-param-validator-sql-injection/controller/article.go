@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"app/chapter-param-validator-sql-injection/controller/response"
-	"app/chapter-param-validator-sql-injection/repository"
+	"elegantGo/chapter-param-validator-sql-injection/controller/response"
+	"elegantGo/chapter-param-validator-sql-injection/repository"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,7 +16,7 @@ func NewArticle(repo *repository.Article) *Article {
 	return ctr
 }
 
-func (ctr *Article) Detail(c *gin.Context) (response.Data, error) {
+func (ctr *Article) One(c *gin.Context) (response.Data, error) {
 	hashID := c.DefaultQuery("hashID", "")
 	article := ctr.repo.Get(c.Request.Context(), hashID)
 

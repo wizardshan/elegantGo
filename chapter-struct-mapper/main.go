@@ -1,8 +1,8 @@
 package main
 
 import (
-	"app/chapter-struct-mapper/controller"
-	"app/chapter-struct-mapper/repository"
+	"elegantGo/chapter-struct-mapper/controller"
+	"elegantGo/chapter-struct-mapper/repository"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,8 +14,8 @@ func main() {
 
 	repoArticle := repository.NewArticle()
 	ctrArticle := controller.NewArticle(repoArticle)
-	engine.GET("/article", handler.Wrapper(ctrArticle.Get))
-	engine.GET("/articles", handler.Wrapper(ctrArticle.All))
+	engine.GET("/article", handler.Wrapper(ctrArticle.One))
+	engine.GET("/articles", handler.Wrapper(ctrArticle.Many))
 
 	engine.Run()
 }

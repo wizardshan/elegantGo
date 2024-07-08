@@ -1,9 +1,9 @@
 package main
 
 import (
-	"app/chapter-param-validator-sql-injection/controller"
-	"app/chapter-param-validator-sql-injection/repository"
 	"database/sql"
+	"elegantGo/chapter-param-validator-sql-injection/controller"
+	"elegantGo/chapter-param-validator-sql-injection/repository"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -22,7 +22,7 @@ func main() {
 
 	repoArticle := repository.NewArticle(db)
 	ctrArticle := controller.NewArticle(repoArticle)
-	engine.GET("/article", handler.Wrapper(ctrArticle.Detail))
+	engine.GET("/article", handler.Wrapper(ctrArticle.One))
 
 	engine.Run()
 }

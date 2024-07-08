@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"app/chapter-struct-mapper/domain"
+	"elegantGo/chapter-struct-mapper/domain"
 	"github.com/jinzhu/copier"
 )
 

@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"app/chapter-struct-mapper-pool/controller/request"
-	"app/chapter-struct-mapper-pool/controller/response"
-	"app/chapter-struct-mapper-pool/repository"
+	"elegantGo/chapter-struct-mapper-pool/controller/request"
+	"elegantGo/chapter-struct-mapper-pool/controller/response"
+	"elegantGo/chapter-struct-mapper-pool/repository"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,56 +17,56 @@ func NewArticle(repo *repository.Article) *Article {
 	return ctr
 }
 
-func (ctr *Article) Get(c *gin.Context) (response.Data, error) {
+func (ctr *Article) One(c *gin.Context) (response.Data, error) {
 
-	request := new(request.ArticleGet)
-	if err := c.Validate(request); err != nil {
+	request := new(request.Article)
+	if err := c.ShouldBind(request); err != nil {
 		return nil, err
 	}
 
-	article := ctr.repo.Get(c.Request.Context(), request.ID)
+	article := ctr.repo.Fetch(c.Request.Context(), request.ID)
 
 	resp := new(response.Article)
 	return resp.Mapper(article), nil
 }
 
-func (ctr *Article) GetWithPool(c *gin.Context) (response.Data, error) {
+func (ctr *Article) OnePool(c *gin.Context) (response.Data, error) {
 
-	request := request.NewArticleGetWithPool()
-	if err := c.Validate(request); err != nil {
+	request := request.NewArticlePool()
+	if err := c.ShouldBind(request); err != nil {
 		return nil, err
 	}
 	defer request.Put()
 
-	article := ctr.repo.GetWithPool(c.Request.Context(), request.ID)
+	article := ctr.repo.FetchPool(c.Request.Context(), request.ID)
 
-	resp := response.NewArticleWithPool()
+	resp := response.NewArticlePool()
 	return resp.Mapper(article), nil
 }
 
-func (ctr *Article) All(c *gin.Context) (response.Data, error) {
+func (ctr *Article) Many(c *gin.Context) (response.Data, error) {
 
-	request := new(request.ArticleAll)
-	if err := c.Validate(request); err != nil {
+	request := new(request.Articles)
+	if err := c.ShouldBind(request); err != nil {
 		return nil, err
 	}
 
-	articles := ctr.repo.Find(c.Request.Context())
+	articles := ctr.repo.FetchMany(c.Request.Context())
 
 	resp := response.Articles{}
 	return resp.Mapper(articles), nil
 }
 
-func (ctr *Article) AllWithPool(c *gin.Context) (response.Data, error) {
+func (ctr *Article) ManyPool(c *gin.Context) (response.Data, error) {
 
-	request := request.NewArticleAllWithPool()
-	if err := c.Validate(request); err != nil {
+	request := request.NewArticlePool()
+	if err := c.ShouldBind(request); err != nil {
 		return nil, err
 	}
 	defer request.Put()
 
-	articles := ctr.repo.FindWithPool(c.Request.Context())
+	articles := ctr.repo.FetchManyPool(c.Request.Context())
 
-	resp := response.ArticlesWithPool{}
+	resp := response.ArticlesPool{}
 	return resp.Mapper(articles), nil
 }

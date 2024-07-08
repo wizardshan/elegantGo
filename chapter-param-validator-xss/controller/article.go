@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"app/chapter-param-validator-xss/controller/request"
-	"app/chapter-param-validator-xss/repository"
+	"elegantGo/chapter-param-validator-xss/controller/request"
+	"elegantGo/chapter-param-validator-xss/repository"
 	"github.com/gin-gonic/gin"
 	"html/template"
 	"net/http"
@@ -21,7 +21,7 @@ func NewArticle(repo *repository.Article) *Article {
 func (ctr *Article) Search(c *gin.Context) {
 
 	request := new(request.ArticleSearch)
-	if err := c.Validate(request); err != nil {
+	if err := c.ShouldBind(request); err != nil {
 		panic(err)
 	}
 

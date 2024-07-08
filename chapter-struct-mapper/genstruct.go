@@ -1,7 +1,7 @@
 package main
 
 import (
-	"app/chapter-struct-mapper/repository/entity"
+	"elegantGo/chapter-struct-mapper/repository/entity"
 	"os"
 	"reflect"
 	"strings"

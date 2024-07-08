@@ -1,29 +1,29 @@
 package response
 
 import (
-	"app/chapter-struct-mapper-pool/domain"
+	"elegantGo/chapter-struct-mapper-pool/domain"
 	"time"
 )
 
-type ArticlesWithPool []*ArticleWithPool
+type ArticlesPool []*ArticlePool
 
-type ArticleWithPool struct {
-	ID          int       `json:"id"`
-	Title       string    `json:"title"`
-	Content     string    `json:"content"`
-	TimesOfRead int       `json:"timesOfRead"`
-	CreateTime  time.Time `json:"createTime"`
+type ArticlePool struct {
+	ID          int
+	Title       string
+	Content     string
+	TimesOfRead int
+	CreateTime  time.Time
 }
 
-func NewArticleWithPool() *ArticleWithPool {
+func NewArticlePool() *ArticlePool {
 	return poolArticle.Get()
 }
 
-func (respArticle *ArticleWithPool) Put() {
+func (respArticle *ArticlePool) Put() {
 	poolArticle.Put(respArticle)
 }
 
-func (respArticle *ArticleWithPool) Mapper(domArticle *domain.Article) *ArticleWithPool {
+func (respArticle *ArticlePool) Mapper(domArticle *domain.Article) *ArticlePool {
 	if domArticle == nil {
 		return nil
 	}
@@ -37,18 +37,18 @@ func (respArticle *ArticleWithPool) Mapper(domArticle *domain.Article) *ArticleW
 	return respArticle
 }
 
-func (respArticles ArticlesWithPool) Put() {
+func (respArticles ArticlesPool) Put() {
 	for _, resp := range respArticles {
 		resp.Put()
 	}
 }
 
-func (respArticles ArticlesWithPool) Mapper(domArticles domain.Articles) ArticlesWithPool {
+func (respArticles ArticlesPool) Mapper(domArticles domain.Articles) ArticlesPool {
 
 	size := len(domArticles)
-	respArticles = make(ArticlesWithPool, size)
+	respArticles = make(ArticlesPool, size)
 	for i := 0; i < size; i++ {
-		respArticle := NewArticleWithPool()
+		respArticle := NewArticlePool()
 		respArticles[i] = respArticle.Mapper(domArticles[i])
 	}
 

@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"app/chapter-param-validator-sql-injection/repository/entity"
 	"context"
 	"database/sql"
+	"elegantGo/chapter-param-validator-sql-injection/repository/entity"
 	"fmt"
 )
 

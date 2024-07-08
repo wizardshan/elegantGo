@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"elegantGo/chapter-param-validator-sql-injection/controller/response"
+	"elegantGo/chapter-struct-mapper-pool/controller/response"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"

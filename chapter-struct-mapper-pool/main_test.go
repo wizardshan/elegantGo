@@ -15,7 +15,7 @@ func BenchmarkArticle(b *testing.B) {
 }
 
 func BenchmarkArticleWithPool(b *testing.B) {
-	urlIndex := "/articleWithPool"
+	urlIndex := "/articlePool"
 	for n := 0; n < b.N; n++ {
 		Get(urlIndex, engine)
 	}
@@ -29,7 +29,7 @@ func BenchmarkArticles(b *testing.B) {
 }
 
 func BenchmarkArticlesWithPool(b *testing.B) {
-	urlIndex := "/articlesWithPool"
+	urlIndex := "/articlesPool"
 	for n := 0; n < b.N; n++ {
 		Get(urlIndex, engine)
 	}

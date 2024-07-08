@@ -1,8 +1,8 @@
 package request
 
-type ArticleGet struct {
+type Article struct {
 	ID int `form:"id"`
 }
 
-type ArticleAll struct {
+type Articles struct {
 }

@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"app/chapter-struct-mapper/controller/request"
-	"app/chapter-struct-mapper/controller/response"
-	"app/chapter-struct-mapper/repository"
+	"elegantGo/chapter-struct-mapper/controller/request"
+	"elegantGo/chapter-struct-mapper/controller/response"
+	"elegantGo/chapter-struct-mapper/repository"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,23 +17,23 @@ func NewArticle(repo *repository.Article) *Article {
 	return ctr
 }
 
-func (ctr *Article) Get(c *gin.Context) (response.Data, error) {
+func (ctr *Article) One(c *gin.Context) (response.Data, error) {
 
-	request := new(request.ArticleGet)
-	if err := c.Validate(request); err != nil {
+	request := new(request.Article)
+	if err := c.ShouldBind(request); err != nil {
 		return nil, err
 	}
 
 	article := ctr.repo.Get(c.Request.Context(), request.ID)
 
-	resp := new(response.ArticleGet)
+	resp := new(response.Article)
 	return resp.Mapper(article), nil
 }
 
-func (ctr *Article) All(c *gin.Context) (response.Data, error) {
+func (ctr *Article) Many(c *gin.Context) (response.Data, error) {
 
 	articles := ctr.repo.Find(c.Request.Context())
 
-	resp := response.ArticleAll{}
+	resp := response.Articles{}
 	return resp.Mapper(articles), nil
 }

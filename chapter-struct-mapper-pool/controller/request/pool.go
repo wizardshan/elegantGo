@@ -1,12 +1,12 @@
 package request
 
 import (
-	"app/chapter-struct-mapper-pool/pool"
+	"elegantGo/chapter-struct-mapper-pool/pool"
 )
 
-var poolArticleGet = pool.New(func() *ArticleGetWithPool {
-	return new(ArticleGetWithPool)
+var poolArticle = pool.New(func() *ArticlePool {
+	return new(ArticlePool)
 })
-var poolArticleAll = pool.New(func() *ArticleAllWithPool {
-	return new(ArticleAllWithPool)
+var poolArticles = pool.New(func() *ArticlesPool {
+	return new(ArticlesPool)
 })

@@ -1,9 +1,9 @@
 package response
 
 import (
-	"app/chapter-struct-mapper-pool/pool"
+	"elegantGo/chapter-struct-mapper-pool/pool"
 )
 
-var poolArticle = pool.New(func() *ArticleWithPool {
-	return new(ArticleWithPool)
+var poolArticle = pool.New(func() *ArticlePool {
+	return new(ArticlePool)
 })

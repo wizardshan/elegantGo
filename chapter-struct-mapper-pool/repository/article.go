@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"app/chapter-struct-mapper-pool/domain"
-	"app/chapter-struct-mapper-pool/repository/entity"
 	"context"
+	"elegantGo/chapter-struct-mapper-pool/domain"
+	"elegantGo/chapter-struct-mapper-pool/repository/entity"
 	"time"
 )
 
@@ -15,7 +15,7 @@ func NewArticle() *Article {
 	return repo
 }
 
-func (repo *Article) Get(ctx context.Context, id int) *domain.Article {
+func (repo *Article) Fetch(ctx context.Context, id int) *domain.Article {
 
 	entityArticle := new(entity.Article)
 	entityArticle.ID = 1
@@ -26,7 +26,7 @@ func (repo *Article) Get(ctx context.Context, id int) *domain.Article {
 	return entityArticle.Mapper()
 }
 
-func (repo *Article) GetWithPool(ctx context.Context, id int) *domain.Article {
+func (repo *Article) FetchPool(ctx context.Context, id int) *domain.Article {
 
 	entityArticle := new(entity.Article)
 	entityArticle.ID = 1
@@ -34,10 +34,10 @@ func (repo *Article) GetWithPool(ctx context.Context, id int) *domain.Article {
 	entityArticle.Content = "content1"
 	entityArticle.TimesOfRead = 100
 	entityArticle.CreateTime = time.Now()
-	return entityArticle.MapperWithPool()
+	return entityArticle.MapperPool()
 }
 
-func (repo *Article) Find(ctx context.Context) domain.Articles {
+func (repo *Article) FetchMany(ctx context.Context) domain.Articles {
 
 	entityArticle1 := new(entity.Article)
 	entityArticle1.ID = 1
@@ -60,7 +60,7 @@ func (repo *Article) Find(ctx context.Context) domain.Articles {
 	return entityArticles.Mapper()
 }
 
-func (repo *Article) FindWithPool(ctx context.Context) domain.Articles {
+func (repo *Article) FetchManyPool(ctx context.Context) domain.Articles {
 
 	entityArticle1 := new(entity.Article)
 	entityArticle1.ID = 1
@@ -80,5 +80,5 @@ func (repo *Article) FindWithPool(ctx context.Context) domain.Articles {
 	entityArticles = append(entityArticles, entityArticle1, entityArticle2)
 	//entityArticles = append(entityArticles, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2, entityArticle1, entityArticle2)
 
-	return entityArticles.MapperWithPool()
+	return entityArticles.MapperPool()
 }

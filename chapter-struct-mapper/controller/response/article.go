@@ -1,18 +1,18 @@
 package response
 
 import (
-	"app/chapter-struct-mapper/domain"
+	"elegantGo/chapter-struct-mapper/domain"
 	"time"
 )
 
 type Articles []*Article
 
 type Article struct {
-	ID          int       `json:"id"`
-	Title       string    `json:"title"`
-	Content     string    `json:"content"`
-	TimesOfRead int       `json:"timesOfRead"`
-	CreateTime  time.Time `json:"createTime"`
+	ID          int
+	Title       string
+	Content     string
+	TimesOfRead int
+	CreateTime  time.Time
 }
 
 func (respArticle *Article) Mapper(domArticle *domain.Article) *Article {
@@ -50,8 +50,8 @@ type ArticleAll struct {
 
 type ArticleOmit struct {
 	Article
-	TimesOfRead Omit `json:"timesOfRead,omitempty"`
-	//TimesOfRead int `json:"timesOfRead,omitempty"`
+	TimesOfRead Omit `json:"omitempty"`
+	//TimesOfRead int `json:"omitempty"`
 }
 
 func (resp *ArticleOmit) Mapper(domainArticle *domain.Article) *ArticleOmit {

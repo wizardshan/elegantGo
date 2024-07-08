@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"app/chapter-struct-mapper/domain"
-	"app/chapter-struct-mapper/repository/entity"
 	"context"
+	"elegantGo/chapter-struct-mapper/domain"
+	"elegantGo/chapter-struct-mapper/repository/entity"
 	"time"
 )
 

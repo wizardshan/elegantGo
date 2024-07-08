@@ -1,5 +1,5 @@
 package request
 
-type ArticleDetail struct {
+type ArticleOne struct {
 	HashIDField
 }
