@@ -32,15 +32,15 @@ func (ctr *Article) One(c *gin.Context) (response.Data, error) {
 
 func (ctr *Article) OnePool(c *gin.Context) (response.Data, error) {
 
-	request := request.NewArticlePool()
+	request := request.NewArticle()
+	defer request.Recycle()
 	if err := c.ShouldBind(request); err != nil {
 		return nil, err
 	}
-	defer request.Put()
 
 	article := ctr.repo.FetchPool(c.Request.Context(), request.ID)
 
-	resp := response.NewArticlePool()
+	resp := response.NewArticle()
 	return resp.Mapper(article), nil
 }
 
@@ -59,14 +59,14 @@ func (ctr *Article) Many(c *gin.Context) (response.Data, error) {
 
 func (ctr *Article) ManyPool(c *gin.Context) (response.Data, error) {
 
-	request := request.NewArticlePool()
+	request := request.NewArticles()
+	defer request.Recycle()
 	if err := c.ShouldBind(request); err != nil {
 		return nil, err
 	}
-	defer request.Put()
 
 	articles := ctr.repo.FetchManyPool(c.Request.Context())
 
-	resp := response.ArticlesPool{}
-	return resp.Mapper(articles), nil
+	resp := response.Articles{}
+	return resp.MapperPool(articles), nil
 }

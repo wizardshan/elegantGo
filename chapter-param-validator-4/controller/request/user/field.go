@@ -7,8 +7,3 @@ type NicknameField struct {
 type PasswordField struct {
 	Password string `binding:"required,min=6" label:"密码"`
 }
-
-type RePasswordField struct {
-	RePassword string `binding:"required" label:"重复密码"`
-	//RePassword string `binding:"eqfield=Password" label:"重复密码"`
-}

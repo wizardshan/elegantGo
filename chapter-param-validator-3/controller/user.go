@@ -21,12 +21,3 @@ func (ctr *User) Login(c *gin.Context) (response.Data, error) {
 
 	return request, nil
 }
-
-func (ctr *User) Delete(c *gin.Context) (response.Data, error) {
-	request := new(request.UserDelete)
-	if err := c.ShouldBind(request); err != nil {
-		return nil, err
-	}
-
-	return request.GetIDS(), nil
-}

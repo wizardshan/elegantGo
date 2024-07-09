@@ -52,6 +52,60 @@ func (repo *Post) FetchByID(ctx context.Context, id int) *entity.Post {
 	)
 	entityPost.User = &entityUser
 
+	query = fmt.Sprintf("SELECT `id`, `user_id`, `post_id`, `content`, `create_time`, `update_time` FROM comments WHERE `post_id`= %d ORDER BY create_time DESC", id)
+	rows, _ := repo.db.QueryContext(ctx, query)
+	defer rows.Close()
+
+	var entityComments entity.Comments
+	for rows.Next() {
+		var entityComment entity.Comment
+		rows.Scan(
+			&entityComment.ID,
+			&entityComment.UserID,
+			&entityComment.PostID,
+			&entityComment.Content,
+			&entityComment.CreateTime,
+			&entityComment.UpdateTime,
+		)
+		entityComments = append(entityComments, &entityComment)
+	}
+
+	var userIDs []string
+	for _, entityComment := range entityComments {
+		userIDs = append(userIDs, strconv.Itoa(entityComment.UserID))
+	}
+
+	query = fmt.Sprintf("SELECT `id`, `mobile`, `password`, `nickname`, `avatar`, `bio`, `create_time`, `update_time` FROM users WHERE `id` IN (%s)", strings.Join(userIDs, ","))
+	rows, _ = repo.db.QueryContext(ctx, query)
+	defer rows.Close()
+
+	var entityUsers entity.Users
+	for rows.Next() {
+		var entityUser entity.User
+		rows.Scan(
+			&entityUser.ID,
+			&entityUser.Mobile,
+			&entityUser.Password,
+			&entityUser.Nickname,
+			&entityUser.Avatar,
+			&entityUser.Bio,
+			&entityUser.CreateTime,
+			&entityUser.UpdateTime,
+		)
+		entityUsers = append(entityUsers, &entityUser)
+	}
+
+	entityUserIDMapping := make(map[int]*entity.User, len(entityUsers))
+	for _, entityUser := range entityUsers {
+		entityUserIDMapping[entityUser.ID] = entityUser
+	}
+
+	for _, entityComment := range entityComments {
+		entityComment.User = entityUserIDMapping[entityComment.UserID]
+	}
+
+	entityPost.Comments = entityComments
+
 	return &entityPost
 }
 
@@ -114,64 +168,7 @@ func (repo *Post) FetchMany(ctx context.Context) entity.Posts {
 	return entityPosts
 }
 
-func (repo *Post) Comments(ctx context.Context, postID int) entity.Comments {
-
-	query := fmt.Sprintf("SELECT `id`, `user_id`, `post_id`, `content`, `create_time`, `update_time` FROM comments WHERE `post_id`= %d ORDER BY create_time DESC", postID)
-	rows, _ := repo.db.QueryContext(ctx, query)
-	defer rows.Close()
-
-	var entityComments entity.Comments
-	for rows.Next() {
-		var entityComment entity.Comment
-		rows.Scan(
-			&entityComment.ID,
-			&entityComment.UserID,
-			&entityComment.PostID,
-			&entityComment.Content,
-			&entityComment.CreateTime,
-			&entityComment.UpdateTime,
-		)
-		entityComments = append(entityComments, &entityComment)
-	}
-
-	var userIDs []string
-	for _, entityComment := range entityComments {
-		userIDs = append(userIDs, strconv.Itoa(entityComment.UserID))
-	}
-
-	query = fmt.Sprintf("SELECT `id`, `mobile`, `password`, `nickname`, `avatar`, `bio`, `create_time`, `update_time` FROM users WHERE `id` IN (%s)", strings.Join(userIDs, ","))
-	rows, _ = repo.db.QueryContext(ctx, query)
-	defer rows.Close()
-
-	var entityUsers entity.Users
-	for rows.Next() {
-		var entityUser entity.User
-		rows.Scan(
-			&entityUser.ID,
-			&entityUser.Mobile,
-			&entityUser.Password,
-			&entityUser.Nickname,
-			&entityUser.Avatar,
-			&entityUser.Bio,
-			&entityUser.CreateTime,
-			&entityUser.UpdateTime,
-		)
-		entityUsers = append(entityUsers, &entityUser)
-	}
-
-	entityUserIDMapping := make(map[int]*entity.User, len(entityUsers))
-	for _, entityUser := range entityUsers {
-		entityUserIDMapping[entityUser.ID] = entityUser
-	}
-
-	for _, entityComment := range entityComments {
-		entityComment.User = entityUserIDMapping[entityComment.UserID]
-	}
-
-	return entityComments
-}
-
-func (repo *Post) LatestComments(ctx context.Context) entity.Comments {
+func (repo *Post) Comments(ctx context.Context) entity.Comments {
 
 	query := "SELECT `id`, `user_id`, `post_id`, `content`, `create_time`, `update_time` FROM comments ORDER BY create_time DESC LIMIT 10"
 	rows, _ := repo.db.QueryContext(ctx, query)

@@ -1,0 +1,11 @@
+package domain
+
+import "time"
+
+type {{.Name}}s []*{{.Name}}
+
+type {{.Name}} struct {
+	{{- range .fields}}
+	{{.Name}} {{.TypeName}}
+	{{- end}}
+}

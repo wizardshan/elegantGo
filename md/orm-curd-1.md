@@ -48,7 +48,7 @@ func (repo *User) FetchOne(ctx context.Context, optionFunc func(builder *ent.Use
     return builder.FirstX(ctx)
 }
 ```
-通过匿名函数传参的方式我们实现了控制反转的思想，这样在controller层就可以灵活组合不同的查询条件实现多变的查询需求，同理增删改也可以通过这种思想来优化。
+通过匿名函数传参的方式我们实现了控制反转的逻辑，这样在controller层就可以灵活组合不同的查询条件实现多变的查询需求，同理增删改也可以通过这种思想来优化。
 ```go
 // 增
 func (repo *User) Create(ctx context.Context, optionFunc func(builder *ent.UserCreate)) *ent.User {

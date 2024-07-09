@@ -3,16 +3,7 @@
 
 entGo详细教程请参照官网，有中文文档：https://entgo.io/
 
-需要注意的是ent生成过程会与golang工作区模式冲突，提示：
-```
-go: -mod may only be set to readonly or vendor when in workspace mode, but it is set to "mod"
-        Remove the -mod flag to use the default readonly value, 
-        or set GOWORK=off to disable workspace mode.
-```
-暂时未找到合适方法，可以把go.work暂时改为go1.work，ent生成成功再改回来。
-
-
-回到正文，使用entGo实现上文中的三个接口：
+使用entGo实现上文中的三个接口：
 ```json
 帖子列表：
 func (repo *Post) FetchMany(ctx context.Context) []*ent.Post {

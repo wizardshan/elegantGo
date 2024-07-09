@@ -12,7 +12,6 @@ func main() {
 
 	ctrUser := controller.NewUser()
 	engine.GET("/user/login", handler.Wrapper(ctrUser.Login))
-	engine.GET("/user/delete", handler.Wrapper(ctrUser.Delete))
 
 	ctrCaptcha := controller.NewCaptcha()
 	engine.GET("/captcha/send", handler.Wrapper(ctrCaptcha.Send))

@@ -1,0 +1,25 @@
+package ent
+
+import (
+	"elegantGo/chapter-auto-gen/domain"
+	"github.com/elliotchance/pie/v2"
+)
+
+func (ent{{.Name}} *{{.Name}}) Mapper() *domain.{{.Name}} {
+	if ent{{.Name}} == nil {
+		return nil
+	}
+
+	dom{{.Name}} := new(domain.{{.Name}})
+	{{- range .fields}}
+	dom{{$.Name}}.{{.Name}} = ent{{$.Name}}.{{.Name}}
+	{{- end}}
+
+	return dom{{.Name}}
+}
+
+func (ent{{.Name}}s {{.Name}}s) Mapper() domain.{{.Name}}s {
+	return pie.Map(ent{{.Name}}s, func(ent *{{.Name}}) *domain.{{.Name}} {
+		return ent.Mapper()
+	})
+}

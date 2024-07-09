@@ -15,51 +15,25 @@ type Article struct {
 	CreateTime  time.Time
 }
 
-func (respArticle *Article) Mapper(domArticle *domain.Article) *Article {
-	if domArticle == nil {
-		return nil
-	}
-	respArticle.ID = domArticle.ID
-	respArticle.Title = domArticle.Title
-	respArticle.Content = domArticle.Content
-	respArticle.TimesOfRead = domArticle.TimesOfRead
-	respArticle.CreateTime = domArticle.CreateTime
-
-	return respArticle
-}
-
-func (respArticles Articles) Mapper(domArticles domain.Articles) Articles {
-
-	size := len(domArticles)
-	respArticles = make(Articles, size)
-	for i := 0; i < size; i++ {
-		var respArticle Article
-		respArticles[i] = respArticle.Mapper(domArticles[i])
-	}
-
-	return respArticles
-}
-
-type ArticleGet struct {
-	Article
-}
-
-type ArticleAll struct {
-	Articles
-}
-
 type ArticleOmit struct {
 	Article
 	TimesOfRead Omit `json:"omitempty"`
 	//TimesOfRead int `json:"omitempty"`
 }
 
-func (resp *ArticleOmit) Mapper(domainArticle *domain.Article) *ArticleOmit {
-	if domainArticle == nil {
+func MapperArticle(domArticle *domain.Article) *Article {
+	if domArticle == nil {
 		return nil
 	}
+	respArticle := new(Article)
+	respArticle.ID = domArticle.ID
+	respArticle.Title = domArticle.Title
+	respArticle.Content = domArticle.Content
+	respArticle.TimesOfRead = domArticle.TimesOfRead
+	respArticle.CreateTime = domArticle.CreateTime
+	return respArticle
+}
 
-	resp.Article.Mapper(domainArticle)
-
-	return resp
+func MapperArticles(domainArticles domain.Articles) Articles {
+	return mapper(domainArticles, MapperArticle)
 }

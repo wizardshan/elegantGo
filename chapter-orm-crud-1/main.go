@@ -44,6 +44,6 @@ func main() {
 
 	engine.GET("/posts", ctrPost.Many)
 	engine.GET("/post", ctrPost.One)
-	engine.GET("/post/latestComments", ctrPost.LatestComments)
+	engine.GET("/post/comments", ctrPost.Comments)
 	engine.Run()
 }

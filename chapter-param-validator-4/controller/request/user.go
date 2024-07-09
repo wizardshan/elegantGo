@@ -26,5 +26,5 @@ type UserRegister struct {
 	CaptchaField
 	user.NicknameField
 	user.PasswordField
-	user.RePasswordField
+	RePassword string `binding:"eqfield=Password" label:"重复密码"`
 }

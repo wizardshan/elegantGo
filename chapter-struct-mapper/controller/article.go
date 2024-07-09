@@ -24,16 +24,16 @@ func (ctr *Article) One(c *gin.Context) (response.Data, error) {
 		return nil, err
 	}
 
-	article := ctr.repo.Get(c.Request.Context(), request.ID)
-
-	resp := new(response.Article)
-	return resp.Mapper(article), nil
+	article := ctr.repo.Fetch(c.Request.Context(), request.ID)
+	return response.MapperArticle(article), nil
 }
 
 func (ctr *Article) Many(c *gin.Context) (response.Data, error) {
+	request := new(request.Articles)
+	if err := c.ShouldBind(request); err != nil {
+		return nil, err
+	}
 
-	articles := ctr.repo.Find(c.Request.Context())
-
-	resp := response.Articles{}
-	return resp.Mapper(articles), nil
+	articles := ctr.repo.FetchMany(c.Request.Context())
+	return response.MapperArticles(articles), nil
 }

@@ -39,7 +39,7 @@ func (ctr *Post) One(c *gin.Context) {
 	c.JSON(http.StatusOK, posts)
 }
 
-func (ctr *Post) LatestComments(c *gin.Context) {
+func (ctr *Post) Comments(c *gin.Context) {
 	comments := ctr.repoComment.FetchMany(c.Request.Context(), func(builder *ent.CommentQuery) {
 		builder.WithUser().WithPost().Order(ent.Desc(comment.FieldCreateTime))
 	})

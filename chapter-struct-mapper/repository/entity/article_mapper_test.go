@@ -6,15 +6,15 @@ import (
 
 // go test -bench . -benchmem
 func BenchmarkMapper(b *testing.B) {
-	var entArticle Article
 	for n := 0; n < b.N; n++ {
+		entArticle := new(Article)
 		entArticle.Mapper()
 	}
 }
 
 func BenchmarkMapperWithCopier(b *testing.B) {
-	var entArticle Article
 	for n := 0; n < b.N; n++ {
-		entArticle.MapperWithCopier()
+		entArticle := new(Article)
+		entArticle.MapperCopier()
 	}
 }

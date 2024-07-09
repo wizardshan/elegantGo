@@ -24,11 +24,10 @@ func (ctr *Post) Many(c *gin.Context) {
 func (ctr *Post) One(c *gin.Context) {
 	id := 1
 	post := ctr.repo.FetchByID(c.Request.Context(), id)
-	post.Comments = ctr.repo.Comments(c.Request.Context(), id)
 	c.JSON(http.StatusOK, post)
 }
 
-func (ctr *Post) LatestComments(c *gin.Context) {
-	comments := ctr.repo.LatestComments(c.Request.Context())
+func (ctr *Post) Comments(c *gin.Context) {
+	comments := ctr.repo.Comments(c.Request.Context())
 	c.JSON(http.StatusOK, comments)
 }
