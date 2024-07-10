@@ -15,6 +15,12 @@ func (ent{{.Name}} *{{.Name}}) Mapper() *domain.{{.Name}} {
 	dom{{$.Name}}.{{.Name}} = ent{{$.Name}}.{{.Name}}
 	{{- end}}
 
+
+	{{- range .edgesFields}}
+	{{if .IsSlice}}
+	dom{{$.Name}}.{{.Name}} = {{.Name}}(ent{{$.Name}}.Edges.{{.Name}}).Mapper(){{else}}dom{{$.Name}}.{{.Name}} = ent{{$.Name}}.Edges.{{.Name}}.Mapper(){{end}}
+	{{- end}}
+
 	return dom{{.Name}}
 }
 

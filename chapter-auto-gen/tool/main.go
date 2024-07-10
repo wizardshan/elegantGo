@@ -1,16 +1,26 @@
 package main
 
 import (
-	"elegantGo/chapter-auto-gen/repository/ent"
+	"elegantGo/chapter-orm-entgo/repository/ent/schema"
+	entgo "entgo.io/ent"
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/elliotchance/pie/v2"
+	"github.com/gobeam/stringy"
 	"os"
 	"path"
-	"reflect"
 	"strings"
 	"text/template"
 )
+
+type FieldsGetter interface {
+	Fields() []entgo.Field
+}
+
+type EdgesGetter interface {
+	Edges() []entgo.Edge
+}
 
 type flags []string
 
@@ -29,7 +39,9 @@ type Layer struct {
 }
 
 var entityMapper = map[string]any{
-	"User": ent.User{},
+	"User":    schema.User{},
+	"Post":    schema.Post{},
+	"Comment": schema.Comment{},
 }
 
 var layerMapping = map[string]Layer{
@@ -41,7 +53,7 @@ var layerMapping = map[string]Layer{
 		target: "../repository/%s_crud.go",
 		tmpl:   "./tmpl/repo.tmpl",
 	},
-	"ent": {
+	"entMapper": {
 		target: "../repository/ent/%s_mapper.go",
 		tmpl:   "./tmpl/ent_mapper.tmpl",
 	},
@@ -53,6 +65,10 @@ var layerMapping = map[string]Layer{
 		target: "../controller/response/%s.go",
 		tmpl:   "./tmpl/resp.tmpl",
 	},
+	"respMapper": {
+		target: "../controller/response/%s_mapper.go",
+		tmpl:   "./tmpl/resp_mapper.tmpl",
+	},
 	"ctr": {
 		target: "../controller/%s.go",
 		tmpl:   "./tmpl/ctr.tmpl",
@@ -62,6 +78,7 @@ var layerMapping = map[string]Layer{
 type Field struct {
 	Name     string
 	TypeName string
+	IsSlice  bool
 }
 
 func main() {
@@ -83,11 +100,13 @@ func main() {
 	}
 
 	fields := parseFields(entity)
+	edgesFields := parseEdgesFields(entity)
 
 	data := map[string]any{
-		"name":   strings.ToLower(name),
-		"Name":   name,
-		"fields": fields,
+		"name":        strings.ToLower(name),
+		"Name":        name,
+		"fields":      fields,
+		"edgesFields": edgesFields,
 	}
 
 	if c {
@@ -139,26 +158,54 @@ func parse(tmplFile string, targetFile string, data map[string]any) error {
 	return tmpl.Execute(target, data)
 }
 
-func parseFields(entity any) []*Field {
-
-	t := reflect.TypeOf(entity)
-	//fmt.Printf("结构体名: %v\n", t.Name())
+func parseEdgesFields(entity any) []*Field {
 	var fields []*Field
-	for i := 0; i < t.NumField(); i++ {
-		field := t.Field(i)
-		fieldType := field.Type
-		//fmt.Printf("属性名: %v, 属性类型：%v 字段是否可导出: %v\n", field.Name, fieldType.String(), field.IsExported())
-		if !field.IsExported() {
-			continue
-		}
-
-		if field.Name == "Edges" {
-			continue
-		}
-
-		fields = append(fields, &Field{Name: field.Name, TypeName: fieldType.String()})
+	edgesGetter, ok := entity.(EdgesGetter)
+	if !ok {
+		return fields
 	}
+	pie.All(edgesGetter.Edges(), func(f entgo.Edge) bool {
+		fields = append(fields, &Field{Name: pascalCase(f.Descriptor().Name), TypeName: f.Descriptor().Type, IsSlice: !f.Descriptor().Inverse})
+		return true
+	})
+
 	return fields
+}
+
+func parseFields(entity any) []*Field {
+	var fields []*Field
+	fieldsGetter, ok := entity.(FieldsGetter)
+	if !ok {
+		return fields
+	}
+
+	pie.All(fieldsGetter.Fields(), func(f entgo.Field) bool {
+		fields = append(fields, &Field{Name: pascalCase(f.Descriptor().Name), TypeName: f.Descriptor().Info.String()})
+		return true
+	})
+
+	idField := &Field{
+		Name:     "ID",
+		TypeName: "int",
+	}
+
+	createTimeField := &Field{
+		Name:     "CreateTime",
+		TypeName: "time.Time",
+	}
+
+	updateTimeField := &Field{
+		Name:     "UpdateTime",
+		TypeName: "time.Time",
+	}
+
+	fields = append(fields, idField, createTimeField, updateTimeField)
+	return fields
+}
+
+func pascalCase(s string) string {
+	s = strings.ReplaceAll(s, "id", "ID")
+	return stringy.New(s).PascalCase().Get()
 }
 
 func fileExist(path string) bool {

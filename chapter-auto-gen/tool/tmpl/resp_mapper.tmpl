@@ -1,0 +1,29 @@
+package response
+
+import (
+    "elegantGo/chapter-auto-gen/domain"
+)
+
+func (resp{{.Name}} *{{.Name}}) Mapper(dom{{.Name}} *domain.{{.Name}}) *{{.Name}} {
+    if dom{{.Name}} == nil {
+        return nil
+    }
+
+    {{.name}} := new({{.Name}})
+    {{- range .fields}}
+    {{$.name}}.{{.Name}} = dom{{$.Name}}.{{.Name}}
+    {{- end}}
+
+    {{- range .edgesFields}}
+    {{$.name}}.{{.Name}} = {{$.name}}.{{.Name}}.Mapper(dom{{$.Name}}.{{.Name}})
+    {{- end}}
+
+    return {{.name}}
+}
+
+func (resp{{.Name}}s {{.Name}}s) Mapper(dom{{.Name}}s domain.{{.Name}}s) {{.Name}}s {
+    return mapper(dom{{.Name}}s, func(dom *domain.{{.Name}}) ({{.name}} *{{.Name}}) {
+        return {{.name}}.Mapper(dom)
+    })
+}
+

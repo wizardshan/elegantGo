@@ -27,7 +27,9 @@ func (ctr *{{.Name}}) Many(c *gin.Context) (response.Data, error) {
 	dom{{.Name}}s := ctr.repo.FetchMany(c.Request.Context(), func(builder *ent.{{.Name}}Query) {
 		builder.Offset(request.Offset.Value()).Limit(request.Limit.Value()).Order(request.Order.By(request.Sort.Value()))
 	})
-	return response.Mapper{{.Name}}s(dom{{.Name}}s), nil
+
+	var resp response.{{.Name}}s
+	return resp.Mapper(dom{{.Name}}s), nil
 }
 
 func (ctr *{{.Name}}) One(c *gin.Context) (response.Data, error) {
@@ -37,5 +39,7 @@ func (ctr *{{.Name}}) One(c *gin.Context) (response.Data, error) {
 	}
 
 	dom{{.Name}} := ctr.repo.Fetch(c.Request.Context(), request.ID)
-	return response.Mapper{{.Name}}(dom{{.Name}}), nil
+
+	var resp *response.{{.Name}}
+	return resp.Mapper(dom{{.Name}}), nil
 }

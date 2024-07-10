@@ -1,15 +1,15 @@
 gen:
-	go run main.go -name ${name} -layers ent -layers repo -layers dom -layers req -layers resp -layers ctr
+	go run main.go -name ${name} -layers entMapper -layers repo -layers dom -layers req -layers resp -layers respMapper -layers ctr
 
-genReq:
-	go run main.go -name ${name} -layers req
+layer:
+	go run main.go -name ${name} -layers ${layer}
 
-genEnt:
-	go run main.go -name ${name} -layers ent
+ent:
+	go run main.go -name ${name} -layers entMapper -layers dom -layers resp -layers respMapper -layers repo
 
-clearAll:
-	go run main.go -name ${name} -layers ent -layers repo -layers dom -layers req -layers resp -layers ctr -c true
+clear:
+	go run main.go -name ${name} -layers entMapper -layers dom -layers resp -layers respMapper -layers repo -layers req -layers ctr -c true
 
 # make gen name=User
-# make gen name=User -layer
-# make clearAll name=User
+# make layer name=User -layer
+# make clear name=User

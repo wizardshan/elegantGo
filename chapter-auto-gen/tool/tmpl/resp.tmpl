@@ -1,7 +1,6 @@
 package response
 
 import (
-    "elegantGo/chapter-auto-gen/domain"
     "time"
 )
 
@@ -11,20 +10,9 @@ type {{.Name}} struct {
     {{- range .fields}}
     {{.Name}} {{.TypeName}}
     {{- end}}
-}
 
-func Mapper{{.Name}}(dom{{.Name}} *domain.{{.Name}}) *{{.Name}} {
-    if dom{{.Name}} == nil {
-        return nil
-    }
-
-    resp{{.Name}} := new({{.Name}})
-    {{- range .fields}}
-    resp{{$.Name}}.{{.Name}} = dom{{$.Name}}.{{.Name}}
+    {{- range .edgesFields}}
+    {{if .IsSlice}}
+    {{.Name}} {{.TypeName}}s{{else}}{{.Name}} *{{.TypeName}}{{end}} `json:",omitempty"`
     {{- end}}
-    return resp{{.Name}}
-}
-
-func Mapper{{.Name}}s(domain{{.Name}}s domain.{{.Name}}s) {{.Name}}s {
-    return mapper(domain{{.Name}}s, Mapper{{.Name}})
 }
