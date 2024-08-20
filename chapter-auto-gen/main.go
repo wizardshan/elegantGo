@@ -31,11 +31,16 @@ func main() {
 	engine := gin.New()
 
 	handler := new(controller.Handler)
-
+	repoPost := repository.NewPost(db)
+	ctrPost := controller.NewPost(repoPost)
 	repoUser := repository.NewUser(db)
 	ctrUser := controller.NewUser(repoUser)
 	engine.GET("/users", handler.Wrapper(ctrUser.Many))
 	engine.GET("/user", handler.Wrapper(ctrUser.One))
+
+	engine.GET("/posts", handler.Wrapper(ctrPost.Many))
+	engine.GET("/post", handler.Wrapper(ctrPost.One))
+	//engine.GET("/post/comments", handler.Wrapper(ctrPost.Comments))
 
 	engine.Run()
 }

@@ -1,0 +1,94 @@
+package repository
+
+import (
+	"context"
+	"elegantGo/chapter-cache-1/domain"
+	"elegantGo/chapter-cache-1/repository/ent"
+	"elegantGo/chapter-cache-1/repository/ent/{{.name}}"
+)
+
+
+type {{.Name}} struct {
+	repo
+}
+
+func New{{.Name}}(db *ent.Client) *{{.Name}} {
+	repo := new({{.Name}})
+	repo.db = db
+	return repo
+}
+
+func (repo *{{.Name}}) Fetch(ctx context.Context, id int) *domain.{{.Name}} {
+	return repo.fetchOne(ctx, repo.db, func(builder *ent.{{.Name}}Query) {
+		builder.Where({{.name}}.ID(id))
+	}).Mapper()
+}
+func (repo *{{.Name}}) FetchOne(ctx context.Context, optionFunc func(builder *ent.{{.Name}}Query)) *domain.{{.Name}} {
+	return repo.fetchOne(ctx, repo.db, optionFunc).Mapper()
+}
+
+func (repo *{{.Name}}) fetchOne(ctx context.Context, db *ent.Client, optionFunc func(builder *ent.{{.Name}}Query)) *ent.{{.Name}} {
+	builder := db.{{.Name}}.Query()
+	optionFunc(builder)
+	return builder.FirstX(ctx)
+}
+
+func (repo *{{.Name}}) FetchMany(ctx context.Context, optionFunc func(builder *ent.{{.Name}}Query)) domain.{{.Name}}s {
+	return repo.fetchMany(ctx, repo.db, optionFunc).Mapper()
+}
+
+func (repo *{{.Name}}) fetchMany(ctx context.Context, db *ent.Client, optionFunc func(builder *ent.{{.Name}}Query)) ent.{{.Name}}s {
+	builder := db.{{.Name}}.Query()
+	optionFunc(builder)
+	return builder.AllX(ctx)
+}
+
+func (repo *{{.Name}}) Count(ctx context.Context, optionFunc func(builder *ent.{{.Name}}Query)) int {
+	return repo.count(ctx, repo.db, optionFunc)
+}
+
+func (repo *{{.Name}}) count(ctx context.Context, db *ent.Client, optionFunc func(builder *ent.{{.Name}}Query)) int {
+	builder := db.{{.Name}}.Query()
+	optionFunc(builder)
+	return builder.CountX(ctx)
+}
+
+func (repo *{{.Name}}) Exist(ctx context.Context, optionFunc func(builder *ent.{{.Name}}Query)) bool {
+	return repo.exist(ctx, repo.db, optionFunc)
+}
+
+func (repo *{{.Name}}) exist(ctx context.Context, db *ent.Client, optionFunc func(builder *ent.{{.Name}}Query)) bool {
+	builder := db.{{.Name}}.Query()
+	optionFunc(builder)
+	return builder.ExistX(ctx)
+}
+
+func (repo *{{.Name}}) Create(ctx context.Context, optionFunc func(builder *ent.{{.Name}}Create)) *domain.{{.Name}} {
+	return repo.create(ctx, repo.db, optionFunc).Mapper()
+}
+
+func (repo *{{.Name}}) create(ctx context.Context, db *ent.Client, optionFunc func(builder *ent.{{.Name}}Create)) *ent.{{.Name}} {
+	builder := db.{{.Name}}.Create()
+	optionFunc(builder)
+	return builder.SaveX(ctx)
+}
+
+func (repo *{{.Name}}) Update(ctx context.Context, optionFunc func(builder *ent.{{.Name}}Update)) int {
+	return repo.update(ctx, repo.db, optionFunc)
+}
+
+func (repo *{{.Name}}) update(ctx context.Context, db *ent.Client, optionFunc func(builder *ent.{{.Name}}Update)) int {
+	builder := db.{{.Name}}.Update()
+	optionFunc(builder)
+	return builder.SaveX(ctx)
+}
+
+func (repo *{{.Name}}) Delete(ctx context.Context, optionFunc func(builder *ent.{{.Name}}Delete)) int {
+	return repo.delete(ctx, repo.db, optionFunc)
+}
+
+func (repo *{{.Name}}) delete(ctx context.Context, db *ent.Client, optionFunc func(builder *ent.{{.Name}}Delete)) int {
+	builder := db.{{.Name}}.Delete()
+	optionFunc(builder)
+	return builder.ExecX(ctx)
+}

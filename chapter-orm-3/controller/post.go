@@ -23,7 +23,6 @@ func (ctr *Post) Many(c *gin.Context) {
 
 func (ctr *Post) One(c *gin.Context) {
 	id := 1
-	post := ctr.repo.FetchByID(c.Request.Context(), id)
-	post.Comments = ctr.repo.Comments(c.Request.Context(), id)
+	post := ctr.repo.Fetch(c.Request.Context(), id)
 	c.JSON(http.StatusOK, post)
 }

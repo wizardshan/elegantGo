@@ -4,8 +4,6 @@ import (
 	"time"
 )
 
-type Comments []*Comment
-
 type Comment struct {
 	ID         int
 	UserID     int

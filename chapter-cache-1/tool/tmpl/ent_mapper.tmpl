@@ -1,0 +1,31 @@
+package ent
+
+import (
+	"elegantGo/chapter-cache-1/domain"
+	"github.com/elliotchance/pie/v2"
+)
+
+func (ent{{.Name}} *{{.Name}}) Mapper() *domain.{{.Name}} {
+	if ent{{.Name}} == nil {
+		return nil
+	}
+
+	dom{{.Name}} := new(domain.{{.Name}})
+	{{- range .fields}}
+	dom{{$.Name}}.{{.Name}} = ent{{$.Name}}.{{.Name}}
+	{{- end}}
+
+
+	{{- range .edgesFields}}
+	{{if .IsSlice}}
+	dom{{$.Name}}.{{.Name}} = {{.Name}}(ent{{$.Name}}.Edges.{{.Name}}).Mapper(){{else}}dom{{$.Name}}.{{.Name}} = ent{{$.Name}}.Edges.{{.Name}}.Mapper(){{end}}
+	{{- end}}
+
+	return dom{{.Name}}
+}
+
+func (ent{{.Name}}s {{.Name}}s) Mapper() domain.{{.Name}}s {
+	return pie.Map(ent{{.Name}}s, func(ent *{{.Name}}) *domain.{{.Name}} {
+		return ent.Mapper()
+	})
+}

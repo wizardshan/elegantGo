@@ -1,0 +1,18 @@
+package response
+
+import (
+    "time"
+)
+
+type {{.Name}}s []*{{.Name}}
+
+type {{.Name}} struct {
+    {{- range .fields}}
+    {{.Name}} {{.TypeName}}
+    {{- end}}
+
+    {{- range .edgesFields}}
+    {{if .IsSlice}}
+    {{.Name}} {{.TypeName}}s{{else}}{{.Name}} *{{.TypeName}}{{end}} `json:",omitempty"`
+    {{- end}}
+}

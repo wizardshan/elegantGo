@@ -17,79 +17,76 @@ func NewPost(db *sql.DB) *Post {
 	return repo
 }
 
-func (repo *Post) FetchByID(ctx context.Context, id int) *entity.Post {
+func (repo *Post) Fetch(ctx context.Context, id int) *entity.Post {
 
-	query := fmt.Sprintf("SELECT posts.`id`, posts.`hash_id`, posts.`user_id`, posts.`title`, posts.`content`, posts.`times_of_read`, posts.`create_time`, posts.`update_time`, users.`nickname`, users.`avatar` FROM posts, users WHERE posts.user_id=users.id AND posts.`id`= %d", id)
+	query := fmt.Sprintf("SELECT posts.`id`, posts.`hash_id`, posts.`user_id`, posts.`title`, posts.`content`, posts.`views`, posts.`create_time`, posts.`update_time`, users.`nickname`, users.`avatar` FROM posts, users WHERE posts.user_id=users.id AND posts.`id`= %d", id)
 	row := repo.db.QueryRowContext(ctx, query)
 
-	var entityPost entity.Post
+	var entPost entity.Post
 	row.Scan(
-		&entityPost.ID,
-		&entityPost.HashID,
-		&entityPost.UserID,
-		&entityPost.Title,
-		&entityPost.Content,
-		&entityPost.TimesOfRead,
-		&entityPost.CreateTime,
-		&entityPost.UpdateTime,
+		&entPost.ID,
+		&entPost.HashID,
+		&entPost.UserID,
+		&entPost.Title,
+		&entPost.Content,
+		&entPost.Views,
+		&entPost.CreateTime,
+		&entPost.UpdateTime,
 
-		&entityPost.UserNickname,
-		&entityPost.UserAvatar,
+		&entPost.UserNickname,
+		&entPost.UserAvatar,
 	)
 
-	return &entityPost
-}
-
-func (repo *Post) FetchMany(ctx context.Context) entity.Posts {
-
-	query := "SELECT posts.`id`, posts.`hash_id`, posts.`user_id`, posts.`title`, posts.`content`, posts.`times_of_read`, posts.`create_time`, posts.`update_time`, users.`nickname`, users.`avatar` FROM posts, users WHERE posts.user_id=users.id ORDER BY posts.create_time DESC"
+	query = fmt.Sprintf("SELECT comments.`id`, comments.`user_id`, comments.`post_id`, comments.`content`, comments.`create_time`, comments.`update_time`, users.`nickname`, users.`avatar` FROM comments, users WHERE comments.user_id=users.id AND comments.`post_id`= %d ORDER BY comments.create_time DESC", id)
 	rows, _ := repo.db.QueryContext(ctx, query)
 	defer rows.Close()
 
-	var entityPosts entity.Posts
+	var entComments []*entity.Comment
 	for rows.Next() {
-		var entityPost entity.Post
+		var entComment entity.Comment
 		rows.Scan(
-			&entityPost.ID,
-			&entityPost.HashID,
-			&entityPost.UserID,
-			&entityPost.Title,
-			&entityPost.Content,
-			&entityPost.TimesOfRead,
-			&entityPost.CreateTime,
-			&entityPost.UpdateTime,
+			&entComment.ID,
+			&entComment.UserID,
+			&entComment.PostID,
+			&entComment.Content,
+			&entComment.CreateTime,
+			&entComment.UpdateTime,
 
-			&entityPost.UserNickname,
-			&entityPost.UserAvatar,
+			&entComment.UserNickname,
+			&entComment.UserAvatar,
 		)
-		entityPosts = append(entityPosts, &entityPost)
+		entComments = append(entComments, &entComment)
 	}
 
-	return entityPosts
+	entPost.Comments = entComments
+
+	return &entPost
 }
 
-func (repo *Post) Comments(ctx context.Context, postID int) entity.Comments {
+func (repo *Post) FetchMany(ctx context.Context) []*entity.Post {
 
-	query := fmt.Sprintf("SELECT comments.`id`, comments.`user_id`, comments.`post_id`, comments.`content`, comments.`create_time`, comments.`update_time`, users.`nickname`, users.`avatar` FROM comments, users WHERE comments.user_id=users.id AND comments.`post_id`= %d ORDER BY comments.create_time DESC", postID)
+	query := "SELECT posts.`id`, posts.`hash_id`, posts.`user_id`, posts.`title`, posts.`content`, posts.`views`, posts.`create_time`, posts.`update_time`, users.`nickname`, users.`avatar` FROM posts, users WHERE posts.user_id=users.id ORDER BY posts.create_time DESC"
 	rows, _ := repo.db.QueryContext(ctx, query)
 	defer rows.Close()
 
-	var entityComments entity.Comments
+	var entPosts []*entity.Post
 	for rows.Next() {
-		var entityComment entity.Comment
+		var entPost entity.Post
 		rows.Scan(
-			&entityComment.ID,
-			&entityComment.UserID,
-			&entityComment.PostID,
-			&entityComment.Content,
-			&entityComment.CreateTime,
-			&entityComment.UpdateTime,
+			&entPost.ID,
+			&entPost.HashID,
+			&entPost.UserID,
+			&entPost.Title,
+			&entPost.Content,
+			&entPost.Views,
+			&entPost.CreateTime,
+			&entPost.UpdateTime,
 
-			&entityComment.UserNickname,
-			&entityComment.UserAvatar,
+			&entPost.UserNickname,
+			&entPost.UserAvatar,
 		)
-		entityComments = append(entityComments, &entityComment)
+		entPosts = append(entPosts, &entPost)
 	}
 
-	return entityComments
+	return entPosts
 }

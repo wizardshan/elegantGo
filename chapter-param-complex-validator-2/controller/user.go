@@ -58,13 +58,7 @@ func (ctr *User) Many(c *gin.Context) (response.Data, error) {
 			builder = builder.Where(user.CreateTimeLTE(request.Filter.CreateTime.End))
 		}
 
-		builder.Offset(request.Offset.Value()).Limit(request.Limit.Value())
-
-		order := ent.Asc
-		if request.Order.IsDesc() {
-			order = ent.Desc
-		}
-		builder.Order(order(request.Sort.Value()))
+		builder.Offset(request.Offset.Value()).Limit(request.Limit.Value()).Order(request.Order.By(request.Sort.Value()))
 	})
 
 	return entUsers, nil

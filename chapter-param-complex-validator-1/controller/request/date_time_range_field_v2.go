@@ -20,10 +20,6 @@ func (req *DateTimeRangeFieldV2) UnmarshalJSON(b []byte) error {
 	if err := req.unmarshal(b); err != nil {
 		return err
 	}
-	// 验证json字符串有效性
-	if !req.hasSep() {
-		return errors.New("parameter should be separated by commas")
-	}
 	// 解析json字符串到业务数据
 	if err := req.parse(); err != nil {
 		return err
@@ -37,11 +33,15 @@ func (req *DateTimeRangeFieldV2) UnmarshalJSON(b []byte) error {
 }
 
 func (req *DateTimeRangeFieldV2) unmarshal(b []byte) error {
-	return json.Unmarshal(b, &req.data)
-}
+	if err := json.Unmarshal(b, &req.data); err != nil {
+		return err
+	}
 
-func (req *DateTimeRangeFieldV2) hasSep() bool {
-	return strings.Contains(req.data, ",")
+	// 验证json字符串有效性
+	if !strings.Contains(req.data, ",") {
+		return errors.New("parameter should be separated by commas")
+	}
+	return nil
 }
 
 func (req *DateTimeRangeFieldV2) parse() error {

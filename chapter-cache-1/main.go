@@ -1,0 +1,46 @@
+package main
+
+import (
+	"elegantGo/chapter-cache-1/controller"
+	"elegantGo/chapter-cache-1/repository"
+	"elegantGo/chapter-cache-1/repository/ent"
+	"fmt"
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+
+	host := "127.0.0.1:3306"
+	name := "test"
+	username := "root"
+	password := ""
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=true",
+		username,
+		password,
+		host,
+		name,
+	)
+
+	db, err := ent.Open("mysql", dsn)
+
+	if err != nil {
+		panic(err)
+	}
+
+	engine := gin.New()
+
+	handler := new(controller.Handler)
+	repoPost := repository.NewPost(db)
+	ctrPost := controller.NewPost(repoPost)
+	repoUser := repository.NewUser(db)
+	ctrUser := controller.NewUser(repoUser)
+	engine.GET("/users", handler.Wrapper(ctrUser.Many))
+	engine.GET("/user", handler.Wrapper(ctrUser.One))
+
+	engine.GET("/posts", handler.Wrapper(ctrPost.Many))
+	engine.GET("/post", handler.Wrapper(ctrPost.One))
+	//engine.GET("/post/comments", handler.Wrapper(ctrPost.Comments))
+
+	engine.Run()
+}
