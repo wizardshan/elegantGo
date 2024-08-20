@@ -45,7 +45,7 @@ var (
 		{Name: "hash_id", Type: field.TypeString, Default: ""},
 		{Name: "title", Type: field.TypeString, Default: ""},
 		{Name: "content", Type: field.TypeString, Default: ""},
-		{Name: "times_of_read", Type: field.TypeInt, Default: 0},
+		{Name: "views", Type: field.TypeInt, Default: 0},
 		{Name: "user_id", Type: field.TypeInt, Nullable: true, Default: 0},
 	}
 	// PostsTable holds the schema information for the "posts" table.
@@ -67,12 +67,9 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
-		{Name: "mobile", Type: field.TypeString, Default: ""},
-		{Name: "password", Type: field.TypeString, Default: ""},
 		{Name: "level", Type: field.TypeInt, Default: 0},
 		{Name: "nickname", Type: field.TypeString, Default: ""},
 		{Name: "avatar", Type: field.TypeString, Default: ""},
-		{Name: "bio", Type: field.TypeString, Default: ""},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{

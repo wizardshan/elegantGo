@@ -3,11 +3,11 @@
 package ent
 
 import (
+	"context"
 	"elegantGo/chapter-orm-entgo/repository/ent/comment"
 	"elegantGo/chapter-orm-entgo/repository/ent/post"
 	"elegantGo/chapter-orm-entgo/repository/ent/predicate"
 	"elegantGo/chapter-orm-entgo/repository/ent/user"
-	"context"
 	"errors"
 	"fmt"
 	"sync"
@@ -720,25 +720,25 @@ func (m *CommentMutation) ResetEdge(name string) error {
 // PostMutation represents an operation that mutates the Post nodes in the graph.
 type PostMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *int
-	create_time      *time.Time
-	update_time      *time.Time
-	hash_id          *string
-	title            *string
-	content          *string
-	times_of_read    *int
-	addtimes_of_read *int
-	clearedFields    map[string]struct{}
-	comments         map[int]struct{}
-	removedcomments  map[int]struct{}
-	clearedcomments  bool
-	user             *int
-	cleareduser      bool
-	done             bool
-	oldValue         func(context.Context) (*Post, error)
-	predicates       []predicate.Post
+	op              Op
+	typ             string
+	id              *int
+	create_time     *time.Time
+	update_time     *time.Time
+	hash_id         *string
+	title           *string
+	content         *string
+	views           *int
+	addviews        *int
+	clearedFields   map[string]struct{}
+	comments        map[int]struct{}
+	removedcomments map[int]struct{}
+	clearedcomments bool
+	user            *int
+	cleareduser     bool
+	done            bool
+	oldValue        func(context.Context) (*Post, error)
+	predicates      []predicate.Post
 }
 
 var _ ent.Mutation = (*PostMutation)(nil)
@@ -1068,60 +1068,60 @@ func (m *PostMutation) ResetContent() {
 	m.content = nil
 }
 
-// SetTimesOfRead sets the "times_of_read" field.
-func (m *PostMutation) SetTimesOfRead(i int) {
-	m.times_of_read = &i
-	m.addtimes_of_read = nil
+// SetViews sets the "views" field.
+func (m *PostMutation) SetViews(i int) {
+	m.views = &i
+	m.addviews = nil
 }
 
-// TimesOfRead returns the value of the "times_of_read" field in the mutation.
-func (m *PostMutation) TimesOfRead() (r int, exists bool) {
-	v := m.times_of_read
+// Views returns the value of the "views" field in the mutation.
+func (m *PostMutation) Views() (r int, exists bool) {
+	v := m.views
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldTimesOfRead returns the old "times_of_read" field's value of the Post entity.
+// OldViews returns the old "views" field's value of the Post entity.
 // If the Post object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PostMutation) OldTimesOfRead(ctx context.Context) (v int, err error) {
+func (m *PostMutation) OldViews(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTimesOfRead is only allowed on UpdateOne operations")
+		return v, errors.New("OldViews is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTimesOfRead requires an ID field in the mutation")
+		return v, errors.New("OldViews requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTimesOfRead: %w", err)
+		return v, fmt.Errorf("querying old value for OldViews: %w", err)
 	}
-	return oldValue.TimesOfRead, nil
+	return oldValue.Views, nil
 }
 
-// AddTimesOfRead adds i to the "times_of_read" field.
-func (m *PostMutation) AddTimesOfRead(i int) {
-	if m.addtimes_of_read != nil {
-		*m.addtimes_of_read += i
+// AddViews adds i to the "views" field.
+func (m *PostMutation) AddViews(i int) {
+	if m.addviews != nil {
+		*m.addviews += i
 	} else {
-		m.addtimes_of_read = &i
+		m.addviews = &i
 	}
 }
 
-// AddedTimesOfRead returns the value that was added to the "times_of_read" field in this mutation.
-func (m *PostMutation) AddedTimesOfRead() (r int, exists bool) {
-	v := m.addtimes_of_read
+// AddedViews returns the value that was added to the "views" field in this mutation.
+func (m *PostMutation) AddedViews() (r int, exists bool) {
+	v := m.addviews
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetTimesOfRead resets all changes to the "times_of_read" field.
-func (m *PostMutation) ResetTimesOfRead() {
-	m.times_of_read = nil
-	m.addtimes_of_read = nil
+// ResetViews resets all changes to the "views" field.
+func (m *PostMutation) ResetViews() {
+	m.views = nil
+	m.addviews = nil
 }
 
 // AddCommentIDs adds the "comments" edge to the Comment entity by ids.
@@ -1258,8 +1258,8 @@ func (m *PostMutation) Fields() []string {
 	if m.content != nil {
 		fields = append(fields, post.FieldContent)
 	}
-	if m.times_of_read != nil {
-		fields = append(fields, post.FieldTimesOfRead)
+	if m.views != nil {
+		fields = append(fields, post.FieldViews)
 	}
 	return fields
 }
@@ -1281,8 +1281,8 @@ func (m *PostMutation) Field(name string) (ent.Value, bool) {
 		return m.Title()
 	case post.FieldContent:
 		return m.Content()
-	case post.FieldTimesOfRead:
-		return m.TimesOfRead()
+	case post.FieldViews:
+		return m.Views()
 	}
 	return nil, false
 }
@@ -1304,8 +1304,8 @@ func (m *PostMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldTitle(ctx)
 	case post.FieldContent:
 		return m.OldContent(ctx)
-	case post.FieldTimesOfRead:
-		return m.OldTimesOfRead(ctx)
+	case post.FieldViews:
+		return m.OldViews(ctx)
 	}
 	return nil, fmt.Errorf("unknown Post field %s", name)
 }
@@ -1357,12 +1357,12 @@ func (m *PostMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetContent(v)
 		return nil
-	case post.FieldTimesOfRead:
+	case post.FieldViews:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetTimesOfRead(v)
+		m.SetViews(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Post field %s", name)
@@ -1372,8 +1372,8 @@ func (m *PostMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *PostMutation) AddedFields() []string {
 	var fields []string
-	if m.addtimes_of_read != nil {
-		fields = append(fields, post.FieldTimesOfRead)
+	if m.addviews != nil {
+		fields = append(fields, post.FieldViews)
 	}
 	return fields
 }
@@ -1383,8 +1383,8 @@ func (m *PostMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *PostMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case post.FieldTimesOfRead:
-		return m.AddedTimesOfRead()
+	case post.FieldViews:
+		return m.AddedViews()
 	}
 	return nil, false
 }
@@ -1394,12 +1394,12 @@ func (m *PostMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *PostMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case post.FieldTimesOfRead:
+	case post.FieldViews:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddTimesOfRead(v)
+		m.AddViews(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Post numeric field %s", name)
@@ -1455,8 +1455,8 @@ func (m *PostMutation) ResetField(name string) error {
 	case post.FieldContent:
 		m.ResetContent()
 		return nil
-	case post.FieldTimesOfRead:
-		m.ResetTimesOfRead()
+	case post.FieldViews:
+		m.ResetViews()
 		return nil
 	}
 	return fmt.Errorf("unknown Post field %s", name)
@@ -1572,13 +1572,10 @@ type UserMutation struct {
 	id              *int
 	create_time     *time.Time
 	update_time     *time.Time
-	mobile          *string
-	password        *string
 	level           *int
 	addlevel        *int
 	nickname        *string
 	avatar          *string
-	bio             *string
 	clearedFields   map[string]struct{}
 	comments        map[int]struct{}
 	removedcomments map[int]struct{}
@@ -1761,78 +1758,6 @@ func (m *UserMutation) ResetUpdateTime() {
 	m.update_time = nil
 }
 
-// SetMobile sets the "mobile" field.
-func (m *UserMutation) SetMobile(s string) {
-	m.mobile = &s
-}
-
-// Mobile returns the value of the "mobile" field in the mutation.
-func (m *UserMutation) Mobile() (r string, exists bool) {
-	v := m.mobile
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldMobile returns the old "mobile" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldMobile(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldMobile is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldMobile requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMobile: %w", err)
-	}
-	return oldValue.Mobile, nil
-}
-
-// ResetMobile resets all changes to the "mobile" field.
-func (m *UserMutation) ResetMobile() {
-	m.mobile = nil
-}
-
-// SetPassword sets the "password" field.
-func (m *UserMutation) SetPassword(s string) {
-	m.password = &s
-}
-
-// Password returns the value of the "password" field in the mutation.
-func (m *UserMutation) Password() (r string, exists bool) {
-	v := m.password
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPassword returns the old "password" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldPassword(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPassword is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPassword requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPassword: %w", err)
-	}
-	return oldValue.Password, nil
-}
-
-// ResetPassword resets all changes to the "password" field.
-func (m *UserMutation) ResetPassword() {
-	m.password = nil
-}
-
 // SetLevel sets the "level" field.
 func (m *UserMutation) SetLevel(i int) {
 	m.level = &i
@@ -1959,42 +1884,6 @@ func (m *UserMutation) OldAvatar(ctx context.Context) (v string, err error) {
 // ResetAvatar resets all changes to the "avatar" field.
 func (m *UserMutation) ResetAvatar() {
 	m.avatar = nil
-}
-
-// SetBio sets the "bio" field.
-func (m *UserMutation) SetBio(s string) {
-	m.bio = &s
-}
-
-// Bio returns the value of the "bio" field in the mutation.
-func (m *UserMutation) Bio() (r string, exists bool) {
-	v := m.bio
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldBio returns the old "bio" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldBio(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBio is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBio requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBio: %w", err)
-	}
-	return oldValue.Bio, nil
-}
-
-// ResetBio resets all changes to the "bio" field.
-func (m *UserMutation) ResetBio() {
-	m.bio = nil
 }
 
 // AddCommentIDs adds the "comments" edge to the Comment entity by ids.
@@ -2139,18 +2028,12 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 5)
 	if m.create_time != nil {
 		fields = append(fields, user.FieldCreateTime)
 	}
 	if m.update_time != nil {
 		fields = append(fields, user.FieldUpdateTime)
-	}
-	if m.mobile != nil {
-		fields = append(fields, user.FieldMobile)
-	}
-	if m.password != nil {
-		fields = append(fields, user.FieldPassword)
 	}
 	if m.level != nil {
 		fields = append(fields, user.FieldLevel)
@@ -2160,9 +2043,6 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.avatar != nil {
 		fields = append(fields, user.FieldAvatar)
-	}
-	if m.bio != nil {
-		fields = append(fields, user.FieldBio)
 	}
 	return fields
 }
@@ -2176,18 +2056,12 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.CreateTime()
 	case user.FieldUpdateTime:
 		return m.UpdateTime()
-	case user.FieldMobile:
-		return m.Mobile()
-	case user.FieldPassword:
-		return m.Password()
 	case user.FieldLevel:
 		return m.Level()
 	case user.FieldNickname:
 		return m.Nickname()
 	case user.FieldAvatar:
 		return m.Avatar()
-	case user.FieldBio:
-		return m.Bio()
 	}
 	return nil, false
 }
@@ -2201,18 +2075,12 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldCreateTime(ctx)
 	case user.FieldUpdateTime:
 		return m.OldUpdateTime(ctx)
-	case user.FieldMobile:
-		return m.OldMobile(ctx)
-	case user.FieldPassword:
-		return m.OldPassword(ctx)
 	case user.FieldLevel:
 		return m.OldLevel(ctx)
 	case user.FieldNickname:
 		return m.OldNickname(ctx)
 	case user.FieldAvatar:
 		return m.OldAvatar(ctx)
-	case user.FieldBio:
-		return m.OldBio(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -2236,20 +2104,6 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdateTime(v)
 		return nil
-	case user.FieldMobile:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetMobile(v)
-		return nil
-	case user.FieldPassword:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPassword(v)
-		return nil
 	case user.FieldLevel:
 		v, ok := value.(int)
 		if !ok {
@@ -2270,13 +2124,6 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAvatar(v)
-		return nil
-	case user.FieldBio:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetBio(v)
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
@@ -2348,12 +2195,6 @@ func (m *UserMutation) ResetField(name string) error {
 	case user.FieldUpdateTime:
 		m.ResetUpdateTime()
 		return nil
-	case user.FieldMobile:
-		m.ResetMobile()
-		return nil
-	case user.FieldPassword:
-		m.ResetPassword()
-		return nil
 	case user.FieldLevel:
 		m.ResetLevel()
 		return nil
@@ -2362,9 +2203,6 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldAvatar:
 		m.ResetAvatar()
-		return nil
-	case user.FieldBio:
-		m.ResetBio()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)

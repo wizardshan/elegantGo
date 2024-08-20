@@ -72,10 +72,10 @@ func init() {
 	postDescContent := postFields[3].Descriptor()
 	// post.DefaultContent holds the default value on creation for the content field.
 	post.DefaultContent = postDescContent.Default.(string)
-	// postDescTimesOfRead is the schema descriptor for times_of_read field.
-	postDescTimesOfRead := postFields[4].Descriptor()
-	// post.DefaultTimesOfRead holds the default value on creation for the times_of_read field.
-	post.DefaultTimesOfRead = postDescTimesOfRead.Default.(int)
+	// postDescViews is the schema descriptor for views field.
+	postDescViews := postFields[4].Descriptor()
+	// post.DefaultViews holds the default value on creation for the views field.
+	post.DefaultViews = postDescViews.Default.(int)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0
@@ -91,28 +91,16 @@ func init() {
 	user.DefaultUpdateTime = userDescUpdateTime.Default.(func() time.Time)
 	// user.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	user.UpdateDefaultUpdateTime = userDescUpdateTime.UpdateDefault.(func() time.Time)
-	// userDescMobile is the schema descriptor for mobile field.
-	userDescMobile := userFields[0].Descriptor()
-	// user.DefaultMobile holds the default value on creation for the mobile field.
-	user.DefaultMobile = userDescMobile.Default.(string)
-	// userDescPassword is the schema descriptor for password field.
-	userDescPassword := userFields[1].Descriptor()
-	// user.DefaultPassword holds the default value on creation for the password field.
-	user.DefaultPassword = userDescPassword.Default.(string)
 	// userDescLevel is the schema descriptor for level field.
-	userDescLevel := userFields[2].Descriptor()
+	userDescLevel := userFields[0].Descriptor()
 	// user.DefaultLevel holds the default value on creation for the level field.
 	user.DefaultLevel = userDescLevel.Default.(int)
 	// userDescNickname is the schema descriptor for nickname field.
-	userDescNickname := userFields[3].Descriptor()
+	userDescNickname := userFields[1].Descriptor()
 	// user.DefaultNickname holds the default value on creation for the nickname field.
 	user.DefaultNickname = userDescNickname.Default.(string)
 	// userDescAvatar is the schema descriptor for avatar field.
-	userDescAvatar := userFields[4].Descriptor()
+	userDescAvatar := userFields[2].Descriptor()
 	// user.DefaultAvatar holds the default value on creation for the avatar field.
 	user.DefaultAvatar = userDescAvatar.Default.(string)
-	// userDescBio is the schema descriptor for bio field.
-	userDescBio := userFields[5].Descriptor()
-	// user.DefaultBio holds the default value on creation for the bio field.
-	user.DefaultBio = userDescBio.Default.(string)
 }

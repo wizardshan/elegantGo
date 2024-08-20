@@ -3,10 +3,10 @@
 package ent
 
 import (
+	"context"
 	"elegantGo/chapter-orm-entgo/repository/ent/comment"
 	"elegantGo/chapter-orm-entgo/repository/ent/post"
 	"elegantGo/chapter-orm-entgo/repository/ent/user"
-	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -106,16 +106,16 @@ func (pc *PostCreate) SetNillableContent(s *string) *PostCreate {
 	return pc
 }
 
-// SetTimesOfRead sets the "times_of_read" field.
-func (pc *PostCreate) SetTimesOfRead(i int) *PostCreate {
-	pc.mutation.SetTimesOfRead(i)
+// SetViews sets the "views" field.
+func (pc *PostCreate) SetViews(i int) *PostCreate {
+	pc.mutation.SetViews(i)
 	return pc
 }
 
-// SetNillableTimesOfRead sets the "times_of_read" field if the given value is not nil.
-func (pc *PostCreate) SetNillableTimesOfRead(i *int) *PostCreate {
+// SetNillableViews sets the "views" field if the given value is not nil.
+func (pc *PostCreate) SetNillableViews(i *int) *PostCreate {
 	if i != nil {
-		pc.SetTimesOfRead(*i)
+		pc.SetViews(*i)
 	}
 	return pc
 }
@@ -199,9 +199,9 @@ func (pc *PostCreate) defaults() {
 		v := post.DefaultContent
 		pc.mutation.SetContent(v)
 	}
-	if _, ok := pc.mutation.TimesOfRead(); !ok {
-		v := post.DefaultTimesOfRead
-		pc.mutation.SetTimesOfRead(v)
+	if _, ok := pc.mutation.Views(); !ok {
+		v := post.DefaultViews
+		pc.mutation.SetViews(v)
 	}
 }
 
@@ -222,8 +222,8 @@ func (pc *PostCreate) check() error {
 	if _, ok := pc.mutation.Content(); !ok {
 		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Post.content"`)}
 	}
-	if _, ok := pc.mutation.TimesOfRead(); !ok {
-		return &ValidationError{Name: "times_of_read", err: errors.New(`ent: missing required field "Post.times_of_read"`)}
+	if _, ok := pc.mutation.Views(); !ok {
+		return &ValidationError{Name: "views", err: errors.New(`ent: missing required field "Post.views"`)}
 	}
 	return nil
 }
@@ -271,9 +271,9 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 		_spec.SetField(post.FieldContent, field.TypeString, value)
 		_node.Content = value
 	}
-	if value, ok := pc.mutation.TimesOfRead(); ok {
-		_spec.SetField(post.FieldTimesOfRead, field.TypeInt, value)
-		_node.TimesOfRead = value
+	if value, ok := pc.mutation.Views(); ok {
+		_spec.SetField(post.FieldViews, field.TypeInt, value)
+		_node.Views = value
 	}
 	if nodes := pc.mutation.CommentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

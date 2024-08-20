@@ -18,18 +18,12 @@ const (
 	FieldCreateTime = "create_time"
 	// FieldUpdateTime holds the string denoting the update_time field in the database.
 	FieldUpdateTime = "update_time"
-	// FieldMobile holds the string denoting the mobile field in the database.
-	FieldMobile = "mobile"
-	// FieldPassword holds the string denoting the password field in the database.
-	FieldPassword = "password"
 	// FieldLevel holds the string denoting the level field in the database.
 	FieldLevel = "level"
 	// FieldNickname holds the string denoting the nickname field in the database.
 	FieldNickname = "nickname"
 	// FieldAvatar holds the string denoting the avatar field in the database.
 	FieldAvatar = "avatar"
-	// FieldBio holds the string denoting the bio field in the database.
-	FieldBio = "bio"
 	// EdgeComments holds the string denoting the comments edge name in mutations.
 	EdgeComments = "comments"
 	// EdgePosts holds the string denoting the posts edge name in mutations.
@@ -57,12 +51,9 @@ var Columns = []string{
 	FieldID,
 	FieldCreateTime,
 	FieldUpdateTime,
-	FieldMobile,
-	FieldPassword,
 	FieldLevel,
 	FieldNickname,
 	FieldAvatar,
-	FieldBio,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -82,18 +73,12 @@ var (
 	DefaultUpdateTime func() time.Time
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() time.Time
-	// DefaultMobile holds the default value on creation for the "mobile" field.
-	DefaultMobile string
-	// DefaultPassword holds the default value on creation for the "password" field.
-	DefaultPassword string
 	// DefaultLevel holds the default value on creation for the "level" field.
 	DefaultLevel int
 	// DefaultNickname holds the default value on creation for the "nickname" field.
 	DefaultNickname string
 	// DefaultAvatar holds the default value on creation for the "avatar" field.
 	DefaultAvatar string
-	// DefaultBio holds the default value on creation for the "bio" field.
-	DefaultBio string
 )
 
 // OrderOption defines the ordering options for the User queries.
@@ -114,16 +99,6 @@ func ByUpdateTime(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdateTime, opts...).ToFunc()
 }
 
-// ByMobile orders the results by the mobile field.
-func ByMobile(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldMobile, opts...).ToFunc()
-}
-
-// ByPassword orders the results by the password field.
-func ByPassword(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPassword, opts...).ToFunc()
-}
-
 // ByLevel orders the results by the level field.
 func ByLevel(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLevel, opts...).ToFunc()
@@ -137,11 +112,6 @@ func ByNickname(opts ...sql.OrderTermOption) OrderOption {
 // ByAvatar orders the results by the avatar field.
 func ByAvatar(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAvatar, opts...).ToFunc()
-}
-
-// ByBio orders the results by the bio field.
-func ByBio(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBio, opts...).ToFunc()
 }
 
 // ByCommentsCount orders the results by comments count.

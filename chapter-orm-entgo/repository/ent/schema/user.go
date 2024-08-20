@@ -13,12 +13,9 @@ type User struct {
 
 func (User) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("mobile").Default(""),
-		field.String("password").Default(""),
 		field.Int("level").Default(0),
 		field.String("nickname").Default(""),
 		field.String("avatar").Default(""),
-		field.String("bio").Default(""),
 	}
 }
 

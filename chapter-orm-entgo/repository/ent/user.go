@@ -21,18 +21,12 @@ type User struct {
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
 	UpdateTime time.Time `json:"update_time,omitempty"`
-	// Mobile holds the value of the "mobile" field.
-	Mobile string `json:"mobile,omitempty"`
-	// Password holds the value of the "password" field.
-	Password string `json:"password,omitempty"`
 	// Level holds the value of the "level" field.
 	Level int `json:"level,omitempty"`
 	// Nickname holds the value of the "nickname" field.
 	Nickname string `json:"nickname,omitempty"`
 	// Avatar holds the value of the "avatar" field.
 	Avatar string `json:"avatar,omitempty"`
-	// Bio holds the value of the "bio" field.
-	Bio string `json:"bio,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges        UserEdges `json:"edges"`
@@ -75,7 +69,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldID, user.FieldLevel:
 			values[i] = new(sql.NullInt64)
-		case user.FieldMobile, user.FieldPassword, user.FieldNickname, user.FieldAvatar, user.FieldBio:
+		case user.FieldNickname, user.FieldAvatar:
 			values[i] = new(sql.NullString)
 		case user.FieldCreateTime, user.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -112,18 +106,6 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.UpdateTime = value.Time
 			}
-		case user.FieldMobile:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field mobile", values[i])
-			} else if value.Valid {
-				u.Mobile = value.String
-			}
-		case user.FieldPassword:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field password", values[i])
-			} else if value.Valid {
-				u.Password = value.String
-			}
 		case user.FieldLevel:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field level", values[i])
@@ -141,12 +123,6 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field avatar", values[i])
 			} else if value.Valid {
 				u.Avatar = value.String
-			}
-		case user.FieldBio:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field bio", values[i])
-			} else if value.Valid {
-				u.Bio = value.String
 			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
@@ -200,12 +176,6 @@ func (u *User) String() string {
 	builder.WriteString("update_time=")
 	builder.WriteString(u.UpdateTime.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("mobile=")
-	builder.WriteString(u.Mobile)
-	builder.WriteString(", ")
-	builder.WriteString("password=")
-	builder.WriteString(u.Password)
-	builder.WriteString(", ")
 	builder.WriteString("level=")
 	builder.WriteString(fmt.Sprintf("%v", u.Level))
 	builder.WriteString(", ")
@@ -214,9 +184,6 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("avatar=")
 	builder.WriteString(u.Avatar)
-	builder.WriteString(", ")
-	builder.WriteString("bio=")
-	builder.WriteString(u.Bio)
 	builder.WriteByte(')')
 	return builder.String()
 }

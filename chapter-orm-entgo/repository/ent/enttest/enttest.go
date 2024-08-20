@@ -3,8 +3,8 @@
 package enttest
 
 import (
-	"elegantGo/chapter-orm-entgo/repository/ent"
 	"context"
+	"elegantGo/chapter-orm-entgo/repository/ent"
 	// required by schema hooks.
 	_ "elegantGo/chapter-orm-entgo/repository/ent/runtime"
 

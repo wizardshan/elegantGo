@@ -30,8 +30,8 @@ type Post struct {
 	Title string `json:"title,omitempty"`
 	// Content holds the value of the "content" field.
 	Content string `json:"content,omitempty"`
-	// TimesOfRead holds the value of the "times_of_read" field.
-	TimesOfRead int `json:"times_of_read,omitempty"`
+	// Views holds the value of the "views" field.
+	Views int `json:"views,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PostQuery when eager-loading is set.
 	Edges        PostEdges `json:"edges"`
@@ -74,7 +74,7 @@ func (*Post) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case post.FieldID, post.FieldUserID, post.FieldTimesOfRead:
+		case post.FieldID, post.FieldUserID, post.FieldViews:
 			values[i] = new(sql.NullInt64)
 		case post.FieldHashID, post.FieldTitle, post.FieldContent:
 			values[i] = new(sql.NullString)
@@ -137,11 +137,11 @@ func (po *Post) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				po.Content = value.String
 			}
-		case post.FieldTimesOfRead:
+		case post.FieldViews:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field times_of_read", values[i])
+				return fmt.Errorf("unexpected type %T for field views", values[i])
 			} else if value.Valid {
-				po.TimesOfRead = int(value.Int64)
+				po.Views = int(value.Int64)
 			}
 		default:
 			po.selectValues.Set(columns[i], values[i])
@@ -207,8 +207,8 @@ func (po *Post) String() string {
 	builder.WriteString("content=")
 	builder.WriteString(po.Content)
 	builder.WriteString(", ")
-	builder.WriteString("times_of_read=")
-	builder.WriteString(fmt.Sprintf("%v", po.TimesOfRead))
+	builder.WriteString("views=")
+	builder.WriteString(fmt.Sprintf("%v", po.Views))
 	builder.WriteByte(')')
 	return builder.String()
 }

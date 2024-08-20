@@ -3,12 +3,12 @@
 package ent
 
 import (
+	"context"
+	"database/sql/driver"
 	"elegantGo/chapter-orm-entgo/repository/ent/comment"
 	"elegantGo/chapter-orm-entgo/repository/ent/post"
 	"elegantGo/chapter-orm-entgo/repository/ent/predicate"
 	"elegantGo/chapter-orm-entgo/repository/ent/user"
-	"context"
-	"database/sql/driver"
 	"fmt"
 	"math"
 

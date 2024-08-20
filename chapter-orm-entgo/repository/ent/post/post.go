@@ -26,8 +26,8 @@ const (
 	FieldTitle = "title"
 	// FieldContent holds the string denoting the content field in the database.
 	FieldContent = "content"
-	// FieldTimesOfRead holds the string denoting the times_of_read field in the database.
-	FieldTimesOfRead = "times_of_read"
+	// FieldViews holds the string denoting the views field in the database.
+	FieldViews = "views"
 	// EdgeComments holds the string denoting the comments edge name in mutations.
 	EdgeComments = "comments"
 	// EdgeUser holds the string denoting the user edge name in mutations.
@@ -59,7 +59,7 @@ var Columns = []string{
 	FieldUserID,
 	FieldTitle,
 	FieldContent,
-	FieldTimesOfRead,
+	FieldViews,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -87,8 +87,8 @@ var (
 	DefaultTitle string
 	// DefaultContent holds the default value on creation for the "content" field.
 	DefaultContent string
-	// DefaultTimesOfRead holds the default value on creation for the "times_of_read" field.
-	DefaultTimesOfRead int
+	// DefaultViews holds the default value on creation for the "views" field.
+	DefaultViews int
 )
 
 // OrderOption defines the ordering options for the Post queries.
@@ -129,9 +129,9 @@ func ByContent(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldContent, opts...).ToFunc()
 }
 
-// ByTimesOfRead orders the results by the times_of_read field.
-func ByTimesOfRead(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldTimesOfRead, opts...).ToFunc()
+// ByViews orders the results by the views field.
+func ByViews(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldViews, opts...).ToFunc()
 }
 
 // ByCommentsCount orders the results by comments count.

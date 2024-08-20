@@ -3,10 +3,10 @@
 package ent
 
 import (
+	"context"
 	"elegantGo/chapter-orm-entgo/repository/ent/comment"
 	"elegantGo/chapter-orm-entgo/repository/ent/post"
 	"elegantGo/chapter-orm-entgo/repository/ent/user"
-	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -50,34 +50,6 @@ func (uc *UserCreate) SetNillableUpdateTime(t *time.Time) *UserCreate {
 	return uc
 }
 
-// SetMobile sets the "mobile" field.
-func (uc *UserCreate) SetMobile(s string) *UserCreate {
-	uc.mutation.SetMobile(s)
-	return uc
-}
-
-// SetNillableMobile sets the "mobile" field if the given value is not nil.
-func (uc *UserCreate) SetNillableMobile(s *string) *UserCreate {
-	if s != nil {
-		uc.SetMobile(*s)
-	}
-	return uc
-}
-
-// SetPassword sets the "password" field.
-func (uc *UserCreate) SetPassword(s string) *UserCreate {
-	uc.mutation.SetPassword(s)
-	return uc
-}
-
-// SetNillablePassword sets the "password" field if the given value is not nil.
-func (uc *UserCreate) SetNillablePassword(s *string) *UserCreate {
-	if s != nil {
-		uc.SetPassword(*s)
-	}
-	return uc
-}
-
 // SetLevel sets the "level" field.
 func (uc *UserCreate) SetLevel(i int) *UserCreate {
 	uc.mutation.SetLevel(i)
@@ -116,20 +88,6 @@ func (uc *UserCreate) SetAvatar(s string) *UserCreate {
 func (uc *UserCreate) SetNillableAvatar(s *string) *UserCreate {
 	if s != nil {
 		uc.SetAvatar(*s)
-	}
-	return uc
-}
-
-// SetBio sets the "bio" field.
-func (uc *UserCreate) SetBio(s string) *UserCreate {
-	uc.mutation.SetBio(s)
-	return uc
-}
-
-// SetNillableBio sets the "bio" field if the given value is not nil.
-func (uc *UserCreate) SetNillableBio(s *string) *UserCreate {
-	if s != nil {
-		uc.SetBio(*s)
 	}
 	return uc
 }
@@ -207,14 +165,6 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultUpdateTime()
 		uc.mutation.SetUpdateTime(v)
 	}
-	if _, ok := uc.mutation.Mobile(); !ok {
-		v := user.DefaultMobile
-		uc.mutation.SetMobile(v)
-	}
-	if _, ok := uc.mutation.Password(); !ok {
-		v := user.DefaultPassword
-		uc.mutation.SetPassword(v)
-	}
 	if _, ok := uc.mutation.Level(); !ok {
 		v := user.DefaultLevel
 		uc.mutation.SetLevel(v)
@@ -227,10 +177,6 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultAvatar
 		uc.mutation.SetAvatar(v)
 	}
-	if _, ok := uc.mutation.Bio(); !ok {
-		v := user.DefaultBio
-		uc.mutation.SetBio(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -241,12 +187,6 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "User.update_time"`)}
 	}
-	if _, ok := uc.mutation.Mobile(); !ok {
-		return &ValidationError{Name: "mobile", err: errors.New(`ent: missing required field "User.mobile"`)}
-	}
-	if _, ok := uc.mutation.Password(); !ok {
-		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "User.password"`)}
-	}
 	if _, ok := uc.mutation.Level(); !ok {
 		return &ValidationError{Name: "level", err: errors.New(`ent: missing required field "User.level"`)}
 	}
@@ -255,9 +195,6 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.Avatar(); !ok {
 		return &ValidationError{Name: "avatar", err: errors.New(`ent: missing required field "User.avatar"`)}
-	}
-	if _, ok := uc.mutation.Bio(); !ok {
-		return &ValidationError{Name: "bio", err: errors.New(`ent: missing required field "User.bio"`)}
 	}
 	return nil
 }
@@ -293,14 +230,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldUpdateTime, field.TypeTime, value)
 		_node.UpdateTime = value
 	}
-	if value, ok := uc.mutation.Mobile(); ok {
-		_spec.SetField(user.FieldMobile, field.TypeString, value)
-		_node.Mobile = value
-	}
-	if value, ok := uc.mutation.Password(); ok {
-		_spec.SetField(user.FieldPassword, field.TypeString, value)
-		_node.Password = value
-	}
 	if value, ok := uc.mutation.Level(); ok {
 		_spec.SetField(user.FieldLevel, field.TypeInt, value)
 		_node.Level = value
@@ -312,10 +241,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Avatar(); ok {
 		_spec.SetField(user.FieldAvatar, field.TypeString, value)
 		_node.Avatar = value
-	}
-	if value, ok := uc.mutation.Bio(); ok {
-		_spec.SetField(user.FieldBio, field.TypeString, value)
-		_node.Bio = value
 	}
 	if nodes := uc.mutation.CommentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

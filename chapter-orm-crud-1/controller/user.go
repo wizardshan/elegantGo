@@ -20,7 +20,7 @@ func NewUser(repo *repository.User) *User {
 
 func (ctr *User) One(c *gin.Context) {
 	id := 1
-	//entUser := ctr.repo.FetchByID(c.Request.Context(), id)
+	//entUser := ctr.repo.Fetch(c.Request.Context(), id)
 	//c.JSON(http.StatusOK, entUser)
 
 	entUser := ctr.repo.FetchOne(c.Request.Context(), func(builder *ent.UserQuery) {

@@ -85,9 +85,9 @@ func Content(v string) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldContent, v))
 }
 
-// TimesOfRead applies equality check predicate on the "times_of_read" field. It's identical to TimesOfReadEQ.
-func TimesOfRead(v int) predicate.Post {
-	return predicate.Post(sql.FieldEQ(FieldTimesOfRead, v))
+// Views applies equality check predicate on the "views" field. It's identical to ViewsEQ.
+func Views(v int) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldViews, v))
 }
 
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
@@ -395,44 +395,44 @@ func ContentContainsFold(v string) predicate.Post {
 	return predicate.Post(sql.FieldContainsFold(FieldContent, v))
 }
 
-// TimesOfReadEQ applies the EQ predicate on the "times_of_read" field.
-func TimesOfReadEQ(v int) predicate.Post {
-	return predicate.Post(sql.FieldEQ(FieldTimesOfRead, v))
+// ViewsEQ applies the EQ predicate on the "views" field.
+func ViewsEQ(v int) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldViews, v))
 }
 
-// TimesOfReadNEQ applies the NEQ predicate on the "times_of_read" field.
-func TimesOfReadNEQ(v int) predicate.Post {
-	return predicate.Post(sql.FieldNEQ(FieldTimesOfRead, v))
+// ViewsNEQ applies the NEQ predicate on the "views" field.
+func ViewsNEQ(v int) predicate.Post {
+	return predicate.Post(sql.FieldNEQ(FieldViews, v))
 }
 
-// TimesOfReadIn applies the In predicate on the "times_of_read" field.
-func TimesOfReadIn(vs ...int) predicate.Post {
-	return predicate.Post(sql.FieldIn(FieldTimesOfRead, vs...))
+// ViewsIn applies the In predicate on the "views" field.
+func ViewsIn(vs ...int) predicate.Post {
+	return predicate.Post(sql.FieldIn(FieldViews, vs...))
 }
 
-// TimesOfReadNotIn applies the NotIn predicate on the "times_of_read" field.
-func TimesOfReadNotIn(vs ...int) predicate.Post {
-	return predicate.Post(sql.FieldNotIn(FieldTimesOfRead, vs...))
+// ViewsNotIn applies the NotIn predicate on the "views" field.
+func ViewsNotIn(vs ...int) predicate.Post {
+	return predicate.Post(sql.FieldNotIn(FieldViews, vs...))
 }
 
-// TimesOfReadGT applies the GT predicate on the "times_of_read" field.
-func TimesOfReadGT(v int) predicate.Post {
-	return predicate.Post(sql.FieldGT(FieldTimesOfRead, v))
+// ViewsGT applies the GT predicate on the "views" field.
+func ViewsGT(v int) predicate.Post {
+	return predicate.Post(sql.FieldGT(FieldViews, v))
 }
 
-// TimesOfReadGTE applies the GTE predicate on the "times_of_read" field.
-func TimesOfReadGTE(v int) predicate.Post {
-	return predicate.Post(sql.FieldGTE(FieldTimesOfRead, v))
+// ViewsGTE applies the GTE predicate on the "views" field.
+func ViewsGTE(v int) predicate.Post {
+	return predicate.Post(sql.FieldGTE(FieldViews, v))
 }
 
-// TimesOfReadLT applies the LT predicate on the "times_of_read" field.
-func TimesOfReadLT(v int) predicate.Post {
-	return predicate.Post(sql.FieldLT(FieldTimesOfRead, v))
+// ViewsLT applies the LT predicate on the "views" field.
+func ViewsLT(v int) predicate.Post {
+	return predicate.Post(sql.FieldLT(FieldViews, v))
 }
 
-// TimesOfReadLTE applies the LTE predicate on the "times_of_read" field.
-func TimesOfReadLTE(v int) predicate.Post {
-	return predicate.Post(sql.FieldLTE(FieldTimesOfRead, v))
+// ViewsLTE applies the LTE predicate on the "views" field.
+func ViewsLTE(v int) predicate.Post {
+	return predicate.Post(sql.FieldLTE(FieldViews, v))
 }
 
 // HasComments applies the HasEdge predicate on the "comments" edge.

@@ -17,16 +17,16 @@ func NewPost(db *ent.Client) *Post {
 	return repo
 }
 
-func (repo *Post) FetchByID(ctx context.Context, id int) *ent.Post {
+func (repo *Post) Fetch(ctx context.Context, id int) *ent.Post {
 	return repo.db.Post.Query().WithUser().WithComments(func(ops *ent.CommentQuery) {
 		ops.WithUser()
 	}).Where(post.ID(id)).FirstX(ctx)
 }
 
 func (repo *Post) FetchMany(ctx context.Context) []*ent.Post {
-	return repo.db.Post.Query().WithUser().AllX(ctx)
+	return repo.db.Debug().Post.Query().WithUser().Order(ent.Desc(post.FieldCreateTime)).AllX(ctx)
 }
 
-func (repo *Post) LatestComments(ctx context.Context) []*ent.Comment {
+func (repo *Post) Comments(ctx context.Context) []*ent.Comment {
 	return repo.db.Comment.Query().WithUser().WithPost().Order(ent.Desc(comment.FieldCreateTime)).AllX(ctx)
 }

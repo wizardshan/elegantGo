@@ -3,11 +3,11 @@
 package ent
 
 import (
+	"context"
 	"elegantGo/chapter-orm-entgo/repository/ent/comment"
 	"elegantGo/chapter-orm-entgo/repository/ent/post"
 	"elegantGo/chapter-orm-entgo/repository/ent/predicate"
 	"elegantGo/chapter-orm-entgo/repository/ent/user"
-	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -33,34 +33,6 @@ func (uu *UserUpdate) Where(ps ...predicate.User) *UserUpdate {
 // SetUpdateTime sets the "update_time" field.
 func (uu *UserUpdate) SetUpdateTime(t time.Time) *UserUpdate {
 	uu.mutation.SetUpdateTime(t)
-	return uu
-}
-
-// SetMobile sets the "mobile" field.
-func (uu *UserUpdate) SetMobile(s string) *UserUpdate {
-	uu.mutation.SetMobile(s)
-	return uu
-}
-
-// SetNillableMobile sets the "mobile" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableMobile(s *string) *UserUpdate {
-	if s != nil {
-		uu.SetMobile(*s)
-	}
-	return uu
-}
-
-// SetPassword sets the "password" field.
-func (uu *UserUpdate) SetPassword(s string) *UserUpdate {
-	uu.mutation.SetPassword(s)
-	return uu
-}
-
-// SetNillablePassword sets the "password" field if the given value is not nil.
-func (uu *UserUpdate) SetNillablePassword(s *string) *UserUpdate {
-	if s != nil {
-		uu.SetPassword(*s)
-	}
 	return uu
 }
 
@@ -109,20 +81,6 @@ func (uu *UserUpdate) SetAvatar(s string) *UserUpdate {
 func (uu *UserUpdate) SetNillableAvatar(s *string) *UserUpdate {
 	if s != nil {
 		uu.SetAvatar(*s)
-	}
-	return uu
-}
-
-// SetBio sets the "bio" field.
-func (uu *UserUpdate) SetBio(s string) *UserUpdate {
-	uu.mutation.SetBio(s)
-	return uu
-}
-
-// SetNillableBio sets the "bio" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableBio(s *string) *UserUpdate {
-	if s != nil {
-		uu.SetBio(*s)
 	}
 	return uu
 }
@@ -252,12 +210,6 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.UpdateTime(); ok {
 		_spec.SetField(user.FieldUpdateTime, field.TypeTime, value)
 	}
-	if value, ok := uu.mutation.Mobile(); ok {
-		_spec.SetField(user.FieldMobile, field.TypeString, value)
-	}
-	if value, ok := uu.mutation.Password(); ok {
-		_spec.SetField(user.FieldPassword, field.TypeString, value)
-	}
 	if value, ok := uu.mutation.Level(); ok {
 		_spec.SetField(user.FieldLevel, field.TypeInt, value)
 	}
@@ -269,9 +221,6 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.Avatar(); ok {
 		_spec.SetField(user.FieldAvatar, field.TypeString, value)
-	}
-	if value, ok := uu.mutation.Bio(); ok {
-		_spec.SetField(user.FieldBio, field.TypeString, value)
 	}
 	if uu.mutation.CommentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -389,34 +338,6 @@ func (uuo *UserUpdateOne) SetUpdateTime(t time.Time) *UserUpdateOne {
 	return uuo
 }
 
-// SetMobile sets the "mobile" field.
-func (uuo *UserUpdateOne) SetMobile(s string) *UserUpdateOne {
-	uuo.mutation.SetMobile(s)
-	return uuo
-}
-
-// SetNillableMobile sets the "mobile" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableMobile(s *string) *UserUpdateOne {
-	if s != nil {
-		uuo.SetMobile(*s)
-	}
-	return uuo
-}
-
-// SetPassword sets the "password" field.
-func (uuo *UserUpdateOne) SetPassword(s string) *UserUpdateOne {
-	uuo.mutation.SetPassword(s)
-	return uuo
-}
-
-// SetNillablePassword sets the "password" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillablePassword(s *string) *UserUpdateOne {
-	if s != nil {
-		uuo.SetPassword(*s)
-	}
-	return uuo
-}
-
 // SetLevel sets the "level" field.
 func (uuo *UserUpdateOne) SetLevel(i int) *UserUpdateOne {
 	uuo.mutation.ResetLevel()
@@ -462,20 +383,6 @@ func (uuo *UserUpdateOne) SetAvatar(s string) *UserUpdateOne {
 func (uuo *UserUpdateOne) SetNillableAvatar(s *string) *UserUpdateOne {
 	if s != nil {
 		uuo.SetAvatar(*s)
-	}
-	return uuo
-}
-
-// SetBio sets the "bio" field.
-func (uuo *UserUpdateOne) SetBio(s string) *UserUpdateOne {
-	uuo.mutation.SetBio(s)
-	return uuo
-}
-
-// SetNillableBio sets the "bio" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableBio(s *string) *UserUpdateOne {
-	if s != nil {
-		uuo.SetBio(*s)
 	}
 	return uuo
 }
@@ -635,12 +542,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.UpdateTime(); ok {
 		_spec.SetField(user.FieldUpdateTime, field.TypeTime, value)
 	}
-	if value, ok := uuo.mutation.Mobile(); ok {
-		_spec.SetField(user.FieldMobile, field.TypeString, value)
-	}
-	if value, ok := uuo.mutation.Password(); ok {
-		_spec.SetField(user.FieldPassword, field.TypeString, value)
-	}
 	if value, ok := uuo.mutation.Level(); ok {
 		_spec.SetField(user.FieldLevel, field.TypeInt, value)
 	}
@@ -652,9 +553,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.Avatar(); ok {
 		_spec.SetField(user.FieldAvatar, field.TypeString, value)
-	}
-	if value, ok := uuo.mutation.Bio(); ok {
-		_spec.SetField(user.FieldBio, field.TypeString, value)
 	}
 	if uuo.mutation.CommentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
