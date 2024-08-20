@@ -18,7 +18,7 @@ Delete     // 删除记录
 
 User为模型参数名
 ```
-
+命令执行成功后会在repository目录中生成user_crud.go文件。
 
 ```go
 // 模板repo.tmpl文件部分代码
