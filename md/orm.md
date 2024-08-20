@@ -117,7 +117,7 @@ comments表联users表查询：SELECT comments.`id`, comments.`user_id`, comment
 1、post数据里包含Nickname、Avatar属性，这两个属性是post自带属性吗？<br/>
 2、同上，comment数据里也包含Nickname、Avatar属性，这两个属性是comment自带属性吗？<br/>
 
-通过沟通或者看字段注释才能确定这两个属性是user数据的属性，这样就增加的沟通成本。
+通过沟通或者看字段注释才能确定这两个属性是user的属性，这样无形中就降低了开发效率。
 
 我们可以通过增加属性前缀解决属性归属的不确定性，例如帖子详情JSON数据格式改成如下：
 ```json
