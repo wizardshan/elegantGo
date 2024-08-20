@@ -2,91 +2,92 @@ package repository
 
 import (
 	"elegantGo/chapter-orm-crud-3/repository/ent"
-	"elegantGo/chapter-orm-crud-3/repository/ent/{{.entityName | ToLower}}"
+	"elegantGo/chapter-orm-crud-3/repository/ent/{{.entName | ToLower}}"
 	"context"
 )
 
-type {{.entityName}} struct {
+type {{.entName}} struct {
 	repo
 }
 
-func New{{.entityName}}(db *ent.Client) *{{.entityName}} {
-	repo := new({{.entityName}})
+func New{{.entName}}(db *ent.Client) *{{.entName}} {
+	repo := new({{.entName}})
 	repo.db = db
 	return repo
 }
 
-func (repo *{{.entityName}}) Fetch(ctx context.Context, id int) *ent.{{.entityName}} {
-	return repo.fetchOne(ctx, repo.db, func(builder *ent.{{.entityName}}Query) {
-		builder.Where({{.entityName | ToLower}}.ID(id))
+func (repo *{{.entName}}) Fetch(ctx context.Context, id int) *ent.{{.entName}} {
+	return repo.fetchOne(ctx, repo.db, func(opt *ent.{{.entName}}Query) {
+		opt.Where({{.entName | ToLower}}.ID(id))
 	})
 }
-func (repo *{{.entityName}}) FetchOne(ctx context.Context, optionFunc func(builder *ent.{{.entityName}}Query)) *ent.{{.entityName}} {
+
+func (repo *{{.entName}}) FetchOne(ctx context.Context, optionFunc func(opt *ent.{{.entName}}Query)) *ent.{{.entName}} {
 	return repo.fetchOne(ctx, repo.db, optionFunc)
 }
 
-func (repo *{{.entityName}}) fetchOne(ctx context.Context, db *ent.Client, optionFunc func(builder *ent.{{.entityName}}Query)) *ent.{{.entityName}} {
-	builder := db.{{.entityName}}.Query()
+func (repo *{{.entName}}) fetchOne(ctx context.Context, db *ent.Client, optionFunc func(opt *ent.{{.entName}}Query)) *ent.{{.entName}} {
+	builder := db.{{.entName}}.Query()
 	optionFunc(builder)
 	return builder.FirstX(ctx)
 }
 
-func (repo *{{.entityName}}) FetchMany(ctx context.Context, optionFunc func(builder *ent.{{.entityName}}Query)) ent.{{.entityName}}s {
+func (repo *{{.entName}}) FetchMany(ctx context.Context, optionFunc func(opt *ent.{{.entName}}Query)) ent.{{.entName}}s {
 	return repo.fetchMany(ctx, repo.db, optionFunc)
 }
 
-func (repo *{{.entityName}}) fetchMany(ctx context.Context, db *ent.Client, optionFunc func(builder *ent.{{.entityName}}Query)) ent.{{.entityName}}s {
-	builder := db.{{.entityName}}.Query()
+func (repo *{{.entName}}) fetchMany(ctx context.Context, db *ent.Client, optionFunc func(opt *ent.{{.entName}}Query)) ent.{{.entName}}s {
+	builder := db.{{.entName}}.Query()
 	optionFunc(builder)
 	return builder.AllX(ctx)
 }
 
-func (repo *{{.entityName}}) Count(ctx context.Context, optionFunc func(builder *ent.{{.entityName}}Query)) int {
+func (repo *{{.entName}}) Count(ctx context.Context, optionFunc func(opt *ent.{{.entName}}Query)) int {
 	return repo.count(ctx, repo.db, optionFunc)
 }
 
-func (repo *{{.entityName}}) count(ctx context.Context, db *ent.Client, optionFunc func(builder *ent.{{.entityName}}Query)) int {
-	builder := db.{{.entityName}}.Query()
+func (repo *{{.entName}}) count(ctx context.Context, db *ent.Client, optionFunc func(opt *ent.{{.entName}}Query)) int {
+	builder := db.{{.entName}}.Query()
 	optionFunc(builder)
 	return builder.CountX(ctx)
 }
 
-func (repo *{{.entityName}}) Exist(ctx context.Context, optionFunc func(builder *ent.{{.entityName}}Query)) bool {
+func (repo *{{.entName}}) Exist(ctx context.Context, optionFunc func(opt *ent.{{.entName}}Query)) bool {
 	return repo.exist(ctx, repo.db, optionFunc)
 }
 
-func (repo *{{.entityName}}) exist(ctx context.Context, db *ent.Client, optionFunc func(builder *ent.{{.entityName}}Query)) bool {
-	builder := db.{{.entityName}}.Query()
+func (repo *{{.entName}}) exist(ctx context.Context, db *ent.Client, optionFunc func(opt *ent.{{.entName}}Query)) bool {
+	builder := db.{{.entName}}.Query()
 	optionFunc(builder)
 	return builder.ExistX(ctx)
 }
 
-func (repo *{{.entityName}}) Create(ctx context.Context, optionFunc func(builder *ent.{{.entityName}}Create)) *ent.{{.entityName}} {
+func (repo *{{.entName}}) Create(ctx context.Context, optionFunc func(opt *ent.{{.entName}}Create)) *ent.{{.entName}} {
 	return repo.create(ctx, repo.db, optionFunc)
 }
 
-func (repo *{{.entityName}}) create(ctx context.Context, db *ent.Client, optionFunc func(builder *ent.{{.entityName}}Create)) *ent.{{.entityName}} {
-	builder := db.{{.entityName}}.Create()
+func (repo *{{.entName}}) create(ctx context.Context, db *ent.Client, optionFunc func(opt *ent.{{.entName}}Create)) *ent.{{.entName}} {
+	builder := db.{{.entName}}.Create()
 	optionFunc(builder)
 	return builder.SaveX(ctx)
 }
 
-func (repo *{{.entityName}}) Update(ctx context.Context, optionFunc func(builder *ent.{{.entityName}}Update)) int {
+func (repo *{{.entName}}) Update(ctx context.Context, optionFunc func(opt *ent.{{.entName}}Update)) int {
 	return repo.update(ctx, repo.db, optionFunc)
 }
 
-func (repo *{{.entityName}}) update(ctx context.Context, db *ent.Client, optionFunc func(builder *ent.{{.entityName}}Update)) int {
-	builder := db.{{.entityName}}.Update()
+func (repo *{{.entName}}) update(ctx context.Context, db *ent.Client, optionFunc func(opt *ent.{{.entName}}Update)) int {
+	builder := db.{{.entName}}.Update()
 	optionFunc(builder)
 	return builder.SaveX(ctx)
 }
 
-func (repo *{{.entityName}}) Delete(ctx context.Context, optionFunc func(builder *ent.{{.entityName}}Delete)) int {
+func (repo *{{.entName}}) Delete(ctx context.Context, optionFunc func(opt *ent.{{.entName}}Delete)) int {
 	return repo.delete(ctx, repo.db, optionFunc)
 }
 
-func (repo *{{.entityName}}) delete(ctx context.Context, db *ent.Client, optionFunc func(builder *ent.{{.entityName}}Delete)) int {
-	builder := db.{{.entityName}}.Delete()
+func (repo *{{.entName}}) delete(ctx context.Context, db *ent.Client, optionFunc func(opt *ent.{{.entName}}Delete)) int {
+	builder := db.{{.entName}}.Delete()
 	optionFunc(builder)
 	return builder.ExecX(ctx)
 }

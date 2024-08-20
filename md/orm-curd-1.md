@@ -1,7 +1,7 @@
 ### 控制反转思想来提高CRUD效率
 <img src="../images/crud.jpeg" width="100%">
 
-开发中小伙伴都会遇到针对同一张表查询有N种的查询条件，例如users用户表经常会有以下的查询方法：
+开发中针对同一张表往往有N种查询条件，例如users用户表经常会有以下的查询方法：
 ```go
 // id查询
 func (repo *User) FetchByID(ctx context.Context, id int) *ent.User {
@@ -27,9 +27,9 @@ func (repo *User) FetchByNickname(ctx context.Context, nickname string) ent.User
 ### InversionOfControl 控制反转
 控制反转一种设计思想，有反就有正，先看一下正控制是怎么控制的。
 
-上文中Fetch开头的函数都属于正控制，controller.One函数传递参数id调用FetchByID，One函数控制不了FetchByID函数内部怎么使用id参数，等于id、不等于id、大于、小于id都得看FetchByID内部如何实现，这种方式就是FetchByID控制One，属于正控制，符合常规逻辑。
+上文中Fetch开头的函数都属于正控制，controller.One函数传递参数id调用FetchByID，One函数控制不了FetchByID函数内部如何使用id参数，等于id、不等于id、大于、小于id都得看FetchByID内部实现，这种方式就是FetchByID控制One，属于正控制，符合常规逻辑。
 
-反过来想，controller.One可以控制FetchByID内部对id参数的使用，那么就是控制反转的逻辑，是控制反转代码是怎么实现的呢？
+反过来，controller.One可以控制FetchByID内部对id参数的使用，那么就是控制反转，控制反转代码是怎么实现的呢？
 ```go
 // controller层
 func (ctr *User) One(c *gin.Context) {
@@ -99,33 +99,36 @@ func (ctr *Post) Comments(c *gin.Context) {
 	c.JSON(http.StatusOK, comments)
 }
 ```
-[源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter-orm-crud-1)
+[源码链接](../chapter-orm-crud-1)
+
+
 
 众所周知增删改查在日常开发中占了很大的工作量，搬砖活不可避免，通过控制反转的思想提高增删改查的开发效率，我们可以做一个高效的CRUD程序员。
 
 ### entGo框架事务
 ```go
 func (repo *User) Register(ctx context.Context) (*ent.User, error) {
-	mobile := "13000000003"
-	password := "a906449d5769fa7361d7ecc6aa3f6d28"
-	level := 30
-	nickname := "昵称3"
-	avatar := "头像3.png"
-	bio := "个人介绍3"
-
-	entUser := repo.Create(ctx, func(opt *ent.UserCreate) {
-		opt.SetMobile(mobile).SetPassword(password).SetLevel(level).SetNickname(nickname).SetAvatar(avatar).SetBio(bio)
-	})
-
-	hashID, err := hashid.EncodeUserID(entUser.ID)
-	if err != nil {
-		return nil, err
-	}
-	repo.Update(ctx, func(opt *ent.UserUpdate) {
-		opt.SetHashID(hashID).Where(user.ID(entUser.ID))
-	})
-
-	return entUser, nil
+    mobile := "13000000003"
+    password := "a906449d5769fa7361d7ecc6aa3f6d28"
+    level := 30
+    nickname := "昵称3"
+    avatar := "头像3.png"
+    bio := "个人介绍3"
+    
+    entUser := repo.Create(ctx, func(opt *ent.UserCreate) {
+        opt.SetMobile(mobile).SetPassword(password).SetLevel(level).SetNickname(nickname).SetAvatar(avatar).SetBio(bio)
+    })
+    
+    var err error
+    entUser.HashID, err = hashid.EncodeUserID(entUser.ID)
+    if err != nil {
+        return nil, err
+    }
+    repo.Update(ctx, func(opt *ent.UserUpdate) {
+        opt.SetHashID(entUser.HashID).Where(user.ID(entUser.ID))
+    })
+    
+    return entUser, nil
 }
 ```
 这是一段用户注册的代码，第一步用户信息保存在数据库中，获取到自增id，然后对自增id进行加密操作，然后再把id加密结果保存在用户表里，我们使用了刚刚定义的CRUD函数，但是又需要使用事务来保持数据一致性，这又如何实现呢，请看下文分解。

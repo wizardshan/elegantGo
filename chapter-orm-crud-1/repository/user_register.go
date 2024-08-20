@@ -19,12 +19,13 @@ func (repo *User) Register(ctx context.Context) (*ent.User, error) {
 		opt.SetMobile(mobile).SetPassword(password).SetLevel(level).SetNickname(nickname).SetAvatar(avatar).SetBio(bio)
 	})
 
-	hashID, err := hashid.EncodeUserID(entUser.ID)
+	var err error
+	entUser.HashID, err = hashid.EncodeUserID(entUser.ID)
 	if err != nil {
 		return nil, err
 	}
 	repo.Update(ctx, func(opt *ent.UserUpdate) {
-		opt.SetHashID(hashID).Where(user.ID(entUser.ID))
+		opt.SetHashID(entUser.HashID).Where(user.ID(entUser.ID))
 	})
 
 	return entUser, nil

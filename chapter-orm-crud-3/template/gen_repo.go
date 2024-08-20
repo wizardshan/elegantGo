@@ -1,5 +1,7 @@
 package main
 
+//go:generate go run gen_repo.go -entName User
+
 import (
 	"errors"
 	"flag"
@@ -10,22 +12,22 @@ import (
 	"text/template"
 )
 
-var entityNameParam = flag.String("entityName", "", "entityName参数")
+var entNameParam = flag.String("entName", "", "entName")
 
 func main() {
 
 	flag.Parse()
 
-	entityName := *entityNameParam
-	if len(entityName) == 0 {
-		panic("entityName参数")
+	entName := *entNameParam
+	if len(entName) == 0 {
+		panic("entName参数")
 	}
 
 	data := map[string]any{
-		"entityName": entityName,
+		"entName": entName,
 	}
 	tmplFile := "./repo.tmpl"
-	targetFile := fmt.Sprintf("../repository/%s.go", strings.ToLower(entityName)+"-crud")
+	targetFile := fmt.Sprintf("../repository/%s.go", strings.ToLower(entName)+"_crud")
 	err := parse(tmplFile, targetFile, data)
 	if err != nil {
 		fmt.Println("os.Create", targetFile, err)

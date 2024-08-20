@@ -3,8 +3,8 @@ Go编程：优雅永不过时
 - 1、[被误解的ORM，只是单纯的不手写SQL？](md/orm.md)
 - 2、[entGo框架高效实现ORM](md/orm-entgo.md)
 - 3、[控制反转思想来提高CRUD开发效率](md/orm-curd-1.md)
-- 4、entGo框架事务优化 的特殊用法 事务 insertupdate rand
-
+- 4、[entGo框架事务优化](md/orm-curd-2.md)
+- 5、[entGo框架CRUD通用代码自动生成](md/orm-curd-3.md)
 
 
 - 1、参数校验三种方式的最优解

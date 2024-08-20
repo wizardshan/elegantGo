@@ -36,9 +36,16 @@ func (ctr *User) One(c *gin.Context) {
 		)
 	})
 
-	if errors.Is(err, sql.ErrNoRows) {
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			c.JSON(http.StatusOK, gin.H{
+				"user": nil,
+			})
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
-			"user": nil,
+			"error": err.Error(),
 		})
 		return
 	}
@@ -108,9 +115,8 @@ func (ctr *User) Upsert(c *gin.Context) {
 	avatar := "头像3.png"
 	bio := "个人介绍3"
 
-	entUser := ctr.repo.Create(c.Request.Context(), func(builder *ent.UserCreate) {
-		builder.
-			SetMobile(mobile).
+	entUser := ctr.repo.Create(c.Request.Context(), func(opt *ent.UserCreate) {
+		opt.SetMobile(mobile).
 			SetPassword(password).
 			SetLevel(level).
 			SetNickname(nickname).
@@ -118,8 +124,8 @@ func (ctr *User) Upsert(c *gin.Context) {
 			SetBio(bio).
 			OnConflict().
 			UpdateNewValues().
-			Update(func(u *ent.UserUpsert) {
-				u.SetBio("个人介绍33")
+			Update(func(o *ent.UserUpsert) {
+				o.SetBio("个人介绍33")
 			})
 	})
 
@@ -129,8 +135,8 @@ func (ctr *User) Upsert(c *gin.Context) {
 }
 
 func (ctr *User) Rand(c *gin.Context) {
-	entUsers := ctr.repo.FetchMany(c.Request.Context(), func(builder *ent.UserQuery) {
-		builder.Order(func(s *entsql.Selector) {
+	entUsers := ctr.repo.FetchMany(c.Request.Context(), func(opt *ent.UserQuery) {
+		opt.Order(func(s *entsql.Selector) {
 			s.OrderBy("rand()")
 		})
 	})

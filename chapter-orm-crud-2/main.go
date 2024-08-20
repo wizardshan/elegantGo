@@ -4,7 +4,6 @@ import (
 	"elegantGo/chapter-orm-crud-2/controller"
 	"elegantGo/chapter-orm-crud-2/repository"
 	"elegantGo/chapter-orm-crud-2/repository/ent"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -14,20 +13,8 @@ import (
 
 func main() {
 
-	host := "127.0.0.1:3306"
-	name := "test"
-	username := "root"
-	password := ""
-
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=true",
-		username,
-		password,
-		host,
-		name,
-	)
-
+	dsn := "root:123456@tcp(127.0.0.1:3306)/bbs?charset=utf8mb4&parseTime=true"
 	db, err := ent.Open("mysql", dsn)
-
 	if err != nil {
 		panic(err)
 	}

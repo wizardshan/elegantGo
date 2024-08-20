@@ -7,11 +7,11 @@ import (
 	"github.com/pkg/errors"
 )
 
-type repoDB struct {
+type repo struct {
 	db *ent.Client
 }
 
-func (repo *repoDB) withTx(ctx context.Context, client *ent.Client, fn func(tx *ent.Tx) error) error {
+func (repo *repo) withTx(ctx context.Context, client *ent.Client, fn func(tx *ent.Tx) error) error {
 	tx, err := client.Tx(ctx)
 	if err != nil {
 		return err
@@ -34,7 +34,7 @@ func (repo *repoDB) withTx(ctx context.Context, client *ent.Client, fn func(tx *
 	return nil
 }
 
-func (repo *repoDB) QueryMany(ctx context.Context, query string, args []any, optionFunc func(rows *sql.Rows) error) error {
+func (repo *repo) QueryMany(ctx context.Context, query string, args []any, optionFunc func(rows *sql.Rows) error) error {
 	rows, err := repo.db.DB().QueryContext(ctx, query, args...)
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func (repo *repoDB) QueryMany(ctx context.Context, query string, args []any, opt
 	return nil
 }
 
-func (repo *repoDB) QueryOne(ctx context.Context, query string, args []any, optionFunc func(row *sql.Row) error) error {
+func (repo *repo) QueryOne(ctx context.Context, query string, args []any, optionFunc func(row *sql.Row) error) error {
 	row := repo.db.DB().QueryRowContext(ctx, query, args...)
 	return optionFunc(row)
 }

@@ -111,7 +111,7 @@ comments表联users表查询：SELECT comments.`id`, comments.`user_id`, comment
     ]
 }
 ```
-[源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter-orm-1)
+[源码链接](../chapter-orm-1)
 
 当对接接口的程序员看到这两个JSON结构，会有两个疑问：<br/>
 1、post数据里包含Nickname、Avatar属性，这两个属性是post自带属性吗？<br/>
@@ -146,7 +146,7 @@ comments表联users表查询：SELECT comments.`id`, comments.`user_id`, comment
     ]
 }
 ```
-[源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter-orm-2)
+[源码链接](../chapter-orm-2)
 
 Nickname、Avatar属性名称加上模型名称前缀User，重新命名为UserNickname、UserAvatar，从而解决了属性归属的不确定性。
 
@@ -194,7 +194,7 @@ public class Post {
 
 客户端开发过程：<br/>
 Post、Comment模型，增加UserLevel属性<br/>
-[源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter-orm-3)
+[源码链接](../chapter-orm-3)
 
 >思考：为什么users表增加1个level字段导致服务端要修改3条SQL、2个模型，并且连带客户端也要修改2个模型？
 
@@ -272,7 +272,7 @@ Post、Comment模型，增加UserLevel属性<br/>
     ]
 }
 ```
-[源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter-orm-4)
+[源码链接](../chapter-orm-4)
 
 ```java
 //客户端对接帖子详情接口过程（Android举例）
