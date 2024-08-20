@@ -72,10 +72,10 @@ func init() {
 	postDescContent := postFields[3].Descriptor()
 	// post.DefaultContent holds the default value on creation for the content field.
 	post.DefaultContent = postDescContent.Default.(string)
-	// postDescTimesOfRead is the schema descriptor for times_of_read field.
-	postDescTimesOfRead := postFields[4].Descriptor()
-	// post.DefaultTimesOfRead holds the default value on creation for the times_of_read field.
-	post.DefaultTimesOfRead = postDescTimesOfRead.Default.(int)
+	// postDescViews is the schema descriptor for views field.
+	postDescViews := postFields[4].Descriptor()
+	// post.DefaultViews holds the default value on creation for the views field.
+	post.DefaultViews = postDescViews.Default.(int)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0

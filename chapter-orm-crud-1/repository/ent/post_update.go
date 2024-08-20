@@ -3,11 +3,11 @@
 package ent
 
 import (
+	"context"
 	"elegantGo/chapter-orm-crud-1/repository/ent/comment"
 	"elegantGo/chapter-orm-crud-1/repository/ent/post"
 	"elegantGo/chapter-orm-crud-1/repository/ent/predicate"
 	"elegantGo/chapter-orm-crud-1/repository/ent/user"
-	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -98,24 +98,24 @@ func (pu *PostUpdate) SetNillableContent(s *string) *PostUpdate {
 	return pu
 }
 
-// SetTimesOfRead sets the "times_of_read" field.
-func (pu *PostUpdate) SetTimesOfRead(i int) *PostUpdate {
-	pu.mutation.ResetTimesOfRead()
-	pu.mutation.SetTimesOfRead(i)
+// SetViews sets the "views" field.
+func (pu *PostUpdate) SetViews(i int) *PostUpdate {
+	pu.mutation.ResetViews()
+	pu.mutation.SetViews(i)
 	return pu
 }
 
-// SetNillableTimesOfRead sets the "times_of_read" field if the given value is not nil.
-func (pu *PostUpdate) SetNillableTimesOfRead(i *int) *PostUpdate {
+// SetNillableViews sets the "views" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableViews(i *int) *PostUpdate {
 	if i != nil {
-		pu.SetTimesOfRead(*i)
+		pu.SetViews(*i)
 	}
 	return pu
 }
 
-// AddTimesOfRead adds i to the "times_of_read" field.
-func (pu *PostUpdate) AddTimesOfRead(i int) *PostUpdate {
-	pu.mutation.AddTimesOfRead(i)
+// AddViews adds i to the "views" field.
+func (pu *PostUpdate) AddViews(i int) *PostUpdate {
+	pu.mutation.AddViews(i)
 	return pu
 }
 
@@ -228,11 +228,11 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := pu.mutation.Content(); ok {
 		_spec.SetField(post.FieldContent, field.TypeString, value)
 	}
-	if value, ok := pu.mutation.TimesOfRead(); ok {
-		_spec.SetField(post.FieldTimesOfRead, field.TypeInt, value)
+	if value, ok := pu.mutation.Views(); ok {
+		_spec.SetField(post.FieldViews, field.TypeInt, value)
 	}
-	if value, ok := pu.mutation.AddedTimesOfRead(); ok {
-		_spec.AddField(post.FieldTimesOfRead, field.TypeInt, value)
+	if value, ok := pu.mutation.AddedViews(); ok {
+		_spec.AddField(post.FieldViews, field.TypeInt, value)
 	}
 	if pu.mutation.CommentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -396,24 +396,24 @@ func (puo *PostUpdateOne) SetNillableContent(s *string) *PostUpdateOne {
 	return puo
 }
 
-// SetTimesOfRead sets the "times_of_read" field.
-func (puo *PostUpdateOne) SetTimesOfRead(i int) *PostUpdateOne {
-	puo.mutation.ResetTimesOfRead()
-	puo.mutation.SetTimesOfRead(i)
+// SetViews sets the "views" field.
+func (puo *PostUpdateOne) SetViews(i int) *PostUpdateOne {
+	puo.mutation.ResetViews()
+	puo.mutation.SetViews(i)
 	return puo
 }
 
-// SetNillableTimesOfRead sets the "times_of_read" field if the given value is not nil.
-func (puo *PostUpdateOne) SetNillableTimesOfRead(i *int) *PostUpdateOne {
+// SetNillableViews sets the "views" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableViews(i *int) *PostUpdateOne {
 	if i != nil {
-		puo.SetTimesOfRead(*i)
+		puo.SetViews(*i)
 	}
 	return puo
 }
 
-// AddTimesOfRead adds i to the "times_of_read" field.
-func (puo *PostUpdateOne) AddTimesOfRead(i int) *PostUpdateOne {
-	puo.mutation.AddTimesOfRead(i)
+// AddViews adds i to the "views" field.
+func (puo *PostUpdateOne) AddViews(i int) *PostUpdateOne {
+	puo.mutation.AddViews(i)
 	return puo
 }
 
@@ -556,11 +556,11 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 	if value, ok := puo.mutation.Content(); ok {
 		_spec.SetField(post.FieldContent, field.TypeString, value)
 	}
-	if value, ok := puo.mutation.TimesOfRead(); ok {
-		_spec.SetField(post.FieldTimesOfRead, field.TypeInt, value)
+	if value, ok := puo.mutation.Views(); ok {
+		_spec.SetField(post.FieldViews, field.TypeInt, value)
 	}
-	if value, ok := puo.mutation.AddedTimesOfRead(); ok {
-		_spec.AddField(post.FieldTimesOfRead, field.TypeInt, value)
+	if value, ok := puo.mutation.AddedViews(); ok {
+		_spec.AddField(post.FieldViews, field.TypeInt, value)
 	}
 	if puo.mutation.CommentsCleared() {
 		edge := &sqlgraph.EdgeSpec{

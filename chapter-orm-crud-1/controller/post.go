@@ -22,7 +22,6 @@ func NewPost(repo *repository.Post, repoComment *repository.Comment) *Post {
 }
 
 func (ctr *Post) Many(c *gin.Context) {
-
 	entPosts := ctr.repo.FetchMany(c.Request.Context(), func(builder *ent.PostQuery) {
 		builder.WithUser()
 	})
@@ -31,17 +30,17 @@ func (ctr *Post) Many(c *gin.Context) {
 
 func (ctr *Post) One(c *gin.Context) {
 	id := 1
-	posts := ctr.repo.FetchOne(c.Request.Context(), func(builder *ent.PostQuery) {
-		builder.WithUser().WithComments(func(ops *ent.CommentQuery) {
-			ops.WithUser()
+	posts := ctr.repo.FetchOne(c.Request.Context(), func(opt *ent.PostQuery) {
+		opt.WithUser().WithComments(func(o *ent.CommentQuery) {
+			o.WithUser()
 		}).Where(post.ID(id))
 	})
 	c.JSON(http.StatusOK, posts)
 }
 
 func (ctr *Post) Comments(c *gin.Context) {
-	comments := ctr.repoComment.FetchMany(c.Request.Context(), func(builder *ent.CommentQuery) {
-		builder.WithUser().WithPost().Order(ent.Desc(comment.FieldCreateTime))
+	comments := ctr.repoComment.FetchMany(c.Request.Context(), func(opt *ent.CommentQuery) {
+		opt.WithUser().WithPost().Order(ent.Desc(comment.FieldCreateTime))
 	})
 	c.JSON(http.StatusOK, comments)
 }

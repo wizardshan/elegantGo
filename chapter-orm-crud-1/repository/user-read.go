@@ -7,30 +7,30 @@ import (
 )
 
 func (repo *User) Fetch(ctx context.Context, id int) *ent.User {
-	return repo.FetchOne(ctx, func(builder *ent.UserQuery) {
-		builder.Where(user.ID(id))
+	return repo.FetchOne(ctx, func(opt *ent.UserQuery) {
+		opt.Where(user.ID(id))
 	})
 }
 
-func (repo *User) FetchOne(ctx context.Context, optionFunc func(builder *ent.UserQuery)) *ent.User {
+func (repo *User) FetchOne(ctx context.Context, optionFunc func(opt *ent.UserQuery)) *ent.User {
 	builder := repo.db.User.Query()
 	optionFunc(builder)
 	return builder.FirstX(ctx)
 }
 
-func (repo *User) FetchMany(ctx context.Context, optionFunc func(builder *ent.UserQuery)) ent.Users {
+func (repo *User) FetchMany(ctx context.Context, optionFunc func(opt *ent.UserQuery)) ent.Users {
 	builder := repo.db.User.Query()
 	optionFunc(builder)
 	return builder.AllX(ctx)
 }
 
-func (repo *User) Count(ctx context.Context, optionFunc func(builder *ent.UserQuery)) int {
+func (repo *User) Count(ctx context.Context, optionFunc func(opt *ent.UserQuery)) int {
 	builder := repo.db.User.Query()
 	optionFunc(builder)
 	return builder.CountX(ctx)
 }
 
-func (repo *User) Exist(ctx context.Context, optionFunc func(builder *ent.UserQuery)) bool {
+func (repo *User) Exist(ctx context.Context, optionFunc func(opt *ent.UserQuery)) bool {
 	builder := repo.db.User.Query()
 	optionFunc(builder)
 	return builder.ExistX(ctx)

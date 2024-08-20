@@ -17,7 +17,7 @@ func (Post) Fields() []ent.Field {
 		field.Int("user_id").Optional().Default(0),
 		field.String("title").Default(""),
 		field.String("content").Default(""),
-		field.Int("times_of_read").Default(0),
+		field.Int("views").Default(0),
 	}
 }
 

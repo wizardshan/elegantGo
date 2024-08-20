@@ -15,16 +15,16 @@ func (repo *User) Register(ctx context.Context) (*ent.User, error) {
 	avatar := "头像3.png"
 	bio := "个人介绍3"
 
-	entUser := repo.Create(ctx, func(builder *ent.UserCreate) {
-		builder.SetMobile(mobile).SetPassword(password).SetLevel(level).SetNickname(nickname).SetAvatar(avatar).SetBio(bio)
+	entUser := repo.Create(ctx, func(opt *ent.UserCreate) {
+		opt.SetMobile(mobile).SetPassword(password).SetLevel(level).SetNickname(nickname).SetAvatar(avatar).SetBio(bio)
 	})
 
 	hashID, err := hashid.EncodeUserID(entUser.ID)
 	if err != nil {
 		return nil, err
 	}
-	repo.Update(ctx, func(builder *ent.UserUpdate) {
-		builder.SetHashID(hashID).Where(user.ID(entUser.ID))
+	repo.Update(ctx, func(opt *ent.UserUpdate) {
+		opt.SetHashID(hashID).Where(user.ID(entUser.ID))
 	})
 
 	return entUser, nil

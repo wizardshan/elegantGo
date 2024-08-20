@@ -3,11 +3,11 @@
 package ent
 
 import (
+	"context"
 	"elegantGo/chapter-orm-crud-1/repository/ent/comment"
 	"elegantGo/chapter-orm-crud-1/repository/ent/post"
 	"elegantGo/chapter-orm-crud-1/repository/ent/predicate"
 	"elegantGo/chapter-orm-crud-1/repository/ent/user"
-	"context"
 	"errors"
 	"fmt"
 	"sync"
@@ -720,25 +720,25 @@ func (m *CommentMutation) ResetEdge(name string) error {
 // PostMutation represents an operation that mutates the Post nodes in the graph.
 type PostMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *int
-	create_time      *time.Time
-	update_time      *time.Time
-	hash_id          *string
-	title            *string
-	content          *string
-	times_of_read    *int
-	addtimes_of_read *int
-	clearedFields    map[string]struct{}
-	comments         map[int]struct{}
-	removedcomments  map[int]struct{}
-	clearedcomments  bool
-	user             *int
-	cleareduser      bool
-	done             bool
-	oldValue         func(context.Context) (*Post, error)
-	predicates       []predicate.Post
+	op              Op
+	typ             string
+	id              *int
+	create_time     *time.Time
+	update_time     *time.Time
+	hash_id         *string
+	title           *string
+	content         *string
+	views           *int
+	addviews        *int
+	clearedFields   map[string]struct{}
+	comments        map[int]struct{}
+	removedcomments map[int]struct{}
+	clearedcomments bool
+	user            *int
+	cleareduser     bool
+	done            bool
+	oldValue        func(context.Context) (*Post, error)
+	predicates      []predicate.Post
 }
 
 var _ ent.Mutation = (*PostMutation)(nil)
@@ -1068,60 +1068,60 @@ func (m *PostMutation) ResetContent() {
 	m.content = nil
 }
 
-// SetTimesOfRead sets the "times_of_read" field.
-func (m *PostMutation) SetTimesOfRead(i int) {
-	m.times_of_read = &i
-	m.addtimes_of_read = nil
+// SetViews sets the "views" field.
+func (m *PostMutation) SetViews(i int) {
+	m.views = &i
+	m.addviews = nil
 }
 
-// TimesOfRead returns the value of the "times_of_read" field in the mutation.
-func (m *PostMutation) TimesOfRead() (r int, exists bool) {
-	v := m.times_of_read
+// Views returns the value of the "views" field in the mutation.
+func (m *PostMutation) Views() (r int, exists bool) {
+	v := m.views
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldTimesOfRead returns the old "times_of_read" field's value of the Post entity.
+// OldViews returns the old "views" field's value of the Post entity.
 // If the Post object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PostMutation) OldTimesOfRead(ctx context.Context) (v int, err error) {
+func (m *PostMutation) OldViews(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTimesOfRead is only allowed on UpdateOne operations")
+		return v, errors.New("OldViews is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTimesOfRead requires an ID field in the mutation")
+		return v, errors.New("OldViews requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTimesOfRead: %w", err)
+		return v, fmt.Errorf("querying old value for OldViews: %w", err)
 	}
-	return oldValue.TimesOfRead, nil
+	return oldValue.Views, nil
 }
 
-// AddTimesOfRead adds i to the "times_of_read" field.
-func (m *PostMutation) AddTimesOfRead(i int) {
-	if m.addtimes_of_read != nil {
-		*m.addtimes_of_read += i
+// AddViews adds i to the "views" field.
+func (m *PostMutation) AddViews(i int) {
+	if m.addviews != nil {
+		*m.addviews += i
 	} else {
-		m.addtimes_of_read = &i
+		m.addviews = &i
 	}
 }
 
-// AddedTimesOfRead returns the value that was added to the "times_of_read" field in this mutation.
-func (m *PostMutation) AddedTimesOfRead() (r int, exists bool) {
-	v := m.addtimes_of_read
+// AddedViews returns the value that was added to the "views" field in this mutation.
+func (m *PostMutation) AddedViews() (r int, exists bool) {
+	v := m.addviews
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetTimesOfRead resets all changes to the "times_of_read" field.
-func (m *PostMutation) ResetTimesOfRead() {
-	m.times_of_read = nil
-	m.addtimes_of_read = nil
+// ResetViews resets all changes to the "views" field.
+func (m *PostMutation) ResetViews() {
+	m.views = nil
+	m.addviews = nil
 }
 
 // AddCommentIDs adds the "comments" edge to the Comment entity by ids.
@@ -1258,8 +1258,8 @@ func (m *PostMutation) Fields() []string {
 	if m.content != nil {
 		fields = append(fields, post.FieldContent)
 	}
-	if m.times_of_read != nil {
-		fields = append(fields, post.FieldTimesOfRead)
+	if m.views != nil {
+		fields = append(fields, post.FieldViews)
 	}
 	return fields
 }
@@ -1281,8 +1281,8 @@ func (m *PostMutation) Field(name string) (ent.Value, bool) {
 		return m.Title()
 	case post.FieldContent:
 		return m.Content()
-	case post.FieldTimesOfRead:
-		return m.TimesOfRead()
+	case post.FieldViews:
+		return m.Views()
 	}
 	return nil, false
 }
@@ -1304,8 +1304,8 @@ func (m *PostMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldTitle(ctx)
 	case post.FieldContent:
 		return m.OldContent(ctx)
-	case post.FieldTimesOfRead:
-		return m.OldTimesOfRead(ctx)
+	case post.FieldViews:
+		return m.OldViews(ctx)
 	}
 	return nil, fmt.Errorf("unknown Post field %s", name)
 }
@@ -1357,12 +1357,12 @@ func (m *PostMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetContent(v)
 		return nil
-	case post.FieldTimesOfRead:
+	case post.FieldViews:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetTimesOfRead(v)
+		m.SetViews(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Post field %s", name)
@@ -1372,8 +1372,8 @@ func (m *PostMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *PostMutation) AddedFields() []string {
 	var fields []string
-	if m.addtimes_of_read != nil {
-		fields = append(fields, post.FieldTimesOfRead)
+	if m.addviews != nil {
+		fields = append(fields, post.FieldViews)
 	}
 	return fields
 }
@@ -1383,8 +1383,8 @@ func (m *PostMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *PostMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case post.FieldTimesOfRead:
-		return m.AddedTimesOfRead()
+	case post.FieldViews:
+		return m.AddedViews()
 	}
 	return nil, false
 }
@@ -1394,12 +1394,12 @@ func (m *PostMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *PostMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case post.FieldTimesOfRead:
+	case post.FieldViews:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddTimesOfRead(v)
+		m.AddViews(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Post numeric field %s", name)
@@ -1455,8 +1455,8 @@ func (m *PostMutation) ResetField(name string) error {
 	case post.FieldContent:
 		m.ResetContent()
 		return nil
-	case post.FieldTimesOfRead:
-		m.ResetTimesOfRead()
+	case post.FieldViews:
+		m.ResetViews()
 		return nil
 	}
 	return fmt.Errorf("unknown Post field %s", name)

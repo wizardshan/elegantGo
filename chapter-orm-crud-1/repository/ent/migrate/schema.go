@@ -45,7 +45,7 @@ var (
 		{Name: "hash_id", Type: field.TypeString, Default: ""},
 		{Name: "title", Type: field.TypeString, Default: ""},
 		{Name: "content", Type: field.TypeString, Default: ""},
-		{Name: "times_of_read", Type: field.TypeInt, Default: 0},
+		{Name: "views", Type: field.TypeInt, Default: 0},
 		{Name: "user_id", Type: field.TypeInt, Nullable: true, Default: 0},
 	}
 	// PostsTable holds the schema information for the "posts" table.

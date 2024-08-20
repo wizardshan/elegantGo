@@ -3,9 +3,9 @@
 package ent
 
 import (
+	"context"
 	"elegantGo/chapter-orm-crud-1/repository/ent/predicate"
 	"elegantGo/chapter-orm-crud-1/repository/ent/user"
-	"context"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"

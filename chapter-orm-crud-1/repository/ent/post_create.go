@@ -3,10 +3,10 @@
 package ent
 
 import (
+	"context"
 	"elegantGo/chapter-orm-crud-1/repository/ent/comment"
 	"elegantGo/chapter-orm-crud-1/repository/ent/post"
 	"elegantGo/chapter-orm-crud-1/repository/ent/user"
-	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -108,16 +108,16 @@ func (pc *PostCreate) SetNillableContent(s *string) *PostCreate {
 	return pc
 }
 
-// SetTimesOfRead sets the "times_of_read" field.
-func (pc *PostCreate) SetTimesOfRead(i int) *PostCreate {
-	pc.mutation.SetTimesOfRead(i)
+// SetViews sets the "views" field.
+func (pc *PostCreate) SetViews(i int) *PostCreate {
+	pc.mutation.SetViews(i)
 	return pc
 }
 
-// SetNillableTimesOfRead sets the "times_of_read" field if the given value is not nil.
-func (pc *PostCreate) SetNillableTimesOfRead(i *int) *PostCreate {
+// SetNillableViews sets the "views" field if the given value is not nil.
+func (pc *PostCreate) SetNillableViews(i *int) *PostCreate {
 	if i != nil {
-		pc.SetTimesOfRead(*i)
+		pc.SetViews(*i)
 	}
 	return pc
 }
@@ -201,9 +201,9 @@ func (pc *PostCreate) defaults() {
 		v := post.DefaultContent
 		pc.mutation.SetContent(v)
 	}
-	if _, ok := pc.mutation.TimesOfRead(); !ok {
-		v := post.DefaultTimesOfRead
-		pc.mutation.SetTimesOfRead(v)
+	if _, ok := pc.mutation.Views(); !ok {
+		v := post.DefaultViews
+		pc.mutation.SetViews(v)
 	}
 }
 
@@ -224,8 +224,8 @@ func (pc *PostCreate) check() error {
 	if _, ok := pc.mutation.Content(); !ok {
 		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Post.content"`)}
 	}
-	if _, ok := pc.mutation.TimesOfRead(); !ok {
-		return &ValidationError{Name: "times_of_read", err: errors.New(`ent: missing required field "Post.times_of_read"`)}
+	if _, ok := pc.mutation.Views(); !ok {
+		return &ValidationError{Name: "views", err: errors.New(`ent: missing required field "Post.views"`)}
 	}
 	return nil
 }
@@ -274,9 +274,9 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 		_spec.SetField(post.FieldContent, field.TypeString, value)
 		_node.Content = value
 	}
-	if value, ok := pc.mutation.TimesOfRead(); ok {
-		_spec.SetField(post.FieldTimesOfRead, field.TypeInt, value)
-		_node.TimesOfRead = value
+	if value, ok := pc.mutation.Views(); ok {
+		_spec.SetField(post.FieldViews, field.TypeInt, value)
+		_node.Views = value
 	}
 	if nodes := pc.mutation.CommentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -429,21 +429,21 @@ func (u *PostUpsert) UpdateContent() *PostUpsert {
 	return u
 }
 
-// SetTimesOfRead sets the "times_of_read" field.
-func (u *PostUpsert) SetTimesOfRead(v int) *PostUpsert {
-	u.Set(post.FieldTimesOfRead, v)
+// SetViews sets the "views" field.
+func (u *PostUpsert) SetViews(v int) *PostUpsert {
+	u.Set(post.FieldViews, v)
 	return u
 }
 
-// UpdateTimesOfRead sets the "times_of_read" field to the value that was provided on create.
-func (u *PostUpsert) UpdateTimesOfRead() *PostUpsert {
-	u.SetExcluded(post.FieldTimesOfRead)
+// UpdateViews sets the "views" field to the value that was provided on create.
+func (u *PostUpsert) UpdateViews() *PostUpsert {
+	u.SetExcluded(post.FieldViews)
 	return u
 }
 
-// AddTimesOfRead adds v to the "times_of_read" field.
-func (u *PostUpsert) AddTimesOfRead(v int) *PostUpsert {
-	u.Add(post.FieldTimesOfRead, v)
+// AddViews adds v to the "views" field.
+func (u *PostUpsert) AddViews(v int) *PostUpsert {
+	u.Add(post.FieldViews, v)
 	return u
 }
 
@@ -569,24 +569,24 @@ func (u *PostUpsertOne) UpdateContent() *PostUpsertOne {
 	})
 }
 
-// SetTimesOfRead sets the "times_of_read" field.
-func (u *PostUpsertOne) SetTimesOfRead(v int) *PostUpsertOne {
+// SetViews sets the "views" field.
+func (u *PostUpsertOne) SetViews(v int) *PostUpsertOne {
 	return u.Update(func(s *PostUpsert) {
-		s.SetTimesOfRead(v)
+		s.SetViews(v)
 	})
 }
 
-// AddTimesOfRead adds v to the "times_of_read" field.
-func (u *PostUpsertOne) AddTimesOfRead(v int) *PostUpsertOne {
+// AddViews adds v to the "views" field.
+func (u *PostUpsertOne) AddViews(v int) *PostUpsertOne {
 	return u.Update(func(s *PostUpsert) {
-		s.AddTimesOfRead(v)
+		s.AddViews(v)
 	})
 }
 
-// UpdateTimesOfRead sets the "times_of_read" field to the value that was provided on create.
-func (u *PostUpsertOne) UpdateTimesOfRead() *PostUpsertOne {
+// UpdateViews sets the "views" field to the value that was provided on create.
+func (u *PostUpsertOne) UpdateViews() *PostUpsertOne {
 	return u.Update(func(s *PostUpsert) {
-		s.UpdateTimesOfRead()
+		s.UpdateViews()
 	})
 }
 
@@ -878,24 +878,24 @@ func (u *PostUpsertBulk) UpdateContent() *PostUpsertBulk {
 	})
 }
 
-// SetTimesOfRead sets the "times_of_read" field.
-func (u *PostUpsertBulk) SetTimesOfRead(v int) *PostUpsertBulk {
+// SetViews sets the "views" field.
+func (u *PostUpsertBulk) SetViews(v int) *PostUpsertBulk {
 	return u.Update(func(s *PostUpsert) {
-		s.SetTimesOfRead(v)
+		s.SetViews(v)
 	})
 }
 
-// AddTimesOfRead adds v to the "times_of_read" field.
-func (u *PostUpsertBulk) AddTimesOfRead(v int) *PostUpsertBulk {
+// AddViews adds v to the "views" field.
+func (u *PostUpsertBulk) AddViews(v int) *PostUpsertBulk {
 	return u.Update(func(s *PostUpsert) {
-		s.AddTimesOfRead(v)
+		s.AddViews(v)
 	})
 }
 
-// UpdateTimesOfRead sets the "times_of_read" field to the value that was provided on create.
-func (u *PostUpsertBulk) UpdateTimesOfRead() *PostUpsertBulk {
+// UpdateViews sets the "views" field to the value that was provided on create.
+func (u *PostUpsertBulk) UpdateViews() *PostUpsertBulk {
 	return u.Update(func(s *PostUpsert) {
-		s.UpdateTimesOfRead()
+		s.UpdateViews()
 	})
 }
 
