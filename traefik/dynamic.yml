@@ -1,0 +1,16 @@
+http:
+  routers:
+    gin-router:
+      rule: "Host(`gin.cn`)"
+      service: "gin-web"
+      middlewares: my-cache
+  services:
+    gin-web:
+      loadBalancer:
+        servers:
+          - url: "http://127.0.0.1:8081"
+  middlewares:
+    my-cache:
+      plugin:
+        cache:
+          path: /Users/iqiyi/Desktop/2024/elegantGo/traefik

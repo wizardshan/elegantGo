@@ -1,4 +1,4 @@
-### engGo框架事务
+### entGo框架CRUD事务优化
 ```go
 func (repo *repoDB) withTx(ctx context.Context, client *ent.Client, fn func(tx *ent.Tx) error) error {
 	tx, err := client.Tx(ctx)

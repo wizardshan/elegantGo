@@ -2,12 +2,15 @@
 Go编程：优雅永不过时
 - 1、[被误解的ORM，只是单纯的不手写SQL？](md/orm.md)
 - 2、[entGo框架高效实现ORM](md/orm-entgo.md)
-- 3、[控制反转思想来提高CRUD开发效率](md/orm-curd-1.md)
-- 4、[entGo框架事务优化](md/orm-curd-2.md)
+- 3、[控制反转提高CRUD开发效率](md/orm-curd-1.md)
+- 4、[entGo框架CRUD事务优化](md/orm-curd-2.md)
 - 5、[entGo框架CRUD通用代码自动化生成](md/orm-curd-3.md)
-- 6、参数校验四种方式的最优解
-- 7、参数相关的安全漏洞：SQL注入
-- 8、参数相关的安全漏洞：XSS 
+- 6、[参数校验三种方式的最优解](md/param-validator.md)
+- 7、参数校验之解析复杂参数
+- 8、参数相关的安全漏洞：SQL注入
+- 9、参数相关的安全漏洞：XSS 
+
+- 6、[entGo框架CRUD通用代码自动化生成](md/control.md)
 
 
 - （去空格 支付宝账号只能绑定一个账号）
