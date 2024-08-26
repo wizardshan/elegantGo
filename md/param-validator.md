@@ -102,7 +102,7 @@ func IsMobile(mobile string) bool {
 > 思考：从面向对象的思想出发，IsMobile属于util的动作或行为吗？（先思考，后文会详细探讨）
 
 #### 第二种实现方式：模型绑定校验
-模型绑定校验是目前参数校验最主流的验证方式，每个编程语言的web框架基本都支持这种模式，模型绑定时将Http请求中的数据映射到模型对应的属性，参数可以是简单类型，如整形，字符串等，也可以是复杂类型，如Json，Json数组，对各种数据类型进行验证，然后抛出相应的错误信息。
+模型绑定校验是目前参数校验最主流的验证方式，每个编程语言的web框架基本都支持这种模式，模型绑定时将Http请求中的数据映射到模型对应的属性，参数可以是简单类型，如整形，字符串等，也可以是复杂类型，如json，json数组，对各种数据类型进行验证，然后抛出相应的错误信息。
 ```go
 // request.SmsCaptcha
 type SmsCaptcha struct {
@@ -213,7 +213,7 @@ type PasswordField struct {
 }
 
 type RePasswordField struct {
-	RePassword string `binding:"eqfield=Password"`
+    RePassword string `binding:"eqfield=Password"`
 }
 // eqfield不起作用
 ```
@@ -263,7 +263,7 @@ func (ctr *Column) One(c *gin.Context) {
 type ColumnOne struct {
     IDField
     // 为真显示重点文章，为否显示非重点文章，为nil都显示
-	Important *bool
+    Important *bool
 }
 
 column?ID=1&Important=true    Important为true
