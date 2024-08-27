@@ -6,8 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type User struct {
-}
+type User struct{}
 
 func NewUser() *User {
 	ctr := new(User)
@@ -20,5 +19,5 @@ func (ctr *User) Many(c *gin.Context) (response.Data, error) {
 		return nil, err
 	}
 
-	return request, nil
+	return request.IDs.Values(), nil
 }

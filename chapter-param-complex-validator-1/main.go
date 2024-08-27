@@ -8,10 +8,9 @@ import (
 func main() {
 
 	engine := gin.New()
-	handler := new(controller.Handler)
 
 	ctrUser := controller.NewUser()
-	engine.GET("/users", handler.Wrapper(ctrUser.Many))
+	engine.GET("/users", controller.Wrapper(ctrUser.Many))
 
 	engine.Run()
 }

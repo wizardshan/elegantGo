@@ -6,7 +6,8 @@ Go编程：优雅永不过时
 - 4、[entGo框架CRUD事务优化](md/orm-curd-2.md)
 - 5、[entGo框架CRUD通用代码自动化生成](md/orm-curd-3.md)
 - 6、[参数校验三种方式的最优解](md/param-validator.md)
-- 7、参数校验之解析复杂参数
+- 7、[复杂参数校验预热：控制逻辑、业务逻辑傻傻分不清楚](md/param-control.md)
+- 7、复杂参数校验
 - 8、参数相关的安全漏洞：SQL注入
 - 9、参数相关的安全漏洞：XSS 
 
@@ -78,3 +79,5 @@ UnmarshalJSON方法揉杂了数据的格式化、有效性校验、数据转化�
 
 
 TZ="Asia/Shanghai" go run main.go
+
+https://wangbjun.site/2021/coding/golang/event-bus.html

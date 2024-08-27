@@ -15,7 +15,7 @@ func Wrapper(handlerFunc HandlerFunc) func(c *gin.Context) {
 
 		data, err := handlerFunc(c)
 		if err == nil {
-			c.JSON(http.StatusOK, response.Response{Code: response.OK, Message: response.Msg[response.OK], Data: data})
+			c.JSON(http.StatusOK, response.Response{Code: response.OK, Message: response.Msg[response.OK], Success: true, Data: data})
 			return
 		}
 
@@ -29,6 +29,6 @@ func Wrapper(handlerFunc HandlerFunc) func(c *gin.Context) {
 			code = respErr.Code
 		}
 
-		c.AbortWithStatusJSON(http.StatusOK, response.Response{Code: code, Message: message, Data: data})
+		c.AbortWithStatusJSON(http.StatusOK, response.Response{Code: code, Message: message, Success: false, Data: data})
 	}
 }
