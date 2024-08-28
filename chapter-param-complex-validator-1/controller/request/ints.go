@@ -18,7 +18,6 @@ func (req *IntsField) MustValues() ([]int, error) {
 	if !pie.All(ss, numeral.IsInt) {
 		return nil, errors.New("one of numbers is not an integer")
 	}
-
 	return pie.Ints(ss), nil
 }
 

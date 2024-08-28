@@ -19,7 +19,7 @@ func (req *IntsFieldV4) Values() []int {
 		}
 	}
 
-	return req.mapper(ss)
+	return req.mapper(ssFiltered)
 }
 
 func (req *IntsFieldV4) MustValues() ([]int, error) {

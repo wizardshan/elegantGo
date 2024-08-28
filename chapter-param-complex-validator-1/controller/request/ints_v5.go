@@ -20,7 +20,7 @@ func (req *IntsFieldV5) Values() []int {
 		}
 	}
 
-	return pie.Map(ss, req.toInt)
+	return pie.Map(ssFiltered, req.toInt)
 }
 
 func (req *IntsFieldV5) MustValues() ([]int, error) {

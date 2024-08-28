@@ -19,5 +19,17 @@ func (ctr *User) Many(c *gin.Context) (response.Data, error) {
 		return nil, err
 	}
 
-	return request.IDs.Values(), nil
+	type V struct {
+		Values       []int
+		MustValues   []int
+		ShouldValues []int
+	}
+
+	var err error
+	v := new(V)
+	v.Values = request.IDs.Values()
+	v.MustValues, err = request.IDs.MustValues()
+	v.ShouldValues = request.IDs.ShouldValues()
+
+	return v, err
 }

@@ -223,9 +223,86 @@ func (req *IntsFieldV4) mapper(ss []string) []int {
     return values
 }
 ```
-很多编程语言中都自带map映射方法，python、js的map、java的stream.map、php的array_map，但是go语言没有实现，我们
+很多编程语言中都自带map映射方法，python、js的map、java的stream.map、php的array_map，但是go语言没有实现，我们使用第三方库：pie [源码链接](https://github.com/elliotchance/pie)，这样来到了V5版本：
+```go
+pie.Map(ss, req.toInt)
+```
+toInt方法pie包里也自带，这样来到了V6版本：
+```go
+// 最终版本
+return pie.Ints(ssFiltered)
 
+// 版本二
+//return pie.Map(ssFiltered, numeral.ToInt)
 
+// 版本一
+//return pie.Map(ssFiltered, func(s string) int {
+//	return pie.Int(s)
+//})
+```
+版本一：pie.Int是泛型函数，pie.Map不能直接使用，需要匿名函数封装一层；<br>
+版本二：版本一不够优雅，由此封装成numeral.ToInt函数；<br>
+最终版本：pie包自带[]string转换[]int的map函数pie.Ints，代码更简洁。<br>
+
+Values方法的这段过滤功能的代码块可以使用pie.Filter代替
+```go
+var ssFiltered []string
+for _, s := range ss {
+    if numeral.IsInt(s) {
+        ssFiltered = append(ssFiltered, s)
+    }
+}
+```
+同时MustValues中的这段判断数据有效性代码可以使用pie.All代替
+```go
+for _, s := range ss {
+    if !numeral.IsInt(s) {
+        return nil, errors.New(s + " is not an integer")
+    }
+}
+```
+这样来到了V7版本：
+```go
+// 过滤
+pie.Filter(ss, numeral.IsInt)
+
+// 判断有效性
+if !pie.All(ss, numeral.IsInt) {
+    return nil, errors.New("one of numbers is not an integer")
+}
+```
+判断有效性还可以使用gin自带的validator包，需要把numeral.ToInt注册到validator包中：
+```go
+if err := validate.Var(ss, "dive,int"); err != nil {
+    return nil, err
+}
+// dive标签功能很强大，请参照文档学习
+```
+我们再整理一下，省去一些中间变量，来到了最终版本：
+```go
+type IntsField string
+
+func (req *IntsField) Values() []int {
+    return pie.Ints(pie.Filter(req.split(), numeral.IsInt))
+}
+
+func (req *IntsField) MustValues() ([]int, error) {
+    ss := req.split()
+    if !pie.All(ss, numeral.IsInt) {
+        return nil, errors.New("one of numbers is not an integer")
+    }
+    return pie.Ints(ss), nil
+}
+
+func (req *IntsField) ShouldValues() []int {
+    return pie.Ints(req.split())
+}
+
+func (req *IntsField) split() []string {
+    return strings.Split(string(*req), ",")
+}
+```
+最终版本颇有一些函数式编程的味道，对比V1版本，希望对大家有所启发。
 
 
 https://blog.csdn.net/weixin_44358480/article/details/139697331
