@@ -6,7 +6,7 @@ Go编程：优雅永不过时
 - 4、[entGo框架CRUD事务优化](md/orm-curd-2.md)
 - 5、[entGo框架CRUD通用代码自动化生成](md/orm-curd-3.md)
 - 6、[参数校验三种方式的最优解](md/param-validator.md)
-- 7、[复杂参数校验预热：控制逻辑、业务逻辑傻傻分不清楚](md/param-control.md)
+- 7、[复杂参数校验预热：map/filter/reduce代码复杂度降维利器](md/param-control.md)
 - 7、复杂参数校验
 - 8、参数相关的安全漏洞：SQL注入
 - 9、参数相关的安全漏洞：XSS 

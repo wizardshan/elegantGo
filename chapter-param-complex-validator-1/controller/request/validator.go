@@ -1,7 +1,7 @@
 package request
 
 import (
-	"elegantGo/chapter-param-complex-validator-1/pkg/util"
+	"elegantGo/chapter-param-complex-validator-1/pkg/numeral"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	"regexp"
@@ -16,6 +16,6 @@ func init() {
 	})
 
 	validate.RegisterValidation("int", func(fl validator.FieldLevel) bool {
-		return util.IsInt(fl.Field().String())
+		return numeral.IsInt(fl.Field().String())
 	})
 }

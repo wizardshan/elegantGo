@@ -5,17 +5,21 @@ type UserMany struct {
     IDs string
 }
 
-func (req *UserMany) IDsValues() (values []int) {
-    nums := strings.Split(req.IDs, ",")
-    for _, num := range nums {
-        value, _ := strconv.Atoi(num)
+func (req *UserMany) IDsValues() []int {
+    ss := strings.Split(req.IDs, ",")
+    var values []int
+    for _, s := range ss {
+        value, err := strconv.Atoi(s)
+        if err != nil {
+            continue
+        }
         values = append(values, value)
     }
-    return
+    return values
 }
 ```
 代码分析：<br>
-通过request.UserMany模型解析IDs参数，问题显而易见，当另外一个接口也需要IDs参数时，想对应的request模型同样需要实现IDsValues函数，这样就导致的重复代码。
+通过request.UserMany模型解析IDs字符串参数，问题显而易见，当另外一个接口也需要IDs参数时，相对应的request模型同样需要实现IDsValues函数，这样就导致的重复代码。
 
 解决思路：
 ```go
@@ -25,13 +29,17 @@ type UserMany struct {
 
 type IDsField string
 
-func (req *IDsField) Values() (values []int) {
-    nums := strings.Split(string(*req), ",")
-    for _, num := range nums {
-        value, _ := strconv.Atoi(num)
-        values = append(values, value) 
+func (req *IDsField) Values() []int {
+    ss := strings.Split(string(*req), ",")
+    var values []int
+    for _, s := range ss {
+        value, err := strconv.Atoi(s)
+        if err != nil {
+            continue
+        }
+        values = append(values, value)
     }
-    return
+    return values
 }
 ```
 代码分析：<br>
@@ -40,56 +48,182 @@ func (req *IDsField) Values() (values []int) {
 ```go
 type LevelsField string
 
-func (req *LevelsField) Values() (values []int) {
-    nums := strings.Split(string(*req), ",")
-    for _, num := range nums {
-        value, _ := strconv.Atoi(num)
-        values = append(values, value)
-    }
-    return
-}
-```
-我们把思维再抽象一点，根据字符串"1,2,3,4,5"的特征新建一个通用的NumbersFieldV1结构体，如下：
-```go
-type NumbersFieldV1 string
-
-func (req *NumbersFieldV1) Values() (values []int) {
-    nums := strings.Split(string(*req), ",")
-    for _, num := range nums {
-        value, _ := strconv.Atoi(num)
-        values = append(values, value)
-    }
-    return
-}
-
-type UserMany struct {
-    IDs    NumbersFieldV1
-    Levels NumbersFieldV1
-}
-```
-这样，用户ID和用户等级等多数字参数就可以复用NumbersField。
-
-下面进入本文的重点，我们先审视一下NumbersField.Values方法，Values方法方法的目的是把被逗号分割的string，转换为[]int，分为三步骤：<br>
-步骤1：字符串Split为[]string<br>
-步骤2：for循环[]string获取切片里的字符串<br>
-步骤3：字符串转换为int，转换规则比较宽松，失败忽略，只收集转换成功的数据<br>
-
-目前为止，看起来没什么问题，当需要增加严格参数校验规则，转化失败就报错，代码如下：
-```go
-func (req *NumbersField) MustValues() (values []int, err error) {
-    nums := strings.Split(string(*req), ",")
-    for _, num := range nums {
-        var value int
-        if value, err = strconv.Atoi(num); err != nil {
-            return
+func (req *LevelsField) Values() []int {
+    ss := strings.Split(string(*req), ",")
+    var values []int
+    for _, s := range ss {
+        value, err := strconv.Atoi(s)
+        if err != nil {
+            continue
         }
         values = append(values, value)
     }
-    return
+    return values
 }
 ```
+我们把角度再拔高一点思维再抽象一点，根据字符串"1,2,3,4,5"的特征新建一个通用的IntsFieldV1结构体，如下：
+```go
+type UserMany struct {
+    IDs    IntsFieldV1
+    Levels IntsFieldV1
+}
 
+type IntsFieldV1 string
 
+func (req *IntsFieldV1) Values() []int {
+    ss := strings.Split(string(*req), ",")
+    var values []int
+    for _, s := range ss {
+        value, err := strconv.Atoi(s)
+        if err != nil {
+            continue
+        }
+        values = append(values, value)
+    }
+    return values
+}
+```
+这样，用户ID和用户等级等多整形数字参数就可以复用IntsFieldV1。
+
+下面进入本文的重点，我们先审视一下IntsFieldV1.Values方法，Values方法的目的是把被逗号分割的string，转换为[]int，分为三步骤：<br>
+步骤1：字符串Split为[]string<br>
+步骤2：for循环[]string获取切片里的字符串<br>
+步骤3：字符串转换为int，转换规则比较宽松，失败忽略，只收集可以转换成功的数据<br>
+
+这十行代码看起来没什么问题，但莫名就有点糟心，给人一种乱糟糟的感觉，但又说不出哪里不对，我们接着往下看。
+
+字符串"1,2,3,4,5"转换为[]int{1,2,3,4,5}有三种规则：<br>
+1、只转换有效的数据<br>
+2、无效数据报错，停止转换<br>
+3、尽力而为，无效数据转换失败，默认零值<br>
+字符串"1,s,2,,3"转换对应的结果：<br>
+1、[]int{1,2,3}<br>
+2、报错<br>
+3、[]int{1,0,2,0,3}
+
+对应实现的代码：
+```go
+// 只转换有效的数据
+func (req *IntsFieldV1) Values() []int {
+    ss := strings.Split(string(*req), ",")
+    var values []int
+    for _, s := range ss {
+        value, err := strconv.Atoi(s)
+        if err != nil {
+            continue
+        }
+        values = append(values, value)
+    }
+    return values
+}
+
+// 无效数据报错，停止转换
+func (req *IntsFieldV1) MustValues() ([]int, error) {
+    ss := strings.Split(string(*req), ",")
+    var values []int
+    for _, s := range ss {
+        value, err := strconv.Atoi(s)
+        if err != nil {
+            return nil, err
+        }
+        values = append(values, value)
+    }
+    return values, nil
+}
+
+// 尽力而为，无效数据转换失败，默认零值
+func (req *IntsFieldV1) ShouldValues() []int {
+    ss := strings.Split(string(*req), ",")
+    var values []int
+    for _, s := range ss {
+        value, _ := strconv.Atoi(s)
+        values = append(values, value)
+    }
+    return values
+}
+```
+大家可以花五分钟审视一下这三个方法，思考一下有没有优化空间。
+
+当Values、MustValues、ShouldValues放在一起对比，感觉更糟心了，代码大体一致，只有部分的微小区别，想抽出公共部分独立出来又特别难搞，导致这种局面的原因是什么呢？
+
+我们分析一下Values方法中的for循环，短短的四五行用到的变量包括ss、s、values、value、err，格式转换、跳过当次循环判断、数据收集等功能揉杂在一起，就这是浆糊式代码。
+
+for循环承载了太多的功能，需要给它减轻负担，Values方法的本意是只收集有效数据，优化思路就是先把无效数据过滤掉，然后只对有效数据进行格式转换，这样就避免了格式转换的同时还要进行数据有效性判断。
+
+同理MustValues方法，我们也先进行数据有效性判断，出现无效数据直接返回错误。
+
+我们来到了V2版本：
+```
+type IntsFieldV2 string
+    
+func (req *IntsFieldV2) Values() []int {
+    ss := req.split()
+    // 过滤出有效数据
+    var ssFiltered []string
+    for _, s := range ss {
+        if numeral.IsInt(s) {
+            ssFiltered = append(ssFiltered, s)
+        }
+    }
+    
+    var values []int
+    for _, s := range ssFiltered {
+        value, _ := strconv.Atoi(s)
+        values = append(values, value)
+    }
+    return values
+}
+    
+func (req *IntsFieldV2) MustValues() ([]int, error) {
+    ss := req.split()
+    // 预先进行有效性判断
+    for _, s := range ss {
+        if !numeral.IsInt(s) {
+            return nil, errors.New(s + " is not an integer")
+        }
+    }
+    
+    var values []int
+    for _, s := range ss {
+        value, _ := strconv.Atoi(s)
+        values = append(values, value)
+    }
+    return values, nil
+}
+```
+这样原本的for循环只是实现简单的数据格式转换功能，同时Values、MustValues、ShouldValues三个方法出现了相同代码块：
+```go
+var values []int
+for _, s := range ss {
+    value, _ := strconv.Atoi(s)
+    values = append(values, value)
+}
+```
+我们先把数据转换功能代码抽取出来，独立成一个方法，这样来到了V3版本：
+```go
+func (req *IntsFieldV3) toInt(s string) int {
+    value, _ := strconv.Atoi(s)
+    return value
+}
+```
+虽然for循环抽取了toInt方法，但三个方法仍然存在着相同代码块：
+```go
+var values []int
+for _, s := range ss {
+    values = append(values, req.toInt(s))
+}
+```
+这个for循环本质是[]string转换[]int的实现过程，一种类型转换成另外一种类型，在编程中有个专业术语：map映射，我们把映射过程抽取出来，这样来到了V4版本：
+```go
+func (req *IntsFieldV4) mapper(ss []string) []int {
+    var values []int
+    for _, s := range ss {
+        values = append(values, req.toInt(s))
+    }
+    return values
+}
+```
+很多编程语言中都自带map映射方法，python、js的map、java的stream.map、php的array_map，但是go语言没有实现，我们
 
 
 

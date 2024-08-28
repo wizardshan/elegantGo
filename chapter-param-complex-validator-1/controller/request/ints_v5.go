@@ -3,13 +3,14 @@ package request
 import (
 	"elegantGo/chapter-param-complex-validator-1/pkg/numeral"
 	"errors"
+	"github.com/elliotchance/pie/v2"
 	"strconv"
 	"strings"
 )
 
-type IntsFieldV4 string
+type IntsFieldV5 string
 
-func (req *IntsFieldV4) Values() []int {
+func (req *IntsFieldV5) Values() []int {
 	ss := req.split()
 
 	var ssFiltered []string
@@ -19,10 +20,10 @@ func (req *IntsFieldV4) Values() []int {
 		}
 	}
 
-	return req.mapper(ss)
+	return pie.Map(ss, req.toInt)
 }
 
-func (req *IntsFieldV4) MustValues() ([]int, error) {
+func (req *IntsFieldV5) MustValues() ([]int, error) {
 	ss := req.split()
 
 	for _, s := range ss {
@@ -31,28 +32,20 @@ func (req *IntsFieldV4) MustValues() ([]int, error) {
 		}
 	}
 
-	return req.mapper(ss), nil
+	return pie.Map(ss, req.toInt), nil
 }
 
-func (req *IntsFieldV4) ShouldValues() []int {
+func (req *IntsFieldV5) ShouldValues() []int {
 	ss := req.split()
 
-	return req.mapper(ss)
+	return pie.Map(ss, req.toInt)
 }
 
-func (req *IntsFieldV4) split() []string {
+func (req *IntsFieldV5) split() []string {
 	return strings.Split(string(*req), ",")
 }
 
-func (req *IntsFieldV4) mapper(ss []string) []int {
-	var values []int
-	for _, s := range ss {
-		values = append(values, req.toInt(s))
-	}
-	return values
-}
-
-func (req *IntsFieldV4) toInt(s string) int {
+func (req *IntsFieldV5) toInt(s string) int {
 	value, _ := strconv.Atoi(s)
 	return value
 }

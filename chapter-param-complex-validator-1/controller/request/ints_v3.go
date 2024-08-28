@@ -1,8 +1,9 @@
 package request
 
 import (
-	"github.com/asaskevich/govalidator"
-	"github.com/elliotchance/pie/v2"
+	"elegantGo/chapter-param-complex-validator-1/pkg/numeral"
+	"errors"
+	"strconv"
 	"strings"
 )
 
@@ -11,32 +12,51 @@ type IntsFieldV3 string
 func (req *IntsFieldV3) Values() []int {
 	ss := req.split()
 
-	ssFiltered := pie.Filter(ss, govalidator.IsInt)
-	return pie.Map(ssFiltered, func(s string) int {
-		return pie.Int(s)
-	})
+	var ssFiltered []string
+	for _, s := range ss {
+		if numeral.IsInt(s) {
+			ssFiltered = append(ssFiltered, s)
+		}
+	}
+
+	var values []int
+	for _, s := range ssFiltered {
+		values = append(values, req.toInt(s))
+	}
+	return values
 }
 
 func (req *IntsFieldV3) MustValues() ([]int, error) {
 	ss := req.split()
 
-	if err := validate.Var(ss, "dive,int"); err != nil {
-		return nil, err
+	for _, s := range ss {
+		if !numeral.IsInt(s) {
+			return nil, errors.New(s + " is not an integer")
+		}
 	}
 
-	return pie.Map(ss, func(s string) int {
-		return pie.Int(s)
-	}), nil
+	var values []int
+	for _, s := range ss {
+		values = append(values, req.toInt(s))
+	}
+	return values, nil
 }
 
 func (req *IntsFieldV3) ShouldValues() []int {
 	ss := req.split()
 
-	return pie.Map(ss, func(s string) int {
-		return pie.Int(s)
-	})
+	var values []int
+	for _, s := range ss {
+		values = append(values, req.toInt(s))
+	}
+	return values
 }
 
 func (req *IntsFieldV3) split() []string {
 	return strings.Split(string(*req), ",")
+}
+
+func (req *IntsFieldV3) toInt(s string) int {
+	value, _ := strconv.Atoi(s)
+	return value
 }

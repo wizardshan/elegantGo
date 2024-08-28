@@ -1,8 +1,8 @@
 package request
 
 import (
+	"elegantGo/chapter-param-complex-validator-1/pkg/numeral"
 	"errors"
-	"github.com/asaskevich/govalidator"
 	"strconv"
 	"strings"
 )
@@ -14,7 +14,7 @@ func (req *IntsFieldV2) Values() []int {
 
 	var ssFiltered []string
 	for _, s := range ss {
-		if govalidator.IsInt(s) {
+		if numeral.IsInt(s) {
 			ssFiltered = append(ssFiltered, s)
 		}
 	}
@@ -29,8 +29,9 @@ func (req *IntsFieldV2) Values() []int {
 
 func (req *IntsFieldV2) MustValues() ([]int, error) {
 	ss := req.split()
+	
 	for _, s := range ss {
-		if !govalidator.IsInt(s) {
+		if !numeral.IsInt(s) {
 			return nil, errors.New(s + " is not an integer")
 		}
 	}
@@ -45,6 +46,7 @@ func (req *IntsFieldV2) MustValues() ([]int, error) {
 
 func (req *IntsFieldV2) ShouldValues() []int {
 	ss := req.split()
+
 	var values []int
 	for _, s := range ss {
 		value, _ := strconv.Atoi(s)
