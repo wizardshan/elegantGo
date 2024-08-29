@@ -18,6 +18,7 @@ func (req *UserMany) IDsValues() []int {
     return values
 }
 ```
+[源码链接](../chapter-param-complex-validator-1)
 代码分析：<br>
 通过request.UserMany模型解析IDs字符串参数，问题显而易见，当另外一个接口也需要IDs参数时，相对应的request模型同样需要实现IDsValues函数，这样就导致的重复代码。
 
