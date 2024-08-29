@@ -44,7 +44,7 @@ func (req *IDsField) Values() []int {
 ```
 代码分析：<br>
 通过独立出来的IDsField，把解析过程封装其内部，当另外一个接口需要IDs参数时，重用即可；<br>
-这种方式又带来另外一个问题，例如用户等级Level，当需要查询多个用户等级，就需要在新建一个LevelsField结构体，如下：
+这种方式又带来另外一个问题，例如用户等级Level，当需要查询多个用户等级，就需要再复制粘贴LevelsField结构体，如下：
 ```go
 type LevelsField string
 
@@ -146,7 +146,7 @@ func (req *IntsFieldV1) ShouldValues() []int {
 
 当Values、MustValues、ShouldValues放在一起对比，感觉更糟心了，代码大体一致，只有部分的微小区别，想抽出公共部分独立出来又特别难搞，导致这种局面的原因是什么呢？
 
-我们分析一下Values方法中的for循环，短短的四五行用到的变量包括ss、s、values、value、err，格式转换、跳过当次循环判断、数据收集等功能揉杂在一起，就这是浆糊式代码。
+我们分析一下Values方法中的for循环，短短的四五行用到了ss、s、values、value、err多个变量，格式转换、错误判断、循环停止判断、数据收集等功能揉杂在一起，就这是浆糊式代码。
 
 for循环承载了太多的功能，需要给它减轻负担，Values方法的本意是只收集有效数据，优化思路就是先把无效数据过滤掉，然后只对有效数据进行格式转换，这样就避免了格式转换的同时还要进行数据有效性判断。
 
@@ -191,6 +191,8 @@ func (req *IntsFieldV2) MustValues() ([]int, error) {
     return values, nil
 }
 ```
+numeral.IsInt函数是通过正则来判断字符串是否是int类型。
+
 这样原本的for循环只是实现简单的数据格式转换功能，同时Values、MustValues、ShouldValues三个方法出现了相同代码块：
 ```go
 var values []int
@@ -215,10 +217,10 @@ for _, s := range ss {
 ```
 这个for循环本质是[]string转换[]int的实现过程，一种类型转换成另外一种类型，在编程中有个专业术语：map映射，我们把映射过程抽取出来，这样来到了V4版本：
 ```go
-func (req *IntsFieldV4) mapper(ss []string) []int {
+func (req *IntsFieldV4) mapper(ss []string, fn func(s string) int) []int {
     var values []int
     for _, s := range ss {
-        values = append(values, req.toInt(s))
+        values = append(values, fn(s))
     }
     return values
 }
@@ -304,11 +306,102 @@ func (req *IntsField) split() []string {
 ```
 最终版本颇有一些函数式编程的味道，对比V1版本，希望对大家有所启发。
 
+从V1版本迭代到最终版本，虽然代码不多，但设计到的知识点挺多的，而且还非常重要，我们来详细分析。
 
-https://blog.csdn.net/weixin_44358480/article/details/139697331
+### 关注点分离
+关注点分离（Separation of Concerns，简称SoC）是软件工程中的一个设计原则，它鼓励将一个复杂的问题分解成多个更小的、更易于管理的部分。每个部分解决问题的一个特定方面，即一个“关注点”。通过这种方式，关注点分离旨在提高软件的可维护性、可扩展性和可复用性，同时减少代码的复杂度。
 
-https://www.jianshu.com/p/8b917163b557
+在我们不断迭代的过程中，关注点分离是最重要的指导思想，贯穿始终。
 
-https://blog.jaronnie.com/%e7%bc%96%e7%a8%8b%e7%9a%84%e6%9c%ac%e8%b4%a8%ef%bc%9alogic-%e4%b8%8e-control-%e5%88%86%e7%a6%bb%ef%bc%81/
+在V1版本Values方法中的for循环就存在过多的关注点：
+```go
+for _, s := range ss {               // 关注点1：for循环
+    value, err := strconv.Atoi(s)    // 关注点2：格式转换
+    if err != nil {                  // 关注点3：数据转换规则
+        continue                     // 关注点4：循环停止
+    }
+    values = append(values, value)   // 关注点5：数据收集
+}
+```
+通过分离关注点，拆成两个for循环，第一个for循环是过滤有效数据，第二个for循环是数据转换，两个for的职责就比较单一，代码的复杂度降低，可读性提高，来到了V2版本：
+```go
+for _, s := range ss {                      // 关注点1：for循环   
+    if numeral.IsInt(s) {                   // 关注点2：过滤条件   
+        ssFiltered = append(ssFiltered, s)  // 关注点3：数据收集
+    }
+}
 
-https://time.geekbang.org/column/article/2751
+for _, s := range ssFiltered {              // 关注点1：for循环
+    value, _ := strconv.Atoi(s)             // 关注点2：格式转换 
+    values = append(values, value)          // 关注点3：数据收集
+}
+```
+### 分离控制逻辑与业务逻辑
+控制逻辑与业务逻辑的知识点，请参看已故陈皓先生的文章： [编程的本质](https://time.geekbang.org/column/article/2751)
+
+控制逻辑：for循环<br>
+业务逻辑：格式转换
+
+通过分离关注点，把业务逻辑格式转换功能提取成独立的方法达到代码重用的目的，这样来到了V3版本：
+```go
+for _, s := range ssFiltered {              // 关注点1：for循环
+    values = append(values, req.toInt(s))   // 关注点2：数据收集
+}
+```
+抽取控制逻辑，实现mapper方法，这样来到了V4版本：
+```go
+func (req *IntsFieldV4) mapper(ss []string, fn func(s string) int) []int {
+    var values []int
+    for _, s := range ss {
+        values = append(values, fn(s))
+    }
+    return values
+}
+```
+控制逻辑是可以标准化的，引入pie包中的Map函数，代替我们自己的mapper方法，这样来到了V5版本：
+```go
+pie.Map(ss, req.toInt)
+```
+简单的业务逻辑也是可以标准化的，例如string to int，[]string to int[]等等，来到了V6版本：
+```go
+pie.Ints(ss)
+```
+控制逻辑中的过滤操作和迭代判定操作也是可以标准化的，这样来到了V7版本：
+```go
+pie.Filter(ss, numeral.IsInt)
+
+if !pie.All(ss, numeral.IsInt) {
+    return nil, errors.New("one of numbers is not an integer")
+}
+```
+整理一下来到了最终版本：
+```go
+func (req *IntsField) Values() []int {
+    return pie.Ints(pie.Filter(req.split(), numeral.IsInt))
+}
+
+func (req *IntsField) MustValues() ([]int, error) {
+    ss := req.split()
+    if !pie.All(ss, numeral.IsInt) {
+        return nil, errors.New("one of numbers is not an integer")
+    }
+    return pie.Ints(ss), nil
+}
+
+func (req *IntsField) ShouldValues() []int {
+    return pie.Ints(req.split())
+}
+```
+对于Values方法，真正的关注点是过滤条件这块业务逻辑，剩下的都可以标准化；
+
+对于MustValues方法，真正的关注点是数据有效性判定这块业务逻辑，剩下的都可以标准化；
+
+对于ShouldValues方法，关注点就只能是如何标准化了...
+
+标准化就意味着高效，不仅仅是编程，各行各业亦是如此。
+
+pie包就是各种控制逻辑标准化实现，也有一些简单数据映射map函数，同样go自带slices包也实现了一些标准化，建议大家把pie和slices包中的每个函数都学习一遍，对照自己过往的业务代码，思考在什么场景下可以应用。
+
+程序开发大多数情况下都在倒腾数据，如何熟练的倒腾数据也是一项重要的技能。
+<img src="../images/mfr.jpg" width="100%">
+

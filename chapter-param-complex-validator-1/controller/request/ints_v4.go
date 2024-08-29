@@ -19,7 +19,7 @@ func (req *IntsFieldV4) Values() []int {
 		}
 	}
 
-	return req.mapper(ssFiltered)
+	return req.mapper(ssFiltered, req.toInt)
 }
 
 func (req *IntsFieldV4) MustValues() ([]int, error) {
@@ -31,23 +31,23 @@ func (req *IntsFieldV4) MustValues() ([]int, error) {
 		}
 	}
 
-	return req.mapper(ss), nil
+	return req.mapper(ss, req.toInt), nil
 }
 
 func (req *IntsFieldV4) ShouldValues() []int {
 	ss := req.split()
 
-	return req.mapper(ss)
+	return req.mapper(ss, req.toInt)
 }
 
 func (req *IntsFieldV4) split() []string {
 	return strings.Split(string(*req), ",")
 }
 
-func (req *IntsFieldV4) mapper(ss []string) []int {
+func (req *IntsFieldV4) mapper(ss []string, fn func(s string) int) []int {
 	var values []int
 	for _, s := range ss {
-		values = append(values, req.toInt(s))
+		values = append(values, fn(s))
 	}
 	return values
 }
