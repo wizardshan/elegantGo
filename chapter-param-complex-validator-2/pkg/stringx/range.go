@@ -30,7 +30,7 @@ type IntRange struct {
 }
 
 func (i *IntRange) Parse(input string) error {
-	ints, err := NewPieces(input).Validator(IsInt).Parse().PtrInts()
+	ints, err := NewSplitter(input).Validator(IsInt).Parse().PtrInts()
 	if err != nil {
 		return err
 	}
@@ -50,8 +50,8 @@ type timeRange struct {
 	Range[time.Time]
 }
 
-func (t *timeRange) Parse(input string, validator func(s string) bool, getter func(pieces *Pieces) ([]time.Time, error)) error {
-	parser := NewPieces(input).Validator(validator).Parse()
+func (t *timeRange) Parse(input string, validator func(s string) bool, getter func(pieces *Splitter) ([]time.Time, error)) error {
+	parser := NewSplitter(input).Validator(validator).Parse()
 	times, err := getter(parser)
 	if err != nil {
 		return err
@@ -73,7 +73,7 @@ type DateTimeRange struct {
 }
 
 func (t *DateTimeRange) Parse(input string) error {
-	return t.timeRange.Parse(input, IsDateTime, func(pieces *Pieces) ([]time.Time, error) {
+	return t.timeRange.Parse(input, IsDateTime, func(pieces *Splitter) ([]time.Time, error) {
 		return pieces.DateTimes()
 	})
 }
@@ -83,7 +83,7 @@ type DateRange struct {
 }
 
 func (t *DateRange) Parse(input string) error {
-	return t.timeRange.Parse(input, IsDate, func(pieces *Pieces) ([]time.Time, error) {
+	return t.timeRange.Parse(input, IsDate, func(pieces *Splitter) ([]time.Time, error) {
 		return pieces.Dates()
 	})
 }
@@ -93,7 +93,7 @@ type TimeRange struct {
 }
 
 func (t *TimeRange) Parse(input string) error {
-	return t.timeRange.Parse(input, IsTime, func(pieces *Pieces) ([]time.Time, error) {
+	return t.timeRange.Parse(input, IsTime, func(pieces *Splitter) ([]time.Time, error) {
 		return pieces.Times()
 	})
 }

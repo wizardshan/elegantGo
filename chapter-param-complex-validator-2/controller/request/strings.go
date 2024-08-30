@@ -11,7 +11,7 @@ func (req *StringsField) Values() ([]string, error) {
 	validator := func(s string) bool {
 		return s != ""
 	}
-	return stringx.NewPieces(string(*req)).Validator(validator).Parse().Strings()
+	return stringx.NewSplitter(string(*req)).Validator(validator).Parse().Strings()
 }
 
 type StringsJsonField struct {
