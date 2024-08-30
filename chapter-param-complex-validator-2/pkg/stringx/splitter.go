@@ -16,9 +16,9 @@ type Splitter struct {
 }
 
 func NewSplitter(input string) *Splitter {
-	piece := new(Splitter)
-	piece.input = input
-	return piece
+	splitter := new(Splitter)
+	splitter.input = input
+	return splitter
 }
 
 func (spr *Splitter) Ints() ([]int, error) {
@@ -76,7 +76,7 @@ func (spr *Splitter) Validator(fn func(s string) bool) *Splitter {
 func (spr *Splitter) Parse() *Splitter {
 	spr.ss = spr.split()
 	if spr.validator != nil && !pie.All(spr.ss, spr.validator) {
-		spr.err = errors.New("one of pieces is failure")
+		spr.err = errors.New("one of substring is failure")
 	}
 	return spr
 }
