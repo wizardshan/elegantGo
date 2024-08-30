@@ -4,8 +4,6 @@ import (
 	"elegantGo/chapter-param-complex-validator-3/controller/request"
 	"elegantGo/chapter-param-complex-validator-3/controller/response"
 	"elegantGo/chapter-param-complex-validator-3/repository"
-	"elegantGo/chapter-param-complex-validator-3/repository/ent"
-	"elegantGo/chapter-param-complex-validator-3/repository/ent/user"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,41 +23,41 @@ func (ctr *User) Many(c *gin.Context) (response.Data, error) {
 		return nil, err
 	}
 
-	entUsers := ctr.repo.FetchMany(c.Request.Context(), func(builder *ent.UserQuery) {
-		if request.Filter.ID != nil {
-			builder = builder.Where(user.ID(*request.Filter.ID))
-		}
+	//ctr.repo.FetchMany(c.Request.Context(), func(builder *ent.UserQuery) {
+	//	if request.Filter.ID != nil {
+	//		builder = builder.Where(user.ID(*request.Filter.ID))
+	//	}
+	//
+	//	if request.Filter.Nickname != nil {
+	//		builder = builder.Where(user.NicknameContains(*request.Filter.Nickname))
+	//	}
+	//
+	//	if request.Filter.Amount.StartAble() {
+	//		builder = builder.Where(user.AmountGTE(*request.Filter.Amount.Start))
+	//	}
+	//
+	//	if request.Filter.Amount.EndAble() {
+	//		builder = builder.Where(user.AmountLTE(*request.Filter.Amount.End))
+	//	}
+	//
+	//	if request.Filter.Status.Able() {
+	//		builder = builder.Where(user.StatusIn(request.Filter.Status...))
+	//	}
+	//
+	//	if request.Filter.Level.Able() {
+	//		builder = builder.Where(user.LevelIn(request.Filter.Level...))
+	//	}
+	//
+	//	if request.Filter.CreateTime.StartAble() {
+	//		builder = builder.Where(user.CreateTimeGTE(request.Filter.CreateTime.Start))
+	//	}
+	//
+	//	if request.Filter.CreateTime.EndAble() {
+	//		builder = builder.Where(user.CreateTimeLTE(request.Filter.CreateTime.End))
+	//	}
+	//
+	//	builder.Offset(request.Offset.Value()).Limit(request.Limit.Value()).Order(request.Order.By(request.Sort.Value()))
+	//})
 
-		if request.Filter.Nickname != nil {
-			builder = builder.Where(user.NicknameContains(*request.Filter.Nickname))
-		}
-
-		if request.Filter.Amount.StartAble() {
-			builder = builder.Where(user.AmountGTE(*request.Filter.Amount.Start))
-		}
-
-		if request.Filter.Amount.EndAble() {
-			builder = builder.Where(user.AmountLTE(*request.Filter.Amount.End))
-		}
-
-		if request.Filter.Status.Able() {
-			builder = builder.Where(user.StatusIn(request.Filter.Status...))
-		}
-
-		if request.Filter.Level.Able() {
-			builder = builder.Where(user.LevelIn(request.Filter.Level...))
-		}
-
-		if request.Filter.CreateTime.StartAble() {
-			builder = builder.Where(user.CreateTimeGTE(request.Filter.CreateTime.Start))
-		}
-
-		if request.Filter.CreateTime.EndAble() {
-			builder = builder.Where(user.CreateTimeLTE(request.Filter.CreateTime.End))
-		}
-
-		builder.Offset(request.Offset.Value()).Limit(request.Limit.Value()).Order(request.Order.By(request.Sort.Value()))
-	})
-
-	return entUsers, nil
+	return request, nil
 }

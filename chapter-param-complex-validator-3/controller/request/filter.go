@@ -22,22 +22,23 @@ func (req TimeRange) EndAble() bool {
 	return !req.End.IsZero()
 }
 
-type NumberRange struct {
+type IntRange struct {
 	Start *int
-	End   *int `binding:"omitempty,nilfield=Start|gtfield=Start"`
+	End   *int
+	//End   *int `binding:"omitempty,nilfield=Start|gtfield=Start"`
 }
 
-func (req NumberRange) StartAble() bool {
+func (req IntRange) StartAble() bool {
 	return req.Start != nil
 }
 
-func (req NumberRange) EndAble() bool {
+func (req IntRange) EndAble() bool {
 	return req.End != nil
 }
 
-type Numbers []int
+type Ints []int
 
-func (req Numbers) Able() bool {
+func (req Ints) Able() bool {
 	return req != nil && len(req) != 0
 }
 

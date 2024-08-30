@@ -21,19 +21,13 @@ func (e Error) Error() string {
 const (
 	OK              = 0
 	UnKnown         = 100
-	InvalidArgument = 200
-	BusinessError   = 500
+	ArgumentInvalid = 200
+	BizError        = 500
 )
-
-/*
-1、未知panic
-2、参数错误
-
-*/
 
 var Msg = map[int]string{
 	OK:              "OK",
 	UnKnown:         "出现未知错误，请稍后重试",
-	InvalidArgument: "参数错误",
-	BusinessError:   "业务出现错误",
+	ArgumentInvalid: "参数无效",
+	BizError:        "业务出现错误",
 }

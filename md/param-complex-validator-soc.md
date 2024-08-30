@@ -406,3 +406,16 @@ pie包就是各种控制逻辑标准化实现，也有一些简单数据映射map函数，同样go自带slices包
 程序开发大多数情况下都在倒腾数据，能熟练的倒腾数据也是人类高质量程序员的判定标准。
 <img src="../images/mfr.jpg" width="100%">
 
+
+Sort:ID
+Order:ASC
+Offset:20
+Limit:10
+Amount:100,1000
+Level:10,50
+Status:normal,cancel,invalid
+CreateTime:2024-01-01 00:00:00,2024-05-01 23:59:59
+UpdateTime:2024-02-01,2024-06-01
+StartTime:2024-03-01,2024-07-01 23:59:59
+Filter:{"ID":1,"Nickname":"admin","Amount":"100,1000","Level":"10,50","Status":"normal,cancel,invalid","CreateTime":"2024-01-01 00:00:00,2024-05-01 23:59:59","UpdateTime":"2024-02-01,2024-06-01","StartTime":"2024-03-01,2024-07-01 23:59:59"}
+

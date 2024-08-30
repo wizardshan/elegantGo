@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"elegantGo/chapter-param-complex-validator-2/controller/response"
+	"elegantGo/chapter-param-complex-validator-3/controller/response"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"

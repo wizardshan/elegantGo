@@ -244,17 +244,17 @@ valid：校验Start、End时间变量逻辑有效性
 
 当然也有右图的台阶，虽然同样又陡又长，但每隔一定距离会设置一个小平台，把整个台阶分割成若干个小台阶，小平台可以让人休憩一会，平复一下心态；当大方法拆成多个小方法，小方法如同小台阶，当阅读代码时，理解完一个小方法相当于达成一个小目标，然后可以平复一下心态，继续理解下一个小方法。
 
-
-
-
-Sort:ID
+Sort:CreateTime
 Order:ASC
 Offset:20
 Limit:10
-AmountRange:100,1000
-Levels:10,50
-Genders:man,women,unknown
-CreateTimeRange:2024-01-01 00:00:00,2024-05-01 23:59:59
-UpdateTimeRange:2024-02-01,2024-06-01
-StartTimeRange:2024-03-01,2024-07-01 23:59:59
-Filter:{"ID":1,"Nickname":"admin","AmountRange":"100,1000","Levels":"10,50","Genders":"man,women,unknown","CreateTimeRange":"2024-01-01 00:00:00,2024-05-01 23:59:59","UpdateTimeRange":"2024-02-01,2024-06-01","StartTimeRange":"2024-03-01,2024-07-01 23:59:59"}
+Amount:{"Start":10, "End":100}
+Level:10
+Level:20
+Level:30
+Status:normal
+Status:cancel
+Status:invalid
+CreateTime:{"Start":"2024-01-01T00:00:00Z", "End":"2024-10-01T00:00:00Z"}
+Filter:{"ID":1,"Nickname":"昵称","Amount":{"Start":10, "End":100},"Level":[10,20,30],"Status":["normal","cancel","invalid"],"CreateTime":{"Start":"2024-01-01T00:00:00Z", "End":"2024-10-01T00:00:00Z"}}
+

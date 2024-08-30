@@ -14,7 +14,7 @@ func main() {
 	host := "127.0.0.1:3306"
 	name := "test"
 	username := "root"
-	password := ""
+	password := "123456"
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=true",
 		username,
@@ -30,11 +30,10 @@ func main() {
 	}
 
 	engine := gin.New()
-	handler := new(controller.Handler)
 
 	repoUser := repository.NewUser(db)
 	ctrUser := controller.NewUser(repoUser)
-	engine.GET("/users", handler.Wrapper(ctrUser.Many))
+	engine.GET("/users", controller.Wrapper(ctrUser.Many))
 
 	engine.Run()
 }

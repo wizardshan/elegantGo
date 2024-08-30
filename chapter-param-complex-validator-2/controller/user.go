@@ -20,12 +20,12 @@ func (ctr *User) Many(c *gin.Context) (response.Data, error) {
 		return nil, err
 	}
 
-	fmt.Println(request.AmountRange.Values())
-	fmt.Println(request.Levels.Values())
-	fmt.Println(request.Genders.Values())
-	fmt.Println(request.CreateTimeRange.Values())
-	fmt.Println(request.UpdateTimeRange.Values())
-	fmt.Println(request.StartTimeRange.Values())
+	fmt.Println(request.Amount.Values())
+	fmt.Println(request.Level.Values())
+	fmt.Println(request.Status.Values())
+	fmt.Println(request.CreateTime.Values())
+	fmt.Println(request.UpdateTime.Values())
+	fmt.Println(request.StartTime.Values())
 
 	return request, nil
 }
