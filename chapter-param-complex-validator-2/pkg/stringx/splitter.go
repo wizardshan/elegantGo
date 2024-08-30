@@ -7,92 +7,72 @@ import (
 	"time"
 )
 
+type Option func(*Splitter)
+
+func Sep(sep string) Option {
+	return func(s *Splitter) {
+		s.sep = sep
+	}
+}
+
+func Validator(validator func(s string) bool) Option {
+	return func(o *Splitter) {
+		o.validator = validator
+	}
+}
+
 type Splitter struct {
 	input     string
 	ss        []string
 	sep       string
 	validator func(s string) bool
-	err       error
 }
 
-func NewSplitter(input string) *Splitter {
-	splitter := new(Splitter)
-	splitter.input = input
-	return splitter
-}
-
-func (spr *Splitter) Ints() ([]int, error) {
-	if spr.err != nil {
-		return nil, spr.err
+func NewSplitter(input string, options ...Option) (*Splitter, error) {
+	spr := Splitter{
+		sep:       ",",
+		input:     input,
+		validator: NotEmpty,
 	}
-	return pie.Ints(spr.ss), nil
-}
 
-func (spr *Splitter) PtrInts() ([]*int, error) {
-	if spr.err != nil {
-		return nil, spr.err
+	for _, option := range options {
+		option(&spr)
 	}
-	return ToPtrInts(spr.ss), nil
-}
 
-func (spr *Splitter) Strings() ([]string, error) {
-	if spr.err != nil {
-		return nil, spr.err
+	if err := spr.parse(); err != nil {
+		return nil, err
 	}
-	return spr.ss, nil
+	return &spr, nil
 }
 
-func (spr *Splitter) DateTimes() ([]time.Time, error) {
-	if spr.err != nil {
-		return nil, spr.err
-	}
-	return ToDateTimes(spr.ss), nil
-}
-
-func (spr *Splitter) Dates() ([]time.Time, error) {
-	if spr.err != nil {
-		return nil, spr.err
-	}
-	return ToDates(spr.ss), nil
-}
-
-func (spr *Splitter) Times() ([]time.Time, error) {
-	if spr.err != nil {
-		return nil, spr.err
-	}
-	return ToTimes(spr.ss), nil
-}
-
-func (spr *Splitter) Sep(sep string) *Splitter {
-	spr.sep = sep
-	return spr
-}
-
-func (spr *Splitter) Validator(fn func(s string) bool) *Splitter {
-	spr.validator = fn
-	return spr
-}
-
-func (spr *Splitter) Parse() *Splitter {
-	spr.ss = spr.split()
+func (spr *Splitter) parse() error {
+	spr.ss = strings.Split(spr.input, spr.sep)
 	if spr.validator != nil && !pie.All(spr.ss, spr.validator) {
-		spr.err = errors.New("one of substring is failure")
+		return errors.New("one of substring validation failed")
 	}
-	return spr
+	return nil
 }
 
-func (spr *Splitter) split() []string {
-	return strings.Split(spr.input, spr.getSep())
+func (spr *Splitter) Ints() []int {
+	return pie.Ints(spr.ss)
 }
 
-func (spr *Splitter) getSep() string {
-	sep := spr.defaultSep()
-	if spr.sep != "" {
-		sep = spr.sep
-	}
-	return sep
+func (spr *Splitter) PtrInts() []*int {
+	return ToPtrInts(spr.ss)
 }
 
-func (spr *Splitter) defaultSep() string {
-	return ","
+func (spr *Splitter) Strings() []string {
+	return spr.ss
+}
+
+func (spr *Splitter) DateTimes() []time.Time {
+	return ToDateTimes(spr.ss)
+}
+
+func (spr *Splitter) Dates() []time.Time {
+	return ToDates(spr.ss)
+}
+
+func (spr *Splitter) Times() []time.Time {
+	return ToTimes(spr.ss)
 }

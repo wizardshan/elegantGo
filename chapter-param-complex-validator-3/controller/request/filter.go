@@ -24,8 +24,7 @@ func (req TimeRange) EndAble() bool {
 
 type IntRange struct {
 	Start *int
-	End   *int
-	//End   *int `binding:"omitempty,nilfield=Start|gtfield=Start"`
+	End   *int `binding:"omitempty,nilfield=Start|gtfield=Start"`
 }
 
 func (req IntRange) StartAble() bool {

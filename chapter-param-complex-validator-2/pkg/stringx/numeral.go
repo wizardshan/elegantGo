@@ -7,11 +7,11 @@ import (
 )
 
 // github.com/asaskevich/govalidator
-func IsInt(str string) bool {
-	if str == "" {
+func IsInt(s string) bool {
+	if Empty(s) {
 		return false
 	}
-	return regexp.MustCompile("^(?:[-+]?(?:0|[1-9][0-9]*))$").MatchString(str)
+	return regexp.MustCompile("^(?:[-+]?(?:0|[1-9][0-9]*))$").MatchString(s)
 }
 
 func ToInt(s string) int {

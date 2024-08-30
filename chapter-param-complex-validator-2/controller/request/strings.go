@@ -8,10 +8,11 @@ import (
 type StringsField string
 
 func (req *StringsField) Values() ([]string, error) {
-	validator := func(s string) bool {
-		return s != ""
+	splitter, err := stringx.NewSplitter(string(*req))
+	if err != nil {
+		return nil, err
 	}
-	return stringx.NewSplitter(string(*req)).Validator(validator).Parse().Strings()
+	return splitter.Strings(), nil
 }
 
 type StringsJsonField struct {

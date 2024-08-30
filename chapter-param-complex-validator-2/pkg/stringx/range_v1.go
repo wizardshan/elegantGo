@@ -9,11 +9,12 @@ type DateTimeRangeV1 struct {
 }
 
 func (t *DateTimeRangeV1) Parse(input string) error {
-	times, err := NewSplitter(input).Validator(IsDateTime).Parse().DateTimes()
+	splitter, err := NewSplitter(input, Validator(IsDateTime))
 	if err != nil {
 		return err
 	}
 
+	times := splitter.DateTimes()
 	if err = t.capValid(times); err != nil {
 		return err
 	}
@@ -30,11 +31,12 @@ type DateRangeV1 struct {
 }
 
 func (t *DateRangeV1) Parse(input string) error {
-	times, err := NewSplitter(input).Validator(IsDate).Parse().Dates()
+	splitter, err := NewSplitter(input, Validator(IsDate))
 	if err != nil {
 		return err
 	}
 
+	times := splitter.Dates()
 	if err = t.capValid(times); err != nil {
 		return err
 	}
@@ -51,11 +53,12 @@ type TimeRangeV1 struct {
 }
 
 func (t *TimeRangeV1) Parse(input string) error {
-	times, err := NewSplitter(input).Validator(IsTime).Parse().Times()
+	splitter, err := NewSplitter(input, Validator(IsTime))
 	if err != nil {
 		return err
 	}
 
+	times := splitter.Times()
 	if err = t.capValid(times); err != nil {
 		return err
 	}

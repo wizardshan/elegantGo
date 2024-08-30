@@ -8,7 +8,11 @@ import (
 type IntsField string
 
 func (req *IntsField) Values() ([]int, error) {
-	return stringx.NewSplitter(string(*req)).Validator(stringx.IsInt).Parse().Ints()
+	splitter, err := stringx.NewSplitter(string(*req), stringx.Validator(stringx.IsInt))
+	if err != nil {
+		return nil, err
+	}
+	return splitter.Ints(), nil
 }
 
 type IntsJsonField struct {
