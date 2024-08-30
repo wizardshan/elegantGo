@@ -1,7 +1,7 @@
 package request
 
 import (
-	"elegantGo/chapter-param-complex-validator-1/pkg/numeral"
+	"elegantGo/chapter-param-complex-validator-1/pkg/stringx"
 	"errors"
 	"github.com/elliotchance/pie/v2"
 	"strings"
@@ -10,12 +10,12 @@ import (
 type IntsField string
 
 func (req *IntsField) Values() []int {
-	return pie.Ints(pie.Filter(req.split(), numeral.IsInt))
+	return pie.Ints(pie.Filter(req.split(), stringx.IsInt))
 }
 
 func (req *IntsField) MustValues() ([]int, error) {
 	ss := req.split()
-	if !pie.All(ss, numeral.IsInt) {
+	if !pie.All(ss, stringx.IsInt) {
 		return nil, errors.New("one of numbers is not an integer")
 	}
 	return pie.Ints(ss), nil

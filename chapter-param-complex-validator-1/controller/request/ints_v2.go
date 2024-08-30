@@ -1,7 +1,7 @@
 package request
 
 import (
-	"elegantGo/chapter-param-complex-validator-1/pkg/numeral"
+	"elegantGo/chapter-param-complex-validator-1/pkg/stringx"
 	"errors"
 	"strconv"
 	"strings"
@@ -14,7 +14,7 @@ func (req *IntsFieldV2) Values() []int {
 
 	var ssFiltered []string
 	for _, s := range ss {
-		if numeral.IsInt(s) {
+		if stringx.IsInt(s) {
 			ssFiltered = append(ssFiltered, s)
 		}
 	}
@@ -29,9 +29,9 @@ func (req *IntsFieldV2) Values() []int {
 
 func (req *IntsFieldV2) MustValues() ([]int, error) {
 	ss := req.split()
-	
+
 	for _, s := range ss {
-		if !numeral.IsInt(s) {
+		if !stringx.IsInt(s) {
 			return nil, errors.New(s + " is not an integer")
 		}
 	}

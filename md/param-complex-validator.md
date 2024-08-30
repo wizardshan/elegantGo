@@ -19,13 +19,13 @@ Like过滤：例如昵称包含某个值
 type QueryField struct {
     Sort   *SortField   `binding:"omitempty,alphanum"`
     Order  *OrderField  `binding:"omitempty,oneof=DESC ASC"`
-    Offset *OffsetField `binding:"omitempty,number,min=0"`
-    Limit  *LimitField  `binding:"omitempty,number,min=1,max=1000"`
+    Offset *OffsetField `binding:"omitempty,int,min=0"`
+    Limit  *LimitField  `binding:"omitempty,int,min=1,max=1000"`
 }
 
-type SortFieldV1 string
+type SortField string
 
-func (req *SortFieldV1) Value() string {
+func (req *SortField) Value() string {
     if req == nil {
         return "id"
     }
@@ -33,7 +33,7 @@ func (req *SortFieldV1) Value() string {
     return stringy.New(string(*req)).SnakeCase().ToLower() // 配合entGo框架，传入CreateTime转化为create_time，ID转化为id
 }
 ```
-[源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter-param-complex-validator-1)
+[源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter-param-complex-validator-1)<br>
 代码分析：<br>
 1、Sort、Order、Offset、Limit参数默认可以不传，所以需要使用指针，当参数没有传的时候进行nil判断，返回默认值<br>
 2、SortFieldV1中的字符串"id"、OrderFieldV1中的字符串"DESC"、OffsetFieldV1中的数字0、、LimitFieldV1中的数字100是魔法值，需要消除<br>
@@ -238,10 +238,23 @@ valid：校验Start、End时间变量逻辑有效性
 
 
 <img src="../images/steps-1.jpg" width="50%"><img src="../images/steps-2.jpg" width="50%">
-现实生活中我们见过左图的台阶，又陡又长，让人望而生畏，担心脚底一打滑骨碌碌滚下去怎么办；当我们面对一个函数或方法包含几十行甚至几百上千行代码时，如同面对又陡又长的台阶，内心的状态是焦虑不安不自信，生怕某一处的代码没有理解或者逻辑有遗漏导致出现bug。
+现实生活中我们见过左图的台阶，又陡又长，让人望而生畏，担心脚底一打滑骨碌碌滚下去怎么办；
+
+当我们面对一个函数或方法包含几十行甚至几百上千行代码时，如同面对又陡又长的台阶，内心的状态是焦虑不安不自信，生怕某一处的代码没有理解或者逻辑有遗漏导致出现bug。
 
 当然也有右图的台阶，虽然同样又陡又长，但每隔一定距离会设置一个小平台，把整个台阶分割成若干个小台阶，小平台可以让人休憩一会，平复一下心态；当大方法拆成多个小方法，小方法如同小台阶，当阅读代码时，理解完一个小方法相当于达成一个小目标，然后可以平复一下心态，继续理解下一个小方法。
 
 
 
 
+Sort:ID
+Order:ASC
+Offset:20
+Limit:10
+AmountRange:100,1000
+Levels:10,50
+Genders:man,women,unknown
+CreateTimeRange:2024-01-01 00:00:00,2024-05-01 23:59:59
+UpdateTimeRange:2024-02-01,2024-06-01
+StartTimeRange:2024-03-01,2024-07-01 23:59:59
+Filter:{"ID":1,"Nickname":"admin","AmountRange":"100,1000","Levels":"10,50","Genders":"man,women,unknown","CreateTimeRange":"2024-01-01 00:00:00,2024-05-01 23:59:59","UpdateTimeRange":"2024-02-01,2024-06-01","StartTimeRange":"2024-03-01,2024-07-01 23:59:59"}

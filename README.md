@@ -7,11 +7,11 @@ Go编程：优雅永不过时
 - 5、[entGo框架CRUD通用代码自动化生成](md/orm-curd-3.md)
 - 6、[参数校验三种方式的最优解](md/param-validator.md)
 - 7、[复杂参数校验预热：分离关注点-代码复杂度降维利器](md/param-soc.md)
-- 7、复杂参数校验
-- 8、参数相关的安全漏洞：SQL注入
-- 9、参数相关的安全漏洞：XSS 
+- 8、[复杂参数校验](md/param-complex-validator.md) 
+- 9、参数相关的安全漏洞：SQL注入
+- 10、参数相关的安全漏洞：XSS 
 
-- 6、[entGo框架CRUD通用代码自动化生成](md/control.md)
+
 
 
 - （去空格 支付宝账号只能绑定一个账号）

@@ -1,4 +1,4 @@
-package numeral
+package stringx
 
 import (
 	"github.com/elliotchance/pie/v2"

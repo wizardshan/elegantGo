@@ -1,7 +1,7 @@
 package request
 
 import (
-	"elegantGo/chapter-param-complex-validator-1/pkg/stringx"
+	"elegantGo/chapter-param-complex-validator-2/pkg/stringx"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	"regexp"

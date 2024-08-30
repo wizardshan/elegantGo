@@ -3,11 +3,11 @@ package controller
 import (
 	"elegantGo/chapter-param-complex-validator-2/controller/request"
 	"elegantGo/chapter-param-complex-validator-2/controller/response"
-	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
-type User struct{}
+type User struct {
+}
 
 func NewUser() *User {
 	ctr := new(User)
@@ -19,13 +19,6 @@ func (ctr *User) Many(c *gin.Context) (response.Data, error) {
 	if err := c.ShouldBind(request); err != nil {
 		return nil, err
 	}
-
-	fmt.Println(request.AmountRange.Values())
-	fmt.Println(request.Levels.Values())
-	fmt.Println(request.Genders.Values())
-	fmt.Println(request.CreateTimeRange.Values())
-	fmt.Println(request.UpdateTimeRange.Values())
-	fmt.Println(request.StartTimeRange.Values())
 
 	return request, nil
 }

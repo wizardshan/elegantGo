@@ -18,7 +18,7 @@ func (req *UserMany) IDsValues() []int {
     return values
 }
 ```
-[源码链接](../chapter-param-complex-validator-1)
+[源码链接](../chapter-param-complex-validator-1)<br>
 代码分析：<br>
 通过request.UserMany模型解析IDs字符串参数，问题显而易见，当另外一个接口也需要IDs参数时，相对应的request模型同样需要实现IDsValues函数，这样就导致的重复代码。
 
@@ -307,7 +307,7 @@ func (req *IntsField) split() []string {
 ```
 最终版本颇有一些函数式编程的味道，对比V1版本，希望对大家有所启发。
 
-从V1版本迭代到最终版本，虽然代码不多，但设计到的知识点挺多的，而且还非常重要，我们来详细分析。
+从V1版本迭代到最终版本，虽然代码不多，但涉及到的知识点挺多的，而且还非常重要，我们来详细分析。
 
 ### 关注点分离
 关注点分离（Separation of Concerns，简称SoC）是软件工程中的一个设计原则，它鼓励将一个复杂的问题分解成多个更小的、更易于管理的部分。每个部分解决问题的一个特定方面，即一个“关注点”。通过这种方式，关注点分离旨在提高软件的可维护性、可扩展性和可复用性，同时减少代码的复杂度。

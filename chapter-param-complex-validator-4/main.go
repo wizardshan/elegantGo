@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
+
 	engine := gin.New()
 
 	ctrUser := controller.NewUser()
