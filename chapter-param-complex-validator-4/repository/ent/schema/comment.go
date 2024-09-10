@@ -7,31 +7,31 @@ import (
 	"entgo.io/ent/schema/mixin"
 )
 
-type Post struct {
+type Comment struct {
 	ent.Schema
 }
 
-func (Post) Fields() []ent.Field {
+func (Comment) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("hash_id").Default(""),
 		field.Int("user_id").Optional().Default(0),
-		field.String("title").Default(""),
+		field.Int("post_id").Optional().Default(0),
 		field.String("content").Default(""),
-		field.Int("views").Default(0),
 	}
 }
 
-func (Post) Mixin() []ent.Mixin {
+func (Comment) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.Time{},
 	}
 }
 
-func (Post) Edges() []ent.Edge {
+func (Comment) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("comments", Comment.Type),
+		edge.From("post", Post.Type).
+			Ref("comments").Field("post_id").
+			Unique(),
 		edge.From("user", User.Type).
-			Ref("posts").Field("user_id").
+			Ref("comments").Field("user_id").
 			Unique(),
 	}
 }

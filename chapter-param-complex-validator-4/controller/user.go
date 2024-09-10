@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"elegantGo/chapter-param-complex-validator-3/controller/request"
-	"elegantGo/chapter-param-complex-validator-3/controller/response"
-	"elegantGo/chapter-param-complex-validator-3/repository"
-	"elegantGo/chapter-param-complex-validator-3/repository/ent"
-	"elegantGo/chapter-param-complex-validator-3/repository/ent/user"
+	"elegantGo/chapter-param-complex-validator-4/controller/request"
+	"elegantGo/chapter-param-complex-validator-4/controller/response"
+	"elegantGo/chapter-param-complex-validator-4/repository"
+	"elegantGo/chapter-param-complex-validator-4/repository/ent"
+	"elegantGo/chapter-param-complex-validator-4/repository/ent/user"
 	"github.com/gin-gonic/gin"
 )
 

@@ -226,7 +226,13 @@ func (req *IntsFieldV4) mapper(ss []string, fn func(s string) int) []int {
     return values
 }
 ```
-很多编程语言中都自带map映射方法，python、js的map、java的stream.map、php的array_map，但是go语言没有实现，我们使用第三方库：pie [源码链接](https://github.com/elliotchance/pie)，这样来到了V5版本：
+很多编程语言中都自带map映射方法，python、js的map、java的stream.map、php的array_map，如下java版本：
+```java
+String str = "1,2,3,4,5";
+String[] strings = str.split(",");
+int[] array = Arrays.asList(strings).stream().mapToInt(Integer::parseInt).toArray();
+```
+但是go语言没有实现，我们使用第三方库：pie [源码链接](https://github.com/elliotchance/pie)，这样来到了V5版本：
 ```go
 pie.Map(ss, req.toInt)
 ```

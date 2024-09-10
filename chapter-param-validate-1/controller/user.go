@@ -37,6 +37,11 @@ func (ctr *User) Login(c *gin.Context) {
 		return
 	}
 
+	if matched, _ := regexp.MatchString(`^[0-9]+$`, captcha); !matched {
+		c.AbortWithStatusJSON(http.StatusOK, gin.H{"error": "验证码必须数字"})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"mobile":  mobile,
 		"captcha": captcha,

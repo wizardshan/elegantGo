@@ -1,13 +1,17 @@
 # elegantGo
 Go编程：优雅永不过时
+- 1、[参数校验的演进过程](md/param-validator.md)
+- 2、[复杂参数校验预热：分离关注点-代码复杂度降维利器](md/param-soc.md)
+- 3、[复杂参数校验](md/param-complex-validator.md)
+
+
+
 - 1、[被误解的ORM，只是单纯的不手写SQL？](md/orm.md)
 - 2、[entGo框架高效实现ORM](md/orm-entgo.md)
 - 3、[控制反转提高CRUD开发效率](md/orm-curd-1.md)
 - 4、[entGo框架CRUD事务优化](md/orm-curd-2.md)
 - 5、[entGo框架CRUD通用代码自动化生成](md/orm-curd-3.md)
-- 6、[参数校验三种方式的最优解](md/param-validator.md)
-- 7、[复杂参数校验预热：分离关注点-代码复杂度降维利器](md/param-soc.md)
-- 8、[复杂参数校验](md/param-complex-validator.md) 
+
 - 9、参数相关的安全漏洞：SQL注入
 - 10、参数相关的安全漏洞：XSS 
 
@@ -29,6 +33,8 @@ Go编程：优雅永不过时
 面向对象的难点：对象族
 
 最后一章 应付差事的CodeReview
+
+事务开始结束日志
 
 MySQL事务隔离级别？ 扣库存的合适级别 为什么MySQL 默认隔离级别是RR，又被阿里设置为RC    RC级别需要程序员乐观锁解决
 SELECT @@global.transaction_isolation
@@ -81,3 +87,16 @@ UnmarshalJSON方法揉杂了数据的格式化、有效性校验、数据转化�
 TZ="Asia/Shanghai" go run main.go
 
 https://wangbjun.site/2021/coding/golang/event-bus.html
+
+
+实际上，对于应用系统而言，只有三种类型的异常：
+BizException：业务异常，有明确的业务语义，不需要记录Error日志，不需要Retry
+SysException：已知的系统异常，需要记录Error日志，可以Retry
+Exception：未知的其它异常，需要完整的Error Stack日志，可以Retry
+
+
+clear架构demo：
+https://github.com/manuelkiessling/go-cleanarchitecture
+https://github.com/bxcodec/go-clean-arch
+
+https://github.com/xxjwxc/uber_go_guide_cn
