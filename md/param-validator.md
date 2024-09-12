@@ -1,79 +1,356 @@
-web开发中，你肯定见到过各种各样的表单或接口数据校验：
-- 客户端参数校验：在数据提交到服务器之前，发生在浏览器端或者app应用端，相比服务器端校验，用户体验更好，能实时反馈用户的输入校验结果。
-
-- 服务器端参数校验：发生在客户端提交数据并被服务器端程序接收之后，通常服务器端校验都是发生在将数据写入数据库之前，如果数据没通过校验，则会直接从服务器端返回错误消息，并且告诉客户端发生错误的具体位置和原因，服务器端校验不像客户端校验那样有好的用户体验，因为它直到整个表单都提交后才能返回错误信息。但是服务器端校验是应用对抗错误，恶意数据的最后防线，在这之后，数据将被持久化至数据库。当今所有的服务端框架都提供了数据校验与过滤功能（让数据更安全）。
-
-本文主要讨论服务器端参数校验。
-
-确保用户以正确格式输入数据，提交的数据能使后端应用程序正常工作，同时在一切用户的输入都是不可信的前提下（SQL注入，XSS等漏洞），
-参数验证是不可或缺的一环，也是很繁琐效率不高的一环，在对接表单提交或者api接口数据提交，程序里充斥着大量重复验证逻辑和if return语句，本文分析参数校验的三种方式，找出最优解，从而提高参数验证程序代码的开发效率。
+参数校验是日常开发中不可或缺的一环，也是繁琐、效率低下的一环。
 
 <img src="../images/login.jpg" width="50%">
 
 #### 案例：
-如上图为常见的网站登陆场景，用户第一步输入手机号，点击获取短信验证码；
-第二步填入手机收到的短信验证码，点击登录按钮完成登录。<br>
-需要实现两个接口：
+如上图为常见的网站登陆场景，用户第一步输入手机号，点击获取短信验证码；第二步填入手机收到的短信验证码，点击登录按钮完成登录。<br>
 ```
 发送验证码接口：
-参数校验需求：判断手机号非空，手机号格式是否正确
+判断手机号非空，手机号数字型，手机号格式是否正确
+
 登录接口：
-参数校验需求：1、判断手机号非空，手机号格式是否正确；2、验证码非空，验证码格式是否正确
+判断手机号非空，手机号数字型，手机号格式是否正确
+判断验证码非空，验证码数字型，验证码格式是否正确
 ```
 
-#### 第一种实现方式：自定义实现校验逻辑
+V1版本：
 ```go
 // controller.Sms
-func (ctr *Sms) Captcha(c *gin.Context) {
+func (ctr *Sms) Captcha(c *gin.Context) (response.Data, error) {
     mobile := c.DefaultQuery("mobile", "")
     
     if mobile == "" {
-        c.AbortWithStatusJSON(http.StatusOK, gin.H{"error": "手机号不能为空"})
-        return
+        return nil, errors.New("手机号不能为空")
+    }
+    
+    if matched, _ := regexp.MatchString(`^[0-9]+$`, mobile); !matched {
+        return nil, errors.New("手机号必须数字")
     }
     
     if matched, _ := regexp.MatchString(`^(1[3-9][0-9]\d{8})$`, mobile); !matched {
-        c.AbortWithStatusJSON(http.StatusOK, gin.H{"error": "手机号格式不正确"})
-        return
+        return nil, errors.New("手机号格式不正确")
     }
     
-    c.JSON(http.StatusOK, gin.H{
-        "mobile": mobile,
-    })
+    return gin.H{"Mobile": mobile}, nil
 }
 
 // controller.User
-func (ctr *User) Login(c *gin.Context) {
+func (ctr *User) Login(c *gin.Context) (response.Data, error) {
     mobile := c.DefaultQuery("mobile", "")
     captcha := c.DefaultQuery("captcha", "")
     
     if mobile == "" {
-        c.AbortWithStatusJSON(http.StatusOK, gin.H{"error": "手机号不能为空"})
-        return
+        return nil, errors.New("手机号不能为空")
+    }
+    
+    if matched, _ := regexp.MatchString(`^[0-9]+$`, mobile); !matched {
+        return nil, errors.New("手机号必须数字")
     }
     
     if matched, _ := regexp.MatchString(`^(1[3-9][0-9]\d{8})$`, mobile); !matched {
-        c.AbortWithStatusJSON(http.StatusOK, gin.H{"error": "手机号格式不正确"})
-        return
+        return nil, errors.New("手机号格式不正确")
     }
     
     if captcha == "" {
-        c.AbortWithStatusJSON(http.StatusOK, gin.H{"error": "验证码不能为空"})
-        return
+        return nil, errors.New("验证码不能为空")
+    }
+    
+    if matched, _ := regexp.MatchString(`^[0-9]+$`, captcha); !matched {
+        return nil, errors.New("验证码必须数字")
     }
     
     if len(captcha) != 4 {
-        c.AbortWithStatusJSON(http.StatusOK, gin.H{"error": "验证码必须4位"})
-        return
+        return nil, errors.New("验证码必须4位")
     }
     
-    c.JSON(http.StatusOK, gin.H{
-        "mobile":  mobile,
-        "captcha": captcha,
-    })
+    return gin.H{"Mobile": mobile, "Captcha": captcha}, nil
 }
 ```
 [源码链接](../chapter-param-validate-1)
+
+### 编程第一原则：DRY
+DRY，不要重复自己(Don’t repeat yourself)，旨在减少代码的冗余和重复，提高代码的可维护性和复用性。
+
+遵守DRY原则的优势：<br>
+可维护：<br>
+DRY原则的最大好处是可维护，DRY原则要求在编写代码时避免重复的逻辑和功能。如果同样的代码片段在多个地方出现，一旦需要对其中一个进行修改，就需要在其他地方都做相同的修改，增加了维护的困难度。
+
+可复用：<br>
+DRY原则鼓励将代码模块化，以便在不同的场景中重复使用，本质上促进了代码的重用。
+
+可测试：<br>
+模块化的代码很容易进行单元测试。
+
+DRY与之对应的就是WET(Write Everything Twice)，V1版本的代码就很湿，湿度100%，重复代码无处不在。
+
+聪明的开发者肯定第一时间想到把校验逻辑提取成一个个独立的校验函数，按照此优化思路来到了V2版本：
+```go
+// controller.sms.go
+func (ctr *Sms) Captcha(c *gin.Context) (response.Data, error) {
+    mobile := c.DefaultQuery("mobile", "")
+    
+    if empty(mobile) {
+        return nil, errors.New("手机号不能为空")
+    }
+    
+    if !isNumber(mobile) {
+        return nil, errors.New("手机号必须数字")
+    }
+    
+    if !isMobile(mobile) {
+        return nil, errors.New("手机号格式不正确")
+    }
+    
+    return gin.H{"Mobile": mobile}, nil
+}
+
+// controller.user.go
+func (ctr *User) Login(c *gin.Context) (response.Data, error) {
+    mobile := c.DefaultQuery("mobile", "")
+    captcha := c.DefaultQuery("captcha", "")
+    
+    if empty(mobile) {
+        return nil, errors.New("手机号不能为空")
+    }
+    
+    if !isNumber(mobile) {
+        return nil, errors.New("手机号必须数字")
+    }
+    
+    if !isMobile(mobile) {
+        return nil, errors.New("手机号格式不正确")
+    }
+    
+    if empty(captcha) {
+        return nil, errors.New("验证码不能为空")
+    }
+    
+    if !isNumber(captcha) {
+        return nil, errors.New("验证码必须数字")
+    }
+    
+    if !length(captcha, 4) {
+        return nil, errors.New("验证码必须4位")
+    }
+    
+    return gin.H{"Mobile": mobile, "Captcha": captcha}, nil
+}
+
+// controller.validate.go
+func empty(s string) bool {
+    return s == ""
+}
+
+func isMobile(s string) bool {
+    matched, _ := regexp.MatchString(`^(1[3-9][0-9]\d{8})$`, s)
+    return matched
+}
+
+func length(s string, value int) bool {
+    return len(s) == value
+}
+
+func isNumber(s string) bool {
+    matched, _ := regexp.MatchString(`^[0-9]+$`, s)
+    return matched
+}
+```
+疑问：<br>
+变量 == ""和len(变量) != num这么简单的逻辑有必要提取成empty和length函数吗？
+
+答疑：<br>
+非常有必要，原因有二：<br>
+1、开发中有几率错误的把==写成!=，!=写成==<br>
+2、函数名能更好的表达逻辑意图
+
+代码分析：<br>
+1、感官清爽了很多，校验逻辑抽取成独立函数，提高了代码的可维护性和可复用性；<br>
+2、empty、isMobile、length、isNumber函数可测试性非常高；<br>
+
+存在问题：<br>
+1、存在errors.New重复的错误描述代码；
+
+V2版本代码：湿度60%、干度40%
+
+把errors.New独立出来，来到了V3版本：
+```go
+// controller.sms.go
+func (ctr *Sms) Captcha(c *gin.Context) (response.Data, error) {
+    mobile := c.DefaultQuery("mobile", "")
+    
+    if empty(mobile) {
+        return nil, ErrMobileEmpty
+    }
+    
+    if !isNumber(mobile) {
+        return nil, ErrMobileNotNumber
+    }
+    
+    if !isMobile(mobile) {
+        return nil, ErrMobileFormat
+    }
+    
+    return gin.H{"Mobile": mobile}, nil
+}
+
+
+// controller.user.go
+func (ctr *User) Login(c *gin.Context) (response.Data, error) {
+    mobile := c.DefaultQuery("mobile", "")
+    captcha := c.DefaultQuery("captcha", "")
+    
+    if empty(mobile) {
+        return nil, ErrMobileEmpty
+    }
+    
+    if !isNumber(mobile) {
+        return nil, ErrMobileNotNumber
+    }
+    
+    if !isMobile(mobile) {
+        return nil, ErrMobileFormat
+    }
+    
+    if empty(captcha) {
+        return nil, ErrCaptchaEmpty
+    }
+    
+    if !isNumber(captcha) {
+        return nil, ErrCaptchaNotNumber
+    }
+    
+    if !length(captcha, 4) {
+        return nil, ErrCaptchaLength
+    }
+    
+    return gin.H{"Mobile": mobile, "Captcha": captcha}, nil
+}
+
+// controller.validate.go
+var (
+    ErrMobileEmpty     = errors.New("手机号不能为空")    
+    ErrMobileNotNumber = errors.New("手机号必须数字")
+    ErrMobileFormat    = errors.New("手机号格式不正确")
+    
+    ErrCaptchaEmpty     = errors.New("验证码不能为空")
+    ErrCaptchaNotNumber = errors.New("验证码必须数字")
+    ErrCaptchaLength    = errors.New("验证码必须4位")
+)
+```
+代码分析：<br>
+1、消除了errors.New重复的错误描述代码<br>
+
+存在问题：<br>
+1、Err系列变量存在大量的重复片段，3个"手机号"、3个"验证码"、2个"不能为空"、2个"必须数字"<br>
+2、存在大量重复if控制语句
+
+V3版本代码：湿度50%、干度50%
+
+疑问：<br>
+if语句不都这样写吗，会有什么问题？
+
+答疑：<br>
+这里的if重复是指：<br>
+if empty(mobile) 和 if empty(captcha) 重复 <br>
+if !isNumber(mobile) 和 if !isNumber(captcha) 重复 <br>
+
+比如我们重复写isNumber逻辑的时候很有可能会遗漏isNumber函数的!符号，把if控制语句抽取出来就可以避免这种低级错误
+
+来到了V4版本:
+```go
+// controller.sms.go
+func (ctr *Sms) Captcha(c *gin.Context) (response.Data, error) {
+    mobile := c.DefaultQuery("mobile", "")
+    
+    fields := []*Field{
+        {name: "手机号", funcs: []string{NotEmpty, IsNumber, IsMobile}, value: mobile},
+    }
+    
+    if err := validate(fields); err != nil {
+        return nil, err
+    }
+    
+    return gin.H{"Mobile": mobile}, nil
+}
+
+// controller.user.go
+func (ctr *User) Login(c *gin.Context) (response.Data, error) {
+    mobile := c.DefaultQuery("mobile", "")
+    captcha := c.DefaultQuery("captcha", "")
+    
+    fields := []*Field{
+        {name: "手机号", funcs: []string{NotEmpty, IsNumber, IsMobile}, value: mobile},
+        {name: "验证码", funcs: []string{NotEmpty, IsNumber, Length}, value: captcha, args: []any{4}},
+    }
+    
+    if err := validate(fields); err != nil {
+        return nil, err
+    }
+    
+    return gin.H{"Mobile": mobile, "Captcha": captcha}, nil
+}
+```
+代码分析：<br>
+1、通过可配置的方式实现了参数检验功能<br>
+2、错误描述语句得到了重用<br>
+3、if控制语句得到了重用
+
+V4版本代码：湿度10%、干度90%
+
+此时的参数校验代码就很像gin框架自带的模型绑定校验了，我们用gin模型绑定校验重新实现一遍，来到了V5版本：
+```go
+type SmsCaptcha struct {
+    Mobile string `binding:"required,number,mobile"`
+}
+
+type UserLogin struct {
+    Mobile  string `binding:"required,number,mobile"`
+    Captcha string `binding:"required,number,len=4"`
+}
+
+func (ctr *Sms) Captcha(c *gin.Context) (response.Data, error) {
+    request := new(request.SmsCaptcha)
+    if err := c.ShouldBind(request); err != nil {
+        return nil, err
+    }
+    
+    return request, nil
+}
+
+func (ctr *User) Login(c *gin.Context) (response.Data, error) {
+    request := new(request.UserLogin)
+    if err := c.ShouldBind(request); err != nil {
+        return nil, err
+    }
+    
+    return request, nil
+}
+```
+此时的代码非常清爽，令人愉悦。
+
+这么愉悦的代码还有什么可优化空间吗？<br>
+SmsCaptcha.Mobile属性和UserLogin.Mobile属性重复
+
+解决属性校验配置重复的解决办法是拆解属性为独立结构体，通过多个属性结构体的相互组合成业务所需的结构体，来到了V6版本：
+```go
+type MobileField struct {
+    Mobile string `binding:"required,number,mobile"`
+}
+
+type CaptchaField struct {
+    Captcha string `binding:"required,number,len=4"`
+}
+
+type SmsCaptcha struct {
+    MobileField
+}
+
+type UserLogin struct {
+    MobileField
+    CaptchaField
+}
+```
+
 
 代码分析：<br>
 参数校验代码放在Controller层；<br>

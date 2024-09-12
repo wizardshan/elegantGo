@@ -1,8 +1,9 @@
 package controller
 
 import (
+	"elegantGo/chapter-param-validate-2/controller/response"
+	"errors"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type Sms struct{}
@@ -12,19 +13,20 @@ func NewSms() *Sms {
 	return ctr
 }
 
-func (ctr *Sms) Captcha(c *gin.Context) {
+func (ctr *Sms) Captcha(c *gin.Context) (response.Data, error) {
 	mobile := c.DefaultQuery("mobile", "")
 
-	fields := []*field{
-		{name: "手机号", funcNames: []string{NotEmpty, IsMobile}, value: mobile},
+	if empty(mobile) {
+		return nil, errors.New("手机号不能为空")
 	}
 
-	if errs := validate(fields); errs != nil {
-		c.AbortWithStatusJSON(http.StatusOK, gin.H{"error": errs.Error()})
-		return
+	if !isNumber(mobile) {
+		return nil, errors.New("手机号必须数字")
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"mobile": mobile,
-	})
+	if !isMobile(mobile) {
+		return nil, errors.New("手机号格式不正确")
+	}
+
+	return gin.H{"Mobile": mobile}, nil
 }

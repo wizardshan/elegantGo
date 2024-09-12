@@ -21,3 +21,12 @@ func (ctr *User) Login(c *gin.Context) (response.Data, error) {
 
 	return request, nil
 }
+
+func (ctr *User) Register(c *gin.Context) (response.Data, error) {
+	request := new(request.UserRegister)
+	if err := c.ShouldBind(request); err != nil {
+		return nil, err
+	}
+
+	return request, nil
+}

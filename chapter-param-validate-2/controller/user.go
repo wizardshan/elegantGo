@@ -1,8 +1,9 @@
 package controller
 
 import (
+	"elegantGo/chapter-param-validate-2/controller/response"
+	"errors"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type User struct{}
@@ -12,22 +13,33 @@ func NewUser() *User {
 	return ctr
 }
 
-func (ctr *User) Login(c *gin.Context) {
+func (ctr *User) Login(c *gin.Context) (response.Data, error) {
 	mobile := c.DefaultQuery("mobile", "")
 	captcha := c.DefaultQuery("captcha", "")
 
-	fields := []*field{
-		{name: "手机号", funcNames: []string{NotEmpty, IsNumber, IsMobile}, value: mobile},
-		{name: "验证码", funcNames: []string{NotEmpty, IsNumber, Length}, value: captcha, args: []any{4}},
+	if empty(mobile) {
+		return nil, errors.New("手机号不能为空")
 	}
 
-	if errs := validate(fields); errs != nil {
-		c.AbortWithStatusJSON(http.StatusOK, gin.H{"error": errs.Error()})
-		return
+	if !isNumber(mobile) {
+		return nil, errors.New("手机号必须数字")
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"mobile":  mobile,
-		"captcha": captcha,
-	})
+	if !isMobile(mobile) {
+		return nil, errors.New("手机号格式不正确")
+	}
+
+	if empty(captcha) {
+		return nil, errors.New("验证码不能为空")
+	}
+
+	if !isNumber(captcha) {
+		return nil, errors.New("验证码必须数字")
+	}
+
+	if !length(captcha, 4) {
+		return nil, errors.New("验证码必须4位")
+	}
+
+	return gin.H{"Mobile": mobile, "Captcha": captcha}, nil
 }

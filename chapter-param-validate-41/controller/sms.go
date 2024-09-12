@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"elegantGo/chapter-param-validate-4/controller/request"
 	"elegantGo/chapter-param-validate-4/controller/response"
 	"github.com/gin-gonic/gin"
 )
@@ -13,15 +14,10 @@ func NewSms() *Sms {
 }
 
 func (ctr *Sms) Captcha(c *gin.Context) (response.Data, error) {
-	mobile := c.DefaultQuery("mobile", "")
-
-	fields := []*Field{
-		{name: "手机号", funcs: []string{NotEmpty, IsNumber, IsMobile}, value: mobile},
-	}
-
-	if err := validate(fields); err != nil {
+	request := new(request.SmsCaptcha)
+	if err := c.ShouldBind(request); err != nil {
 		return nil, err
 	}
 
-	return gin.H{"Mobile": mobile}, nil
+	return request, nil
 }

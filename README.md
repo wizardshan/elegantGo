@@ -1,6 +1,6 @@
 # elegantGo
 Go编程：优雅永不过时
-- 1、[参数校验的演进过程](md/param-validator.md)
+- 1、[参数校验：代码由湿到干的过程](md/param-validator.md)
 - 2、[复杂参数校验预热：分离关注点-代码复杂度降维利器](md/param-soc.md)
 - 3、[复杂参数校验](md/param-complex-validator.md)
 

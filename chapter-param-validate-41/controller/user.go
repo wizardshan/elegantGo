@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"elegantGo/chapter-param-validate-5/controller/request"
-	"elegantGo/chapter-param-validate-5/controller/response"
+	"elegantGo/chapter-param-validate-4/controller/request"
+	"elegantGo/chapter-param-validate-4/controller/response"
 	"github.com/gin-gonic/gin"
 )
 
