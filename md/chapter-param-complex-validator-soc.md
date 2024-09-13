@@ -1,11 +1,12 @@
-上文提到的参数"IDs=1,2,3,4,5"，需要把这个被逗号分割的字符串转换为int切片[]int{1,2,3,4,5}，用于后续代码的使用。<br>
-解决思路：
+上文提到的参数"1,2,3,4,5"，需要把这个被逗号分割的字符串转换为int切片`[]int{1,2,3,4,5}`，用于后续代码的使用。<br>
+
+代码实现：
 ```go
-type UserMany struct {
+type Users struct {
     IDs string
 }
 
-func (req *UserMany) IDsValues() []int {
+func (req *Users) IDsValues() []int {
     ss := strings.Split(req.IDs, ",")
     var values []int
     for _, s := range ss {
@@ -17,14 +18,15 @@ func (req *UserMany) IDsValues() []int {
     }
     return values
 }
+
 ```
 [源码链接](../chapter-param-complex-validator-1)<br>
 代码分析：<br>
-通过request.UserMany模型解析IDs字符串参数，问题显而易见，当另外一个接口也需要IDs参数时，相对应的request模型同样需要实现IDsValues函数，这样就导致的重复代码。
+通过`request.Users`模型解析`IDs`字符串参数，问题显而易见，当另外一个接口也需要`IDs`参数时，相对应的`request`模型同样需要实现`IDsValues`函数，这样就导致的重复代码。
 
-解决思路：
+代码实现：
 ```go
-type UserMany struct {
+type Users struct {
     IDs IDsField
 }
 
@@ -62,9 +64,9 @@ func (req *LevelsField) Values() []int {
     return values
 }
 ```
-我们把角度再拔高一点思维再抽象一点，根据字符串"1,2,3,4,5"的特征新建一个通用的IntsFieldV1结构体，如下：
+我们把角度再拔高一点思维再抽象一点，根据字符串"1,2,3,4,5"的特征新建一个通用的`IntsFieldV1`结构体，如下：
 ```go
-type UserMany struct {
+type Users struct {
     IDs    IntsFieldV1
     Levels IntsFieldV1
 }
@@ -84,11 +86,11 @@ func (req *IntsFieldV1) Values() []int {
     return values
 }
 ```
-这样，用户ID和用户等级等多整形数字参数就可以复用IntsFieldV1。
+这样，用户ID和用户等级等多整形数字参数就可以复用`IntsFieldV1`结构体。
 
-下面进入本文的重点，我们先审视一下IntsFieldV1.Values方法，Values方法的目的是把被逗号分割的string，转换为[]int，分为三步骤：<br>
-步骤1：字符串Split为[]string<br>
-步骤2：for循环[]string获取切片里的字符串<br>
+下面进入本文的重点，我们先审视一下`IntsFieldV1.Values`方法，`Values`方法的目的是把被逗号分割的`string`，转换为`[]int`，分为三步骤：<br>
+步骤1：字符串Split为`[]string`<br>
+步骤2：for循环`[]string`获取切片里的字符串<br>
 步骤3：字符串转换为int，转换规则比较宽松，失败忽略，只收集可以转换成功的数据<br>
 
 这十行代码看起来没什么问题，但莫名就有点糟心，给人一种乱糟糟的感觉，但又说不出哪里不对，我们接着往下看。
@@ -96,8 +98,8 @@ func (req *IntsFieldV1) Values() []int {
 字符串"1,2,3,4,5"转换为[]int{1,2,3,4,5}有三种规则：<br>
 1、只转换有效的数据<br>
 2、无效数据报错，停止转换<br>
-3、尽力而为，无效数据转换失败，默认零值<br>
-字符串"1,s,2,,3"转换对应的结果：<br>
+3、无效数据转换失败使用零值<br>
+字符串"1,s,2,,3"转换对应的三种结果：<br>
 1、[]int{1,2,3}<br>
 2、报错<br>
 3、[]int{1,0,2,0,3}
@@ -132,7 +134,7 @@ func (req *IntsFieldV1) MustValues() ([]int, error) {
     return values, nil
 }
 
-// 尽力而为，无效数据转换失败，默认零值
+// 无效数据转换失败使用零值
 func (req *IntsFieldV1) ShouldValues() []int {
     ss := strings.Split(string(*req), ",")
     var values []int
