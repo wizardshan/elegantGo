@@ -13,5 +13,6 @@ type UserRegister struct {
 	user.NicknameField
 	user.PasswordField
 	//user.RePasswordField
+	// eqfield有效
 	RePassword string `binding:"eqfield=Password"`
 }

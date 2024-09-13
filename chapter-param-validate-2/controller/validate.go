@@ -2,8 +2,8 @@ package controller
 
 import "regexp"
 
-func empty(s string) bool {
-	return s == ""
+func notEmpty(s string) bool {
+	return s != ""
 }
 
 func isMobile(s string) bool {

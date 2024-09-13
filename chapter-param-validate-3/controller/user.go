@@ -16,8 +16,8 @@ func (ctr *User) Login(c *gin.Context) (response.Data, error) {
 	mobile := c.DefaultQuery("mobile", "")
 	captcha := c.DefaultQuery("captcha", "")
 
-	if empty(mobile) {
-		return nil, ErrMobileEmpty
+	if !notEmpty(mobile) {
+		return nil, ErrMobileNotEmpty
 	}
 
 	if !isNumber(mobile) {
@@ -28,8 +28,8 @@ func (ctr *User) Login(c *gin.Context) (response.Data, error) {
 		return nil, ErrMobileFormat
 	}
 
-	if empty(captcha) {
-		return nil, ErrCaptchaEmpty
+	if !notEmpty(captcha) {
+		return nil, ErrCaptchaNotEmpty
 	}
 
 	if !isNumber(captcha) {

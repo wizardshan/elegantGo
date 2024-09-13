@@ -17,7 +17,7 @@ func (ctr *User) Login(c *gin.Context) (response.Data, error) {
 	mobile := c.DefaultQuery("mobile", "")
 	captcha := c.DefaultQuery("captcha", "")
 
-	if empty(mobile) {
+	if !notEmpty(mobile) {
 		return nil, errors.New("手机号不能为空")
 	}
 
@@ -29,7 +29,7 @@ func (ctr *User) Login(c *gin.Context) (response.Data, error) {
 		return nil, errors.New("手机号格式不正确")
 	}
 
-	if empty(captcha) {
+	if !notEmpty(captcha) {
 		return nil, errors.New("验证码不能为空")
 	}
 

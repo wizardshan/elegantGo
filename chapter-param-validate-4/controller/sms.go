@@ -15,11 +15,11 @@ func NewSms() *Sms {
 func (ctr *Sms) Captcha(c *gin.Context) (response.Data, error) {
 	mobile := c.DefaultQuery("mobile", "")
 
-	fields := []*Field{
-		{name: "手机号", funcs: []string{NotEmpty, IsNumber, IsMobile}, value: mobile},
+	fields := Fields{
+		{name: "手机号", funcNames: []string{NotEmpty, IsNumber, IsMobile}, value: mobile},
 	}
 
-	if err := validate(fields); err != nil {
+	if err := fields.validate(); err != nil {
 		return nil, err
 	}
 

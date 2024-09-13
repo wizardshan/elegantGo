@@ -16,12 +16,12 @@ func (ctr *User) Login(c *gin.Context) (response.Data, error) {
 	mobile := c.DefaultQuery("mobile", "")
 	captcha := c.DefaultQuery("captcha", "")
 
-	fields := []*Field{
-		{name: "手机号", funcs: []string{NotEmpty, IsNumber, IsMobile}, value: mobile},
-		{name: "验证码", funcs: []string{NotEmpty, IsNumber, Length}, value: captcha, args: []any{4}},
+	fields := Fields{
+		{name: "手机号", funcNames: []string{NotEmpty, IsNumber, IsMobile}, value: mobile},
+		{name: "验证码", funcNames: []string{NotEmpty, IsNumber, Length}, value: captcha, args: []any{4}},
 	}
 
-	if err := validate(fields); err != nil {
+	if err := fields.validate(); err != nil {
 		return nil, err
 	}
 

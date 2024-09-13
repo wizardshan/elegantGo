@@ -16,7 +16,7 @@ func NewSms() *Sms {
 func (ctr *Sms) Captcha(c *gin.Context) (response.Data, error) {
 	mobile := c.DefaultQuery("mobile", "")
 
-	if empty(mobile) {
+	if !notEmpty(mobile) {
 		return nil, errors.New("手机号不能为空")
 	}
 

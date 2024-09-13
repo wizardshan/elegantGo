@@ -8,6 +8,7 @@ type PasswordField struct {
 	Password string `binding:"required,min=6"`
 }
 
+// eqfield有效
 type RePasswordField struct {
 	//RePassword string `binding:"eqfield=Password"`
 	//RePassword string `binding:"eqfield=PasswordField.Password"`

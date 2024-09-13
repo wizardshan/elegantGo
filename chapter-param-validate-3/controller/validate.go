@@ -6,17 +6,17 @@ import (
 )
 
 var (
-	ErrMobileEmpty     = errors.New("手机号不能为空")
+	ErrMobileNotEmpty  = errors.New("手机号不能为空")
 	ErrMobileNotNumber = errors.New("手机号必须数字")
 	ErrMobileFormat    = errors.New("手机号格式不正确")
 
-	ErrCaptchaEmpty     = errors.New("验证码不能为空")
+	ErrCaptchaNotEmpty  = errors.New("验证码不能为空")
 	ErrCaptchaNotNumber = errors.New("验证码必须数字")
 	ErrCaptchaLength    = errors.New("验证码必须4位")
 )
 
-func empty(s string) bool {
-	return s == ""
+func notEmpty(s string) bool {
+	return s != ""
 }
 
 func isMobile(s string) bool {

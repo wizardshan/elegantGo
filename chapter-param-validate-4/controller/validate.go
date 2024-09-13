@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 )
@@ -13,12 +14,39 @@ const (
 )
 
 var (
-	ErrEmptyMsg             = "%s不能为空"
-	ErrNotNumberMsg         = "%s必须数字"
-	ErrFormatMsg            = "%s格式不正确"
-	ErrLengthMsg            = "%s必须%d位"
-	ErrValidateFuncNotExist = "%s校验函数不存在"
+	ErrNotEmptyMsg  = "%s不能为空"
+	ErrNotNumberMsg = "%s必须数字"
+	ErrFormatMsg    = "%s格式不正确"
+	ErrLengthMsg    = "%s必须%d位"
+
+	ErrValidateFuncNotExistMsg = "%s校验函数不存在"
 )
+
+type Validator func() bool
+
+var ValidatorFuncMapping = map[string]func(field *Field) (Validator, string){
+	NotEmpty: func(field *Field) (Validator, string) {
+		return func() bool {
+			return notEmpty(field.value)
+		}, fmt.Sprintf(ErrNotEmptyMsg, field.name)
+	},
+	IsMobile: func(field *Field) (Validator, string) {
+		return func() bool {
+			return isMobile(field.value)
+		}, fmt.Sprintf(ErrFormatMsg, field.name)
+	},
+	Length: func(field *Field) (Validator, string) {
+		v := field.args[0].(int)
+		return func() bool {
+			return length(field.value, v)
+		}, fmt.Sprintf(ErrLengthMsg, field.name, v)
+	},
+	IsNumber: func(field *Field) (Validator, string) {
+		return func() bool {
+			return isNumber(field.value)
+		}, fmt.Sprintf(ErrNotNumberMsg, field.name)
+	},
+}
 
 type Errs []error
 
@@ -30,50 +58,43 @@ func (errs Errs) Error() string {
 	return errsMsg
 }
 
-type Field struct {
-	name  string
-	funcs []string
-	value string
-	args  []any
-}
+type Fields []*Field
 
-func validate(fields []*Field) (errs Errs) {
+func (fields Fields) validate() (errs Errs) {
 	for _, field := range fields {
-		for _, f := range field.funcs {
-			var err error
-			switch f {
-			case NotEmpty:
-				if empty(field.value) {
-					err = fmt.Errorf(ErrEmptyMsg, field.name)
-				}
-			case IsMobile:
-				if !isMobile(field.value) {
-					err = fmt.Errorf(ErrFormatMsg, field.name)
-				}
-			case Length:
-				v := field.args[0].(int)
-				if !length(field.value, v) {
-					err = fmt.Errorf(ErrLengthMsg, field.name, v)
-				}
-			case IsNumber:
-				if !isNumber(field.value) {
-					err = fmt.Errorf(ErrNotNumberMsg, field.name)
-				}
-			default:
-				err = fmt.Errorf(ErrValidateFuncNotExist, field.name)
-			}
-
-			if err == nil {
-				continue
-			}
+		if err := field.validate(); err != nil {
 			errs = append(errs, err)
 		}
 	}
 	return
 }
 
-func empty(s string) bool {
-	return s == ""
+type Field struct {
+	name      string
+	funcNames []string
+	value     string
+	args      []any
+}
+
+func (field *Field) validate() (errs Errs) {
+	for _, funcName := range field.funcNames {
+		vf, ok := ValidatorFuncMapping[funcName]
+		if !ok {
+			errs = append(errs, fmt.Errorf(ErrValidateFuncNotExistMsg, field.name))
+			continue
+		}
+
+		validator, errMsg := vf(field)
+		// 前文中所有的if控制语句都抽取成这一个if代码块了，并且重复使用也遗漏不了!符号
+		if !validator() {
+			errs = append(errs, errors.New(errMsg))
+		}
+	}
+	return
+}
+
+func notEmpty(s string) bool {
+	return s != ""
 }
 
 func isMobile(s string) bool {
