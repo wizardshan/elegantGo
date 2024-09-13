@@ -8,7 +8,6 @@ import (
 func main() {
 
 	engine := gin.New()
-
 	ctrUser := controller.NewUser()
 	engine.GET("/user/login", ctrUser.Login)
 

@@ -30,6 +30,8 @@ Go编程：优雅永不过时
 - 13、项目结构分层的自动化生成
 - 14、项目结构实践中的完善，user_id,重复提交**
 
+the right status code is 4xx ("you messed up") or 5xx ("I messed up").
+
 面向对象的难点：对象族
 
 最后一章 应付差事的CodeReview

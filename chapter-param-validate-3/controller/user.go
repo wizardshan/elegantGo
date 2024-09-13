@@ -2,8 +2,8 @@ package controller
 
 import (
 	"elegantGo/chapter-param-validate-3/controller/request"
-	"elegantGo/chapter-param-validate-3/controller/response"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type User struct{}
@@ -13,11 +13,14 @@ func NewUser() *User {
 	return ctr
 }
 
-func (ctr *User) Login(c *gin.Context) (response.Data, error) {
+func (ctr *User) Login(c *gin.Context) {
 	request := new(request.UserLogin)
 	if err := c.ShouldBind(request); err != nil {
-		return nil, err
+		c.AbortWithStatusJSON(http.StatusOK, gin.H{"error": err.Error()})
+		return
 	}
 
-	return request, nil
+	c.JSON(http.StatusOK, gin.H{
+		"request": request,
+	})
 }

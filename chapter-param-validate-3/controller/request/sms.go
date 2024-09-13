@@ -1,5 +1,5 @@
 package request
 
 type SmsCaptcha struct {
-	Mobile string `binding:"required,number,mobile"`
+	Mobile string `form:"mobile" binding:"required,number,mobile"`
 }

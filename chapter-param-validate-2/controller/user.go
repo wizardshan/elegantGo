@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"elegantGo/chapter-param-validate-2/controller/request"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -14,13 +13,21 @@ func NewUser() *User {
 }
 
 func (ctr *User) Login(c *gin.Context) {
-	request := new(request.UserLogin)
-	if err := c.ShouldBind(request); err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, gin.H{"error": err.Error()})
+	mobile := c.DefaultQuery("mobile", "")
+	captcha := c.DefaultQuery("captcha", "")
+
+	fields := []*field{
+		{name: "手机号", funcNames: []string{NotEmpty, IsNumber, IsMobile}, value: mobile},
+		{name: "验证码", funcNames: []string{NotEmpty, IsNumber, Length}, value: captcha, args: []any{4}},
+	}
+
+	if errs := validate(fields); errs != nil {
+		c.AbortWithStatusJSON(http.StatusOK, gin.H{"error": errs.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"request": request,
+		"mobile":  mobile,
+		"captcha": captcha,
 	})
 }

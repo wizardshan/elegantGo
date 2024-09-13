@@ -21,6 +21,11 @@ func (ctr *Sms) Captcha(c *gin.Context) {
 		return
 	}
 
+	if matched, _ := regexp.MatchString(`^[0-9]+$`, mobile); !matched {
+		c.AbortWithStatusJSON(http.StatusOK, gin.H{"error": "手机号必须数字"})
+		return
+	}
+
 	if matched, _ := regexp.MatchString(`^(1[3-9][0-9]\d{8})$`, mobile); !matched {
 		c.AbortWithStatusJSON(http.StatusOK, gin.H{"error": "手机号格式不正确"})
 		return

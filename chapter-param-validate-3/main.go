@@ -10,10 +10,10 @@ func main() {
 	engine := gin.New()
 
 	ctrUser := controller.NewUser()
-	engine.GET("/user/login", controller.Wrapper(ctrUser.Login))
+	engine.GET("/user/login", ctrUser.Login)
 
 	ctrSms := controller.NewSms()
-	engine.GET("/sms/captcha", controller.Wrapper(ctrSms.Captcha))
+	engine.GET("/sms/captcha", ctrSms.Captcha)
 
 	engine.Run()
 }

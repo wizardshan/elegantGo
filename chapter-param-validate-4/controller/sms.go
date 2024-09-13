@@ -6,15 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type User struct{}
+type Sms struct{}
 
-func NewUser() *User {
-	ctr := new(User)
+func NewSms() *Sms {
+	ctr := new(Sms)
 	return ctr
 }
 
-func (ctr *User) Login(c *gin.Context) (response.Data, error) {
-	request := new(request.UserLogin)
+func (ctr *Sms) Captcha(c *gin.Context) (response.Data, error) {
+	request := new(request.SmsCaptcha)
 	if err := c.ShouldBind(request); err != nil {
 		return nil, err
 	}

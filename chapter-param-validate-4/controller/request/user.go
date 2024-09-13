@@ -1,19 +1,6 @@
 package request
 
-import (
-	"elegantGo/chapter-param-validate-4/controller/request/user"
-)
-
 type UserLogin struct {
-	MobileField
-	CaptchaField
-}
-
-type UserRegister struct {
-	MobileField
-	CaptchaField
-	user.NicknameField
-	user.PasswordField
-	//user.RePasswordField
-	RePassword string `binding:"eqfield=Password"`
+	Mobile  string `form:"mobile" binding:"required,number,mobile"`
+	Captcha string `form:"captcha" binding:"required,number,len=4"`
 }

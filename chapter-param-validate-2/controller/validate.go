@@ -13,9 +13,9 @@ const (
 	IsNumber = "IsNumber"
 )
 
-type validateErrs []error
+type Errs []error
 
-func (errs validateErrs) Error() string {
+func (errs Errs) Error() string {
 	errsMsg := ""
 	for _, err := range errs {
 		errsMsg += err.Error()
@@ -30,7 +30,7 @@ type field struct {
 	args      []any
 }
 
-func validate(fields []*field) (errs validateErrs) {
+func validate(fields []*field) (errs Errs) {
 	for _, f := range fields {
 		if es := valid(f); es != nil {
 			errs = append(errs, es...)

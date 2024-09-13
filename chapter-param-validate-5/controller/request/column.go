@@ -1,8 +1,8 @@
 package request
 
 import (
-	"elegantGo/chapter-param-validate-4/controller/request/article"
-	"elegantGo/chapter-param-validate-4/controller/request/column"
+	"elegantGo/chapter-param-validate-5/controller/request/article"
+	"elegantGo/chapter-param-validate-5/controller/request/column"
 )
 
 type ColumnCreateArticle struct {
