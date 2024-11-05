@@ -1,7 +1,7 @@
 package request
 
 import (
-	"elegantGo/chapter-param-complex-validator-1/pkg/stringx"
+	"elegantGo/param-validate-soc/pkg/stringx"
 	"errors"
 	"strconv"
 	"strings"

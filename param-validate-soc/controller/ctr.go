@@ -1,4 +1,4 @@
-package request
+package controller
 
 import (
 	"github.com/gin-gonic/gin/binding"

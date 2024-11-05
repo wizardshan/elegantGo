@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"elegantGo/chapter-param-complex-validator-1/controller/response"
+	"elegantGo/param-validate-soc/controller/response"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
