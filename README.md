@@ -102,3 +102,11 @@ https://github.com/manuelkiessling/go-cleanarchitecture
 https://github.com/bxcodec/go-clean-arch
 
 https://github.com/xxjwxc/uber_go_guide_cn
+
+https://darjun.github.io/2020/04/01/godailylib/govaluate/
+
+工具函数库
+https://github.com/gookit/goutil
+https://github.com/duke-git/lancet
+
+https://github.com/hashicorp/golang-lru

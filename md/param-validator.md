@@ -66,7 +66,7 @@ func (ctr *User) Login(c *gin.Context) (response.Data, error) {
     return gin.H{"Mobile": mobile, "Captcha": captcha}, nil
 }
 ```
-[V1源码链接](../chapter-param-validate-1)
+[V1源码链接](../param-validate-1)
 
 ### 编程第一原则：DRY
 `DRY`，不要重复自己(`Don’t repeat yourself`)，旨在减少代码的冗余和重复，提高代码的可维护性和复用性。
@@ -155,7 +155,7 @@ func isNumber(s string) bool {
     return matched
 }
 ```
-[V2源码链接](../chapter-param-validate-2)
+[V2源码链接](../param-validate-2)
 
 `变量 != ""`和`len(变量) != num`如此简单的逻辑有必要提取成`notEmpty`和`length`函数吗？
 
@@ -237,7 +237,7 @@ var (
     ErrCaptchaLength    = errors.New("验证码必须4位")
 )
 ```
-[V3源码链接](../chapter-param-validate-3)
+[V3源码链接](../param-validate-3)
 
 代码分析：<br>
 1、消除了`errors.New`重复的错误描述代码<br>
@@ -349,7 +349,7 @@ func (field *Field) validate() (errs Errs) {
     return
 }
 ```
-[V4源码链接](../chapter-param-validate-4)
+[V4源码链接](../param-validate-4)
 
 代码分析：<br>
 1、通过可配置的方式实现了参数检验功能<br>
@@ -387,7 +387,7 @@ func (ctr *User) Login(c *gin.Context) (response.Data, error) {
     return request, nil
 }
 ```
-[V5源码链接](../chapter-param-validate-5)
+[V5源码链接](../param-validate-5)
 
 此时的代码非常清爽，令人愉悦。
 
@@ -397,15 +397,15 @@ func (ctr *User) Login(c *gin.Context) (response.Data, error) {
 解决字段校验配置重复的解决办法是拆解字段为独立结构体，多个字段结构体的相互组合成业务所需的结构体，来到了V6版本：
 ```go
 type MobileField struct {
-    Mobile string `binding:"required,number,mobile"`
+    Mobile string `binding:"number,mobile"`
 }
 
 type CaptchaField struct {
-    Captcha string `binding:"required,number,len=4"`
+    Captcha string `binding:"number,len=4"`
 }
 
 type IDField struct {
-    ID int `binding:"required,min=1"`
+    ID int `binding:"min=1"`
 }
 
 type SmsCaptcha struct {
@@ -424,12 +424,24 @@ type UserRegister struct {
     user.PasswordField
     user.RePasswordField
 }
+
+type UserMany struct {
+    MobileField        `binding:"omitempty"`
+    user.NicknameField `binding:"omitempty"`
+}
 ```
-[V6源码链接](../chapter-param-validate-6)
+[V6源码链接](../param-validate-6)
 
 代码分析：<br>
 1、独立的字段结构体通常以表名为包名定义范围，比如商品名称和用户名称字段名都为Name，但是所需定义的校验逻辑（字符长度等）很有可能不同；<br>
 2、复用Mobile、Captcha、ID、CreateTime等公共字段结构体；
+
+验证需求通常分两种：<br>
+1、必须验证，如登录、注册接口，对应`required`标签 <br>
+2、传了验证，不传不验，如用户列表查询接口，对应`omitempty`标签 <br>
+
+gin自带的校验框架默认`required`，所以必须验证的情况可以省略`required`标签。
+
 
 V6版本代码：湿度0%、干度100%
 
