@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-type IntsFieldV2 string
+type IntsFieldV3 string
 
-func (req IntsFieldV2) Values() []int {
+func (req IntsFieldV3) Values() []int {
 	ss := req.split()
 
 	var ssFiltered []string
@@ -21,13 +21,12 @@ func (req IntsFieldV2) Values() []int {
 
 	var values []int
 	for _, s := range ssFiltered {
-		value, _ := strconv.Atoi(s)
-		values = append(values, value)
+		values = append(values, req.toInt(s))
 	}
 	return values
 }
 
-func (req IntsFieldV2) MustValues() ([]int, error) {
+func (req IntsFieldV3) MustValues() ([]int, error) {
 	ss := req.split()
 
 	for _, s := range ss {
@@ -38,23 +37,26 @@ func (req IntsFieldV2) MustValues() ([]int, error) {
 
 	var values []int
 	for _, s := range ss {
-		value, _ := strconv.Atoi(s)
-		values = append(values, value)
+		values = append(values, req.toInt(s))
 	}
 	return values, nil
 }
 
-func (req IntsFieldV2) ShouldValues() []int {
+func (req IntsFieldV3) ShouldValues() []int {
 	ss := req.split()
 
 	var values []int
 	for _, s := range ss {
-		value, _ := strconv.Atoi(s)
-		values = append(values, value)
+		values = append(values, req.toInt(s))
 	}
 	return values
 }
 
-func (req IntsFieldV2) split() []string {
+func (req IntsFieldV3) split() []string {
 	return strings.Split(string(req), ",")
+}
+
+func (req IntsFieldV3) toInt(s string) int {
+	value, _ := strconv.Atoi(s)
+	return value
 }

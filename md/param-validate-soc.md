@@ -8,7 +8,7 @@ type Users struct {
     IDs string
 }
 
-func (req *Users) IDsValues() []int {
+func (req Users) IDsValues() []int {
     ss := strings.Split(req.IDs, ",")
     var values []int
     for _, s := range ss {
@@ -22,11 +22,11 @@ func (req *Users) IDsValues() []int {
 }
 
 ```
-[Ô´ÂëÁ´½Ó](../param-complex-validator-1)<br>
+
 ´úÂë·ÖÎö£º<br>
 Í¨¹ı`request.Users`Ä£ĞÍ½âÎö`IDs`×Ö·û´®²ÎÊı£¬ÎÊÌâÏÔ¶øÒ×¼û£¬µ±ÁíÍâÒ»¸ö½Ó¿ÚÒ²ĞèÒª`IDs`²ÎÊıÊ±£¬Ïà¶ÔÓ¦µÄ`request`Ä£ĞÍÍ¬ÑùĞèÒªÊµÏÖ`IDsValues`º¯Êı£¬ÕâÑù¾Íµ¼ÖÂµÄÖØ¸´´úÂë¡£
 
-´úÂëÊµÏÖ£º
+ÎÒÃÇ°Ñ`IDs`³éÈ¡³É`IDsField`£¬´úÂëÊµÏÖ£º
 ```go
 type Users struct {
     IDs IDsField
@@ -34,8 +34,8 @@ type Users struct {
 
 type IDsField string
 
-func (req *IDsField) Values() []int {
-    ss := strings.Split(string(*req), ",")
+func (req IDsField) Values() []int {
+    ss := strings.Split(string(req), ",")
     var values []int
     for _, s := range ss {
         value, err := strconv.Atoi(s)
@@ -53,8 +53,8 @@ func (req *IDsField) Values() []int {
 ```go
 type LevelsField string
 
-func (req *LevelsField) Values() []int {
-    ss := strings.Split(string(*req), ",")
+func (req LevelsField) Values() []int {
+    ss := strings.Split(string(req), ",")
     var values []int
     for _, s := range ss {
         value, err := strconv.Atoi(s)
@@ -75,8 +75,8 @@ type Users struct {
 
 type IntsFieldV1 string
 
-func (req *IntsFieldV1) Values() []int {
-    ss := strings.Split(string(*req), ",")
+func (req IntsFieldV1) Values() []int {
+    ss := strings.Split(string(req), ",")
     var values []int
     for _, s := range ss {
         value, err := strconv.Atoi(s)
@@ -109,8 +109,8 @@ func (req *IntsFieldV1) Values() []int {
 ¶ÔÓ¦ÊµÏÖµÄ´úÂë£º
 ```go
 // Ö»×ª»»ÓĞĞ§µÄÊı¾İ
-func (req *IntsFieldV1) Values() []int {
-    ss := strings.Split(string(*req), ",")
+func (req IntsFieldV1) Values() []int {
+    ss := strings.Split(string(req), ",")
     var values []int
     for _, s := range ss {
         value, err := strconv.Atoi(s)
@@ -123,8 +123,8 @@ func (req *IntsFieldV1) Values() []int {
 }
 
 // ÎŞĞ§Êı¾İ±¨´í£¬Í£Ö¹×ª»»
-func (req *IntsFieldV1) MustValues() ([]int, error) {
-    ss := strings.Split(string(*req), ",")
+func (req IntsFieldV1) MustValues() ([]int, error) {
+    ss := strings.Split(string(req), ",")
     var values []int
     for _, s := range ss {
         value, err := strconv.Atoi(s)
@@ -137,8 +137,8 @@ func (req *IntsFieldV1) MustValues() ([]int, error) {
 }
 
 // ÎŞĞ§Êı¾İ×ª»»Ê§°ÜÊ¹ÓÃÁãÖµ
-func (req *IntsFieldV1) ShouldValues() []int {
-    ss := strings.Split(string(*req), ",")
+func (req IntsFieldV1) ShouldValues() []int {
+    ss := strings.Split(string(req), ",")
     var values []int
     for _, s := range ss {
         value, _ := strconv.Atoi(s)
@@ -161,7 +161,7 @@ forÑ­»·³ĞÔØÁËÌ«¶àµÄ¹¦ÄÜ£¬ĞèÒª¸øËü¼õÇá¸ºµ££¬Values·½·¨µÄ±¾ÒâÊÇÖ»ÊÕ¼¯ÓĞĞ§Êı¾İ£¬ÓÅ»
 ```
 type IntsFieldV2 string
     
-func (req *IntsFieldV2) Values() []int {
+func (req IntsFieldV2) Values() []int {
     ss := req.split()
     // ¹ıÂË³öÓĞĞ§Êı¾İ
     var ssFiltered []string
@@ -179,7 +179,7 @@ func (req *IntsFieldV2) Values() []int {
     return values
 }
     
-func (req *IntsFieldV2) MustValues() ([]int, error) {
+func (req IntsFieldV2) MustValues() ([]int, error) {
     ss := req.split()
     // Ô¤ÏÈ½øĞĞÓĞĞ§ĞÔÅĞ¶Ï
     for _, s := range ss {
@@ -208,7 +208,7 @@ for _, s := range ss {
 ```
 ÎÒÃÇÏÈ°ÑÊı¾İ×ª»»¹¦ÄÜ´úÂë³éÈ¡³öÀ´£¬¶ÀÁ¢³ÉÒ»¸ö·½·¨£¬ÕâÑùÀ´µ½ÁËV3°æ±¾£º
 ```go
-func (req *IntsFieldV3) toInt(s string) int {
+func (req IntsFieldV3) toInt(s string) int {
     value, _ := strconv.Atoi(s)
     return value
 }
@@ -222,7 +222,7 @@ for _, s := range ss {
 ```
 Õâ¸öforÑ­»·±¾ÖÊÊÇ[]string×ª»»[]intµÄÊµÏÖ¹ı³Ì£¬Ò»ÖÖÀàĞÍ×ª»»³ÉÁíÍâÒ»ÖÖÀàĞÍ£¬ÔÚ±à³ÌÖĞÓĞ¸ö×¨ÒµÊõÓï£ºmapÓ³Éä£¬ÎÒÃÇ°ÑÓ³Éä¹ı³Ì³éÈ¡³öÀ´£¬ÕâÑùÀ´µ½ÁËV4°æ±¾£º
 ```go
-func (req *IntsFieldV4) mapper(ss []string, fn func(s string) int) []int {
+func (req IntsFieldV4) mapper(ss []string, fn func(s string) int) []int {
     var values []int
     for _, s := range ss {
         values = append(values, fn(s))
@@ -295,11 +295,11 @@ if err := validate.Var(ss, "dive,int"); err != nil {
 ```go
 type IntsField string
 
-func (req *IntsField) Values() []int {
+func (req IntsField) Values() []int {
     return pie.Ints(pie.Filter(req.split(), numeral.IsInt))
 }
 
-func (req *IntsField) MustValues() ([]int, error) {
+func (req IntsField) MustValues() ([]int, error) {
     ss := req.split()
     if !pie.All(ss, numeral.IsInt) {
         return nil, errors.New("one of numbers is not an integer")
@@ -307,12 +307,12 @@ func (req *IntsField) MustValues() ([]int, error) {
     return pie.Ints(ss), nil
 }
 
-func (req *IntsField) ShouldValues() []int {
+func (req IntsField) ShouldValues() []int {
     return pie.Ints(req.split())
 }
 
-func (req *IntsField) split() []string {
-    return strings.Split(string(*req), ",")
+func (req IntsField) split() []string {
+    return strings.Split(string(req), ",")
 }
 ```
 ×îÖÕ°æ±¾ÆÄÓĞÒ»Ğ©º¯ÊıÊ½±à³ÌµÄÎ¶µÀ£¬¶Ô±ÈV1°æ±¾£¬Ï£Íû¶Ô´ó¼ÒÓĞËùÆô·¢¡£
@@ -351,7 +351,6 @@ for _, s := range ssFiltered {              // ¹Ø×¢µã1£ºforÑ­»·
 }
 ```
 ### ·ÖÀë¿ØÖÆÂß¼­ÓëÒµÎñÂß¼­
-¿ØÖÆÂß¼­ÓëÒµÎñÂß¼­µÄÖªÊ¶µã£¬Çë²Î¿´ÒÑ¹Ê³Âğ©ÏÈÉúµÄÎÄÕÂ£º [±à³ÌµÄ±¾ÖÊ](https://time.geekbang.org/column/article/2751)
 
 ¿ØÖÆÂß¼­£ºforÑ­»·<br>
 ÒµÎñÂß¼­£º¸ñÊ½×ª»»
@@ -364,7 +363,7 @@ for _, s := range ssFiltered {              // ¹Ø×¢µã1£ºforÑ­»·
 ```
 ³éÈ¡¿ØÖÆÂß¼­£¬ÊµÏÖmapper·½·¨£¬ÕâÑùÀ´µ½ÁËV4°æ±¾£º
 ```go
-func (req *IntsFieldV4) mapper(ss []string, fn func(s string) int) []int {
+func (req IntsFieldV4) mapper(ss []string, fn func(s string) int) []int {
     var values []int
     for _, s := range ss {
         values = append(values, fn(s))
@@ -390,11 +389,11 @@ if !pie.All(ss, numeral.IsInt) {
 ```
 ÕûÀíÒ»ÏÂÀ´µ½ÁË×îÖÕ°æ±¾£º
 ```go
-func (req *IntsField) Values() []int {
+func (req IntsField) Values() []int {
     return pie.Ints(pie.Filter(req.split(), numeral.IsInt))
 }
 
-func (req *IntsField) MustValues() ([]int, error) {
+func (req IntsField) MustValues() ([]int, error) {
     ss := req.split()
     if !pie.All(ss, numeral.IsInt) {
         return nil, errors.New("one of numbers is not an integer")
@@ -402,7 +401,7 @@ func (req *IntsField) MustValues() ([]int, error) {
     return pie.Ints(ss), nil
 }
 
-func (req *IntsField) ShouldValues() []int {
+func (req IntsField) ShouldValues() []int {
     return pie.Ints(req.split())
 }
 ```
@@ -414,21 +413,9 @@ func (req *IntsField) ShouldValues() []int {
 
 ±ê×¼»¯¾ÍÒâÎ¶×Å¸ßĞ§£¬²»½ö½öÊÇ±à³Ì£¬¸÷ĞĞ¸÷ÒµÒàÊÇÈç´Ë¡£
 
-pie°ü¾ÍÊÇ¸÷ÖÖ¿ØÖÆÂß¼­±ê×¼»¯ÊµÏÖ£¬Ò²ÓĞÒ»Ğ©¼òµ¥Êı¾İÓ³Éämapº¯Êı£¬Í¬Ñùgo×Ô´øslices°üÒ²ÊµÏÖÁËÒ»Ğ©±ê×¼»¯£¬½¨Òé´ó¼Ò°ÑpieºÍslices°üÖĞµÄÃ¿¸öº¯Êı¶¼Ñ§Ï°Ò»±é£¬¶ÔÕÕ×Ô¼º¹ıÍùµÄÒµÎñ´úÂë£¬Ë¼¿¼ÔÚÊ²Ã´³¡¾°ÏÂ¿ÉÒÔÓ¦ÓÃ¡£
+pie°ü¾ÍÊÇ¸÷ÖÖ¿ØÖÆÂß¼­±ê×¼»¯ÊµÏÖ£¬Ò²ÓĞÒ»Ğ©¼òµ¥Êı¾İÓ³Éämapº¯Êı£¬»¹ÓĞÒ»¸ö±È½Ï³öÃûµÄ¿â£ºlo [Ô´ÂëÁ´½Ó](https://github.com/samber/lo)£¬Í¬Ñùgo×Ô´øslices°üÒ²ÊµÏÖÁËÒ»Ğ©±ê×¼»¯£¬½¨Òé´ó¼Ò°Ñpie¡¢loºÍslices°üÖĞµÄÃ¿¸öº¯Êı¶¼Ñ§Ï°Ò»±é£¬¶ÔÕÕ×Ô¼º¹ıÍùµÄÒµÎñ´úÂë£¬Ë¼¿¼ÔÚÊ²Ã´³¡¾°ÏÂ¿ÉÒÔÓ¦ÓÃ¡£
 
 ³ÌĞò¿ª·¢´ó¶àÊıÇé¿öÏÂ¶¼ÔÚµ¹ÌÚÊı¾İ£¬ÄÜÊìÁ·µÄµ¹ÌÚÊı¾İÒ²ÊÇÈËÀà¸ßÖÊÁ¿³ÌĞòÔ±µÄÅĞ¶¨±ê×¼¡£
 <img src="../images/mfr.jpg" width="100%">
 
-
-Sort:ID
-Order:ASC
-Offset:20
-Limit:10
-Amount:100,1000
-Level:10,50
-Status:normal,cancel,invalid
-CreateTime:2024-01-01 00:00:00,2024-05-01 23:59:59
-UpdateTime:2024-02-01,2024-06-01
-StartTime:2024-03-01,2024-07-01 23:59:59
-Filter:{"ID":1,"Nickname":"admin","Amount":"100,1000","Level":"10,50","Status":"normal,cancel,invalid","CreateTime":"2024-01-01 00:00:00,2024-05-01 23:59:59","UpdateTime":"2024-02-01,2024-06-01","StartTime":"2024-03-01,2024-07-01 23:59:59"}
-
+[Ô´ÂëÁ´½Ó](../param-validate-soc)

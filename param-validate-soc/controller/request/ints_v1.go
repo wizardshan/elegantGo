@@ -8,8 +8,8 @@ import (
 type IntsFieldV1 string
 
 // 只转换有效的数据
-func (req *IntsFieldV1) Values() []int {
-	ss := strings.Split(string(*req), ",")
+func (req IntsFieldV1) Values() []int {
+	ss := strings.Split(string(req), ",")
 	var values []int
 	for _, s := range ss {
 		value, err := strconv.Atoi(s)
@@ -22,8 +22,8 @@ func (req *IntsFieldV1) Values() []int {
 }
 
 // 无效数据报错，停止转换
-func (req *IntsFieldV1) MustValues() ([]int, error) {
-	ss := strings.Split(string(*req), ",")
+func (req IntsFieldV1) MustValues() ([]int, error) {
+	ss := strings.Split(string(req), ",")
 	var values []int
 	for _, s := range ss {
 		value, err := strconv.Atoi(s)
@@ -36,8 +36,8 @@ func (req *IntsFieldV1) MustValues() ([]int, error) {
 }
 
 // 无效数据转换失败使用零值
-func (req *IntsFieldV1) ShouldValues() []int {
-	ss := strings.Split(string(*req), ",")
+func (req IntsFieldV1) ShouldValues() []int {
+	ss := strings.Split(string(req), ",")
 	var values []int
 	for _, s := range ss {
 		value, _ := strconv.Atoi(s)
