@@ -19,7 +19,7 @@ type OrderField struct {
 	Order string `binding:"oneof=DESC ASC"`
 }
 
-func (req *OrderField) Value() string {
+func (req OrderField) Value() string {
 	if req.Order == "" {
 		return "DESC"
 	}
@@ -38,7 +38,7 @@ type LimitField struct {
 	Limit int `binding:"number,min=1,max=100"`
 }
 
-func (req *LimitField) Value() int {
+func (req LimitField) Value() int {
 	if req.Limit == 0 {
 		return 100
 	}

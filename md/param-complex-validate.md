@@ -40,7 +40,7 @@ type OrderField struct {
     Order string `binding:"oneof=DESC ASC"`
 }
 
-func (req *OrderField) Value() string {
+func (req OrderField) Value() string {
     if req.Order == "" {
         return "DESC"
     }
@@ -59,7 +59,7 @@ type LimitField struct {
     Limit int `binding:"number,min=1,max=100"`
 }
 
-func (req *LimitField) Value() int {
+func (req LimitField) Value() int {
     if req.Limit == 0 {
         return 100
     }
@@ -144,7 +144,7 @@ DateTimeRangeFieldV1中的关键代码是UnmarshalJSON方法，我们从可读�
 当出现bug时，例如日志记录记录多少行报错，修复bug的第一步是先通过日志找到报错代码，第二步是理解报错代码所在的上下文，UnmarshalJSON里的上下文就是整个方法的代码，我们还是只能通过通读整个方法，理解上下文的意图，才能放心的修复bug，同上这个方法并不好理解，这就是**可维护性差**。
 
 我们把范围过滤和枚举过滤放在一起考虑，因为他俩的格式是相同的，都是以`,`分割的字符串，解析这个字符串步骤：<br>
-第一步：分割字符串成对应的int数组或者string数组<br>
+第一步：分割字符串成string数组<br>
 第二步：验证分割后每个元素字符串的有效性<br>
 第三步：把每个元素字符串转换为对应的有效数据<br>
 第四步：验证有效数据之间逻辑性，比如范围过滤，起始要小于结束，枚举过滤没有这个需求
@@ -221,7 +221,7 @@ func (spr *Splitter) Times() []time.Time {
 	return ToTimes(spr.ss)
 }
 ```
-分割器Splitter的分割符默认`,`，数据校验函数模式`NotEmpty`，使用Optional模式可以替换这两个属性，Splitter自带四种转换方法：<br>
+分割器Splitter的分割符默认`,`，数据校验函数默认`NotEmpty`，使用Optional模式可以替换这两个属性，Splitter自带六种数据转换方法：<br>
 1、Ints转换int型数组<br>
 2、PtrInts转换int指针型数组<br>
 3、Strings转换string型数组<br>
@@ -273,7 +273,7 @@ func (i *IntRange) Parse(input string) error {
 }
 ```
 `Range`范围类包含Start、End两个泛型属性，capValid方法检查是否具有两个节点。<br>
-`IntRange`组合`Range`实现`int`类型范围类，并在`Parse`方法中使用`Splitter`实现数据转换，并校验起始、结束的逻辑有效性。
+`IntRange`组合`Range`实现`*int`类型范围类，并在`Parse`方法中使用`Splitter`实现数据转换，并校验起始、结束的逻辑有效性。
 
 ```go
 type IntRangeField struct {
@@ -289,7 +289,7 @@ func (req *IntRangeField) UnmarshalJSON(b []byte) error {
     return req.Parse(data)
 }
 ```
-`IntRangeField`再组合`IntRange`实现`int`范围参数的解析。
+`IntRangeField`再组合`IntRange`实现`*int`范围参数的解析。
 
 同理，我们再看时间范围：
 ```go
@@ -350,11 +350,11 @@ graph TD
 
 在抽象到具体的过程中，我们把共性停留在对应的抽象层中，这样一步一步的分解了DateTimeRangeFieldV1的UnmarshalJSON方法，实现了代码的拆分，把大方法分解成一个个独立的小类，每个小类负责各自的职能，当其他的业务有相似的需求时，比如数据库存在`1,2,3`这种格式的字段是，我们就可以使用Ints类来解析，从而实现代码的重用。
 
-分治法是人类对于复杂问题的通用解决思想，分而治之就是把大问题合理划分为若干个子问题，如有需要子问题再合理划分为更小颗粒度的子问题，直到最后子问题可以简单的直接求解，大问题的解即子问题的解的合并。看似整个过程很简单，关键在于如何合理的划分，这就要不断的思考学习总结。
-
 <img src="../images/steps-1.jpg" width="50%"><img src="../images/steps-2.jpg" width="50%">
 现实生活中我们见过左图的台阶，又陡又长，让人望而生畏，担心脚底一打滑骨碌碌滚下去怎么办；
 
 当我们面对一个函数或方法包含几十行甚至几百上千行代码时，如同面对又陡又长的台阶，内心的状态是焦虑不安不自信，生怕某一处的代码没有理解或者逻辑有遗漏导致出现bug。
 
 当然也有右图的台阶，虽然同样又陡又长，但每隔一定距离会设置一个小平台，把整个台阶分割成若干个小台阶，小平台可以让人休憩一会，平复一下心态；当大方法拆成多个小方法，小方法如同小台阶，当阅读代码时，理解完一个小方法相当于达成一个小目标，然后可以平复一下心态，继续理解下一个小方法。
+
+分治法是人类对于复杂问题的通用解决思想，分而治之就是把大问题合理划分为若干个子问题，如有需要子问题再合理划分为更小颗粒度的子问题，直到最后子问题可以简单的直接求解，大问题的解即子问题的解的合并。看似整个过程很简单，关键在于如何合理的划分，这就要不断的思考学习总结。
