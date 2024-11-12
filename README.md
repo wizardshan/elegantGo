@@ -2,7 +2,7 @@
 Go编程：优雅永不过时
 - 1、[参数校验：代码由湿到干的过程](md/param-validate.md)
 - 2、[参数校验：分离关注点-代码复杂度降维利器](md/param-validate-soc.md)
-- 3、[复杂参数校验](md/param-complex-validate.md)
+- 3、[参数校验：抽象到具体的思维方式](md/param-complex-validate.md)
 
 
 

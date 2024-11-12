@@ -6,7 +6,7 @@ import (
 )
 
 type IntsField struct {
-	Values []int
+	stringx.Ints
 }
 
 func (req *IntsField) UnmarshalJSON(b []byte) (err error) {
@@ -14,12 +14,7 @@ func (req *IntsField) UnmarshalJSON(b []byte) (err error) {
 	if err = json.Unmarshal(b, &data); err != nil {
 		return
 	}
-	splitter, err := stringx.NewSplitter(data)
-	if err != nil {
-		return err
-	}
-	req.Values = splitter.Ints()
-	return
+	return req.Parse(data)
 }
 
 type IntRangeField struct {

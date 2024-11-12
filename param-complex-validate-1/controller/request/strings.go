@@ -6,7 +6,7 @@ import (
 )
 
 type StringsField struct {
-	Values []string
+	stringx.Strings
 }
 
 func (req *StringsField) UnmarshalJSON(b []byte) (err error) {
@@ -14,10 +14,5 @@ func (req *StringsField) UnmarshalJSON(b []byte) (err error) {
 	if err = json.Unmarshal(b, &data); err != nil {
 		return
 	}
-	splitter, err := stringx.NewSplitter(data)
-	if err != nil {
-		return
-	}
-	req.Values = splitter.Strings()
-	return
+	return req.Parse(data)
 }

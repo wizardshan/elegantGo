@@ -1,3 +1,5 @@
+# 参数校验：抽象到具体的思维方式
+
 <img src="../images/fast-admin.jpg">
 
 上图为php语言的后台管理系统[fastAdmin](https://www.fastadmin.net/)，展示的是用户列表菜单，集成了功能强大的参数查询，日常开发中也经常需要实现这种较为复杂的查询业务，我们先对参数功能进行归纳分类：
@@ -318,110 +320,37 @@ func (t *timeRange) Parse(input string, validator func(s string) bool, fn func(s
 
 
 ```mermaid
-graph LR
-A[方形] -->B(圆角)
-    B --> C{条件a}
-    C -->|a=1| D[结果1]
-    C -->|a=2| E[结果2]
-    F[横向流程图]
+graph TD
+    A(Splitter) --> A1(Range)
+    A --> A2(Ints)
+    A --> A3(Strings)
+    A2 --> A21(IntsField)
+    A3 --> A31(StringsField)
+    A1 --> E(timeRange)
+    A1 --> F(IntRange)
+    F --> G(IntRangeField)
+    E --> H(DateTimeRange)
+    E --> I(DateRange)
+    E --> J(TimeRange)
+    H --> K(DateTimeRangeField)
+    I --> L(DateRangeField)
+    J --> M(TimeRangeField)
 ```
+如上图所示，最上层的`Splitter`类到最下层的具体参数`Field`类，这是抽象到具体、从高层到低层的思考过程，我们拿时间范围举例：
 
+1、Splitter是由具有分割符的特殊字符串抽象出来的<br>
+2、Range是具有开始结束标识抽象出来的<br>
+3、timeRange是更加具体的Range类<br>
+4、DateTimeRange、DateRange和DateTimeRangeField是具有固定特征的timeRange类<br>
+5、DateTimeRangeField、DateRangeField和TimeRangeField是适用于Json解析的具体参数类
+
+所谓"抽象化"，就是指从具体问题中，提取出具有共性的模式，再使用通用的解决方法加以处理。
+
+开发软件的时候，一方面，我们总是希望使用别人已经写好的代码，另一方面，又希望自己写的代码尽可能重用，以求减少工作量。要做到这两个目标，这需要"抽象化"。
+
+在抽象到具体的过程中，我们把共性停留在对应的抽象层中，这样一步一步的分解了DateTimeRangeFieldV1的UnmarshalJSON方法，实现了代码的拆分，把大方法分解成一个个独立的小类，每个小类负责各自的职能，当其他的业务有相似的需求时，比如数据库存在`1,2,3`这种格式的字段是，我们就可以使用Ints类来解析，从而实现代码的重用。
 
 分治法是人类对于复杂问题的通用解决思想，分而治之就是把大问题合理划分为若干个子问题，如有需要子问题再合理划分为更小颗粒度的子问题，直到最后子问题可以简单的直接求解，大问题的解即子问题的解的合并。看似整个过程很简单，关键在于如何合理的划分，这就要不断的思考学习总结。
-```go
-type DateTimeRangeFieldV2 struct {
-    Start time.Time
-    End   time.Time
-}
-
-func (req *DateTimeRangeFieldV2) UnmarshalJSON(b []byte) error {
-
-    data, err := req.unmarshal(b)
-    if err != nil {
-        return err
-    }
-    
-    elements, err := req.split(data)
-    if err != nil {
-        return err
-    }
-    
-    if err = req.parse(elements); err != nil {
-        return err
-    }
-
-    if err = req.valid(); err != nil {
-        return err
-    }
-    
-    return nil
-}
-
-func (req *DateTimeRangeFieldV2) unmarshal(b []byte) (data string, err error) {
-    // 解析json字符串
-    if err = json.Unmarshal(b, &data); err != nil {
-        return
-    }
-    
-    // 校验字符串有效性
-    if find := strings.Contains(data, ","); !find {
-        err = errors.New("parameter should be separated by commas")
-    }
-    return
-}
-
-func (req *DateTimeRangeFieldV2) split(data string) (elements []string, err error) {
-    // 解析字符串为range数组并检验range数组有效性
-    elements = strings.Split(data, ",")
-    capacity := len(elements)
-    if capacity != 2 {
-        err = errors.New(fmt.Sprintf("the rangeField capacity expected value is 2, the result is %d", capacity))
-    }
-    return
-}
-
-func (req *DateTimeRangeFieldV2) parse(elements []string) (err error) {
-    // 解析range数组中的开始时间和结束时间
-    startStr := elements[0]
-    endStr := elements[1]
-    
-    if startStr != "" {
-        req.Start, err = time.Parse(time.DateTime, startStr)
-        if err != nil {
-            return errors.New(fmt.Sprintf(fmt.Sprintf("the time layout should be `%s`", time.DateTime)))
-        }
-    }
-    
-    if endStr != "" {
-        req.End, err = time.Parse(time.DateTime, endStr)
-        if err != nil {
-            return errors.New(fmt.Sprintf(fmt.Sprintf("the time layout should be `%s`", time.DateTime)))
-        }
-    }
-    
-    return
-}
-
-func (req *DateTimeRangeFieldV2) valid() error {
-    // 检验开始时间和结束时间的逻辑有效性
-    if !req.Start.IsZero() && !req.End.IsZero() && req.Start.After(req.End) {
-        return errors.New("the rangeField start must lt end")
-    }
-    return nil
-}
-```
-依照分治思想，按功能点我们把UnmarshalJSON方法拆出四个小方法：<br>
-unmarshal：解析json字符串<br>
-split：json字符串解析字符串数组<br>
-parse：解析字符串数组到业务数据Start、End时间变量<br>
-valid：校验Start、End时间变量逻辑有效性
-
-**可读性：**<br>
-定位到需要变动的代码时，我们只要按功能点找到四个小方法中其中的一个，然后通读这个小方法，小方法代码较少，可以快速理解消化代码意图，这样就大大提高了开发效率。
-
-**可维护性：**<br>
-当出现bug需要理解bug所在代码的上下文时，这时的上下文就局限在这四个小方法里，同上，快速理解快速修复。
-
 
 <img src="../images/steps-1.jpg" width="50%"><img src="../images/steps-2.jpg" width="50%">
 现实生活中我们见过左图的台阶，又陡又长，让人望而生畏，担心脚底一打滑骨碌碌滚下去怎么办；
@@ -429,4 +358,3 @@ valid：校验Start、End时间变量逻辑有效性
 当我们面对一个函数或方法包含几十行甚至几百上千行代码时，如同面对又陡又长的台阶，内心的状态是焦虑不安不自信，生怕某一处的代码没有理解或者逻辑有遗漏导致出现bug。
 
 当然也有右图的台阶，虽然同样又陡又长，但每隔一定距离会设置一个小平台，把整个台阶分割成若干个小台阶，小平台可以让人休憩一会，平复一下心态；当大方法拆成多个小方法，小方法如同小台阶，当阅读代码时，理解完一个小方法相当于达成一个小目标，然后可以平复一下心态，继续理解下一个小方法。
-
