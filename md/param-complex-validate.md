@@ -317,6 +317,69 @@ func (t *timeRange) Parse(input string, validator func(s string) bool, fn func(s
 我们抽象一个`timeRange`，`timeRange`组合`Range`实现时间范围，然后`DateTimeRange`、`DateRange`和`TimeRange`组合`timeRange`实现更具体的时间范围。
 
 最后`DateTimeRangeField`、`DateRangeField`和`TimeRangeField`再组合对应的时间范围，实现三种不同类型参数时间范围解析。
+```json
+http://localhost:8080/users
+请求参数：
+{
+    "Sort": "ID",
+    "Order": "ASC",
+    "Offset": 100,
+    "Limit": 100,
+    "ID": 1,
+    "Nickname": "admin",
+    "Amount": "100,1000",
+    "Level": "10,50",
+    "Status": "normal,cancel,invalid",
+    "CreateTime": "2024-01-01 00:00:00,2024-05-01 23:59:59",
+    "UpdateTime": "2024-02-01,2024-06-01",
+    "StartTime": "2024-03-01,2024-07-01 23:59:59"
+}
+
+响应结果：
+{
+    "Code": 200,
+    "Message": "OK",
+    "Success": true,
+    "Data": {
+        "Sort": "ID",
+        "Order": "ASC",
+        "Offset": 100,
+        "Limit": 100,
+        "ID": 1,
+        "Nickname": "admin",
+        "Amount": {
+            "Start": 100,
+            "End": 1000
+        },
+        "Level": {
+            "Values": [
+                10,
+                50
+            ]
+        },
+        "Status": {
+            "Values": [
+                "normal",
+                "cancel",
+                "invalid"
+            ]
+        },
+        "CreateTime": {
+            "Start": "2024-01-01T00:00:00Z",
+            "End": "2024-05-01T23:59:59Z"
+        },
+        "UpdateTime": {
+            "Start": "2024-02-01T00:00:00Z",
+            "End": "2024-06-01T00:00:00Z"
+        },
+        "StartTime": {
+            "Start": "2024-03-01T00:00:00Z",
+            "End": "2024-07-01T23:59:59Z"
+        }
+    }
+}
+```
+
 
 
 ```mermaid
