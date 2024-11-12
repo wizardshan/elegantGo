@@ -2,7 +2,7 @@
 Go编程：优雅永不过时
 - 1、[参数校验：代码由湿到干的过程](md/param-validate.md)
 - 2、[参数校验：分离关注点-代码复杂度降维利器](md/param-validate-soc.md)
-- 3、[复杂参数校验](md/param-complex-validator.md)
+- 3、[复杂参数校验](md/param-complex-validate.md)
 
 
 
@@ -110,3 +110,19 @@ https://github.com/gookit/goutil
 https://github.com/duke-git/lancet
 
 https://github.com/hashicorp/golang-lru
+
+
+Sort:CreateTime
+Order:ASC
+Offset:20
+Limit:10
+Amount:{"Start":10, "End":100}
+Level:10
+Level:20
+Level:30
+Status:normal
+Status:cancel
+Status:invalid
+CreateTime:{"Start":"2024-01-01T00:00:00Z", "End":"2024-10-01T00:00:00Z"}
+Filter:{"ID":1,"Nickname":"昵称","Amount":{"Start":10, "End":100},"Level":[10,20,30],"Status":["normal","cancel","invalid"],"CreateTime":{"Start":"2024-01-01T00:00:00Z", "End":"2024-10-01T00:00:00Z"}}
+
