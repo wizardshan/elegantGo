@@ -2,15 +2,15 @@ package main
 
 import (
 	"database/sql"
-	"elegantGo/chapter-param-validator-sql-injection/controller"
-	"elegantGo/chapter-param-validator-sql-injection/repository"
+	"elegantGo/param-validate-sql-injection/controller"
+	"elegantGo/param-validate-sql-injection/repository"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
 
-	dsn := "root:@tcp(127.0.0.1:3306)/test"
+	dsn := "root:123456@tcp(127.0.0.1:3306)/test"
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		panic(err)
@@ -18,11 +18,10 @@ func main() {
 
 	engine := gin.New()
 
-	handler := new(controller.Handler)
-
 	repoArticle := repository.NewArticle(db)
 	ctrArticle := controller.NewArticle(repoArticle)
-	engine.GET("/article", handler.Wrapper(ctrArticle.One))
+	engine.GET("/article", controller.Wrapper(ctrArticle.One))
+	engine.GET("/article/search", controller.Wrapper(ctrArticle.Search))
 
 	engine.Run()
 }

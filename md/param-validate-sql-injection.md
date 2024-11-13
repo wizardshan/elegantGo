@@ -1,13 +1,14 @@
-在开发中，某些表的数据库自增id基于安全保密的要求通常会对其加密（后文会详解加密原因），
-比如YouTube的视频详情页url：https://www.youtube.com/watch?v=iryTrPab4l8 ；<br>
+# 参数相关的安全漏洞：SQL注入
+
+在开发中，某些表的数据库自增id基于安全保密的要求通常会对其加密， 比如YouTube的视频详情页url：https://www.youtube.com/watch?v=iryTrPab4l8 ；<br>
 iryTrPab4l8字符串就是通过一定规则加密而来，通常可以解密还原对应的id数字，
 我们通过这个实际的业务场景来演示sql注入步骤。
 ```go
 // controller.Article
-func (ctr *Article) Detail(c *gin.Context) (response.Data, error) {
+func (ctr *Article) One(c *gin.Context) (response.Data, error) {
     hashID := c.DefaultQuery("hashID", "")
     article := ctr.repo.Get(c.Request.Context(), hashID)
-
+    
     return article, nil
 }
 
@@ -26,7 +27,7 @@ func (repo *Article) Get(ctx context.Context, hashID string) *entity.Article {
     return &article
 }
 ```
-[源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter2.0)
+[源码链接](../param-validate-sql-injection)
 
 代码说明：<br>
 1、实现了通过加密ID获取文章详情的功能；<br>
@@ -71,8 +72,7 @@ http://127.0.0.1:8080/article?hashID=iryTrPab4l8' and 1=1%23
   }
 }
 ```
-代码sql字符串中hash_id='%s'有两个单引号，参数中的单引号是为了和第一个单引号配对，#号是为了注释第二号单引号，
-从而形成一条语法正常的sql语句。此时接口返回正常，确定此处存在注入点。
+代码sql字符串中hash_id='%s'有两个单引号，参数中的单引号是为了和第一个单引号配对，#号是为了注释第二号单引号，从而形成一条语法正常的sql语句。此时接口返回正常，确定此处存在注入点。
 
 #### 第二步：确定select语句中的字段数量
 ```
@@ -263,12 +263,25 @@ http://127.0.0.1:8080/article?hashID=iryTrPab4l8' and 1=2 union select 1,mobile,
 **1、用户的输入都是非法的数据，需要进行验证、过滤、转义。**
 ```go
 type HashIDField struct {
-    HashID int `form:"hashID" valid:"required~hashID不能为空,alphanum~hashID必须为字母和数字,stringlength(8|15)~hashID长度错误"`
+    HashID string `binding:"required,alphanum"`
 }
 // 参数hashID组成结构限制为字母和数字，有效的避免了用户输入单引号、井号、百分号、空格等非法字符，参数长度限制联表的可能性
 ```
+
+某些场景下，比如搜索功能，就不好限制字母和数字，可以通过检查参数是否含有sql注入需要的关键词进行验证。
+```go
+type KeywordField struct {
+    Keyword string `binding:"required,sqlinject"`
+}
+
+func sqlInject(s string) bool {
+    detectSqlInjectRegex := `(?:')|(?:--)|(/\\*(?:.|[\\n\\r])*?\\*/)|(\b(select|update|and|or|delete|insert|trancate|char|chr|into|substr|ascii|declare|exec|count|master|into|drop|execute)\b)`
+    return regexp.MustCompile(detectSqlInjectRegex).MatchString(s)
+}
+```
+
 **2、应用禁止使用管理员账号连接数据库，增删改查即可。**<br>
-在小公司或者外包公司做的项目，因为方便省事使用root账号连接数据库比比皆是，希望引以为戒。
+root权限可以查询information_schema系统表，小公司或者外包公司做的项目，因为方便省事使用root账号连接数据库比比皆是，希望引以为戒。
 
 存在注入点的情况下，即使使用了普通权限账号还是有风险，可以通过猜表名、猜字段名的的方式暴露数据；<br>
 常用用户表名：users、user、admin、admin_user等等，<br>
@@ -318,8 +331,7 @@ google hack是黑客寻找sql注入漏洞的主要方式，比如在google搜关
 所以网站再小能保证不会搜索引擎收录吗？
 
 2、数据少并且没有多大价值<br>
-小网站的数据黑客是没有兴趣，要的是服务器，可以把服务器当肉鸡做ddos攻击或者挖矿，
-上述的注入步骤只是sql注入漏洞的一部分，有些语言例如php还可以上传一句话小木马，小木马拉大木马，大木马提权，
+小网站的数据黑客是没有兴趣，要的是服务器，可以把服务器当肉鸡做ddos攻击或者挖矿，上述的注入步骤只是sql注入漏洞的一部分，有些语言例如php还可以上传一句话小木马，小木马拉大木马，大木马提权，
 可以直接获取到服务器root权限。
 
 3、没有黑客愿意花时间花精力入侵<br>
