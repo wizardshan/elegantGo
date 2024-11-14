@@ -17,6 +17,6 @@ type HashIDField struct {
 }
 
 type KeywordField struct {
-	Keyword string `binding:"required"`
-	//Keyword string `binding:"required,xss"`
+	//Keyword string `binding:"required"`
+	Keyword string `binding:"required,xss"`
 }

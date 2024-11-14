@@ -2,19 +2,16 @@ package controller
 
 import (
 	"elegantGo/param-validate-xss/controller/request"
-	"elegantGo/param-validate-xss/repository"
 	"github.com/gin-gonic/gin"
 	"html/template"
 	"net/http"
 )
 
 type Article struct {
-	repo *repository.Article
 }
 
-func NewArticle(repo *repository.Article) *Article {
+func NewArticle() *Article {
 	ctr := new(Article)
-	ctr.repo = repo
 	return ctr
 }
 
