@@ -1,6 +1,12 @@
-package xssvalidator
+package xss
 
-var DefaultRules []Rule = []Rule{
+import "errors"
+
+var (
+	ErrForbiddenKeywords = errors.New("forbidden keywords triggered, input contains one of the following keywords in a vulnerable format: alert, prompt")
+)
+
+var DefaultRules = []Rule{
 	ForbiddenKeywords{},
 	ForbiddenHTMLUnescapeStringKeywords{},
 	ForbiddenURLQueryUnescapeKeywords{},

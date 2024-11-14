@@ -1,8 +1,8 @@
 package main
 
 import (
-	"elegantGo/chapter-param-validator-xss/controller"
-	"elegantGo/chapter-param-validator-xss/repository"
+	"elegantGo/param-validate-xss/controller"
+	"elegantGo/param-validate-xss/repository"
 	"fmt"
 	"github.com/gin-gonic/gin"
 )
@@ -10,7 +10,7 @@ import (
 func main() {
 
 	engine := gin.New()
-	engine.LoadHTMLGlob("chapter-param-validator-xss/controller/view/*.tmpl")
+	engine.LoadHTMLGlob("param-validate-xss/controller/view/*.tmpl")
 	repoArticle := repository.NewArticle()
 	ctrArticle := controller.NewArticle(repoArticle)
 	engine.GET("/article/search", ctrArticle.Search)

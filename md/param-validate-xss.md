@@ -5,7 +5,7 @@ xss分为三类：反射型、存储型、dom型，反射型xss和存储型xss�
 本文用网站经常存在的搜索功能来演示反射型xss的攻击步骤；
 ```go
 type KeywordField struct {
-    Keyword string `form:"keyword" valid:"required~搜索关键词不能为空"`
+    Keyword string `binding:"required"`
 }
 
 func (ctr *Article) Search(c *gin.Context) {
@@ -20,45 +20,44 @@ func (ctr *Article) Search(c *gin.Context) {
 	c.SetCookie("userID", "1", 86400*30, "/", "127.0.0.1", false, false)
 
 	c.HTML(http.StatusOK, "search.tmpl", gin.H{
-		"keyword": template.HTML(request.Keyword), // 为了方便演示，template.HTML会显示原始字符串，默认会自动对特殊符号转义，
+        "keyword": template.HTML(request.Keyword), // 为了方便演示，template.HTML会显示原始字符串
+        //"keyword": request.Keyword, // 默认会自动对特殊符号转义
 	})
 }
 ```
-[源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter3.0)
-
+[源码链接](../param-validate-xss)
 正常传参请求：
 
 ```
-http://127.0.0.1:8080/article/search?keyword=手机
+http://127.0.0.1:8080/article/search?Keyword=手机
 ```
-<img src="../images/2-1.jpg">
+<img src="../images/xss-1.jpg">
 
 #### 第一步：确定注入点
 
 ```
-http://127.0.0.1:8080/article/search?keyword=<script>alert('XSS')</script>
+http://127.0.0.1:8080/article/search?Keyword=<script>alert('XSS')</script>
 ```
-<img src="../images/2-2.jpg">
+<img src="../images/xss-2.jpg">
 
 #### 第二步：获取敏感信息
 ```
-http://127.0.0.1:8080/article/search?keyword=<script>alert(document.cookie)</script>
+http://127.0.0.1:8080/article/search?Keyword=<script>alert(document.cookie)</script>
 ```
-<img src="../images/2-3.jpg">
+<img src="../images/xss-3.jpg">
 
 #### 第三步：收集敏感信息
 ```
-http://127.0.0.1:8080/article/search?keyword=<script>document.write('<img src="http://127.0.0.1:8080/cookies?'+document.cookie+'"/>')</script>
-这里的+号有问题，转义一下
-http://127.0.0.1:8080/article/search?keyword=%3Cscript%3Edocument.write(%27%3Cimg%20src=%22http://127.0.0.1:8080/cookies?%27%2Bdocument.cookie%2B%27%22/%3E%27)%3C/script%3E
+http://127.0.0.1:8080/article/search?Keyword=<script>document.write('<img src="http://127.0.0.1:8080/cookies?'+document.cookie+'"/>')</script>
+这里的+号浏览器访问有问题，转义一下
+http://127.0.0.1:8080/article/search?Keyword=%3Cscript%3Edocument.write(%27%3Cimg%20src=%22http://127.0.0.1:8080/cookies?%27%2Bdocument.cookie%2B%27%22/%3E%27)%3C/script%3E
 ```
-<img src="../images/2-4.jpg">
+<img src="../images/xss-4.jpg">
 服务器收集数据如下：
-<img src="../images/2-5.jpg">
+<img src="../images/xss-5.jpg">
 
 #### 第四步：诱惑用户点击
-把第三步精心设计的带有xss漏洞的url通过站内信或邮件的方式发给用户，内容为一些诱惑信息，目的是为了让用户单击链接，
-服务器收集到cookie之后再以用户的身份登录网站。
+把第三步精心设计的带有xss漏洞的url通过站内信或邮件的方式发给用户，内容为一些诱惑信息，目的是为了让用户单击链接，服务器收集到cookie之后再以用户的身份登录网站。
 
 反射型xss应用场景：搜索、查询等用户输入数据需要在前端展示的场景；
 
@@ -82,7 +81,7 @@ http://127.0.0.1:8080/article/search?keyword=%3Cscript%3Edocument.write(%27%3Cim
 **2、用户输入数据需要进行严格校验过滤。**
 ```go
 type KeywordField struct {
-    Keyword string `form:"keyword" valid:"required~搜索关键词不能为空,CheckXSS~非法字符"`
+    Keyword string `binding:"required,xss"`
 }
 
 var keywords = []string{
@@ -133,9 +132,8 @@ var keywords = []string{
 `=confirm`,
 }
 
-CheckXSS函数会检查参数是否包含keywords字符串数组里的恶意字符；
-因为xss恶意代码还有很多变种，所以CheckXSS函数还会通过html转义、url转义、unicode转义、字符小写四个方面检测恶意字符；
-xss-validator是github开源项目，简单化放在项目里使用；
+xss函数会检查参数是否包含keywords字符串数组里的恶意字符；
+因为xss恶意代码还有很多变种，所以xss函数还会通过html转义、url转义、unicode转义、字符小写四个方面检测恶意字符；xss-validator是github开源项目，简单化放在项目里使用；
 ```
 **3、页面输出用户数据时进行转义。**
 ```go
@@ -144,7 +142,7 @@ c.HTML(http.StatusOK, "search.tmpl", gin.H{
 })
 ```
 未转义的html源代码：
-<img src="images/2-7.jpg">
+<img src="../images/xss-7.jpg">
 
 ```go
 c.HTML(http.StatusOK, "search.tmpl", gin.H{
@@ -152,12 +150,12 @@ c.HTML(http.StatusOK, "search.tmpl", gin.H{
 })
 ```
 转义后的html源代码：
-<img src="images/2-8.jpg">
+<img src="../images/xss-8.jpg">
 
 这种方式有小概率的局限性，比如用户输入数据框不是textarea文本框，而是具有更高自由度的富文本框，这时候转义就会出错，
 这种情况下更要严格校验用户输入。
 
-<img src="../images/2-6.jpg">
+<img src="../images/xss-6.jpg">
 
 **4、条件允许的情况下，cookie可以设置httpOnly。**
 ```go
@@ -166,5 +164,4 @@ c.SetCookie("token", "token123456", 86400*30, "/", "127.0.0.1", false, false)
 ```
 这种方式也有局限性，很多公司前后端分离，前端调用后端接口需要把token放在header头里，js需要拿到token值，httpOnly参数不能设置为true。
 
-通过两节内容讲解了sql注入和xss攻击的原理步骤和防范措施，目的是有理有据的让大家老老实实的做参数校验，不要偷懒，
-参数校验是web安全的最重要一环。
+通过两节内容讲解了sql注入和xss攻击的原理步骤和防范措施，目的是有理有据的让大家老老实实的做参数校验，不要偷懒，参数校验是web安全的最重要一环。

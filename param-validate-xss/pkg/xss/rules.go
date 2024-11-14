@@ -1,4 +1,4 @@
-package xssvalidator
+package xss
 
 import (
 	"html"
