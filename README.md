@@ -6,9 +6,9 @@ Go编程：优雅永不过时
 - 4、[参数相关的安全漏洞：SQL注入](md/param-validate-sql-injection.md)
 - 5、[参数相关的安全漏洞：XSS](md/param-validate-xss.md)
 - 6、[被误解的ORM，只是单纯的不手写SQL？](md/orm.md)
+- 7、[entGo框架高效实现ORM](md/orm-entgo.md)
 
 
-- 1、[被误解的ORM，只是单纯的不手写SQL？](md/orm.md)
 - 2、[entGo框架高效实现ORM](md/orm-entgo.md)
 - 3、[控制反转提高CRUD开发效率](md/orm-curd-1.md)
 - 4、[entGo框架CRUD事务优化](md/orm-curd-2.md)

@@ -20,7 +20,7 @@ http://127.0.0.1:8080/posts
     "user_id": 1,
     "title": "标题1",
     "content": "内容1",
-    "views": 100,
+    "view": 100,
     "edges": {
       "user": {
         "id": 1,
@@ -41,7 +41,7 @@ http://127.0.0.1:8080/posts
     "user_id": 2,
     "title": "标题2",
     "content": "内容2",
-    "views": 200,
+    "view": 200,
     "edges": {
       "user": {
         "id": 2,
@@ -72,7 +72,7 @@ http://127.0.0.1:8080/post
   "user_id": 1,
   "title": "标题1",
   "content": "内容1",
-  "views": 100,
+  "view": 100,
   "edges": {
     "comments": [
       {
@@ -130,7 +130,7 @@ http://127.0.0.1:8080/post/comments
         "user_id": 1,
         "title": "标题1",
         "content": "内容1",
-        "views": 100,
+        "view": 100,
         "edges": {}
       },
       "user": {
@@ -160,7 +160,7 @@ http://127.0.0.1:8080/post/comments
         "user_id": 2,
         "title": "标题2",
         "content": "内容2",
-        "views": 200,
+        "view": 200,
         "edges": {}
       },
       "user": {
@@ -176,7 +176,7 @@ http://127.0.0.1:8080/post/comments
   }
 ]
 ```
-[源码链接](https://github.com/wizardshan/elegantGo/tree/main/app/chapter-orm-entgo)
+[源码链接](../md/orm-entgo)
 
 edges属性是entGo框架定义对象关系的边概念，后文会进行消除；如果我们忽略edges属性，是不是就跟前文中的json数据格式一致了。
 
@@ -184,7 +184,7 @@ edges属性是entGo框架定义对象关系的边概念，后文会进行消除�
 
 帖子列表通过debug打印entGo的SQL日志如下：
 ```sql
-SELECT `posts`.`id`, `posts`.`create_time`, `posts`.`update_time`, `posts`.`hash_id`, `posts`.`user_id`, `posts`.`title`, `posts`.`content`, `posts`.`views` FROM `posts` ORDER BY `posts`.`create_time` DESC args=[]
+SELECT `posts`.`id`, `posts`.`create_time`, `posts`.`update_time`, `posts`.`hash_id`, `posts`.`user_id`, `posts`.`title`, `posts`.`content`, `posts`.`view` FROM `posts` ORDER BY `posts`.`create_time` DESC args=[]
 SELECT `users`.`id`, `users`.`create_time`, `users`.`update_time`, `users`.`level`, `users`.`nickname`, `users`.`avatar` FROM `users` WHERE `users`.`id` IN (?, ?) args=[1 2]
 ```
 对比我们自己手写的SQL一模一样，内部组装数据的步骤流程也是大同小异。
@@ -194,7 +194,7 @@ SELECT `users`.`id`, `users`.`create_time`, `users`.`update_time`, `users`.`leve
 二、提高接口对接效率，客户端模型与服务器模型一一对应，不同业务就是不同模型的组合；<br>
 三、降低客户端与服务器端人员的沟通成本，都在相同的模型上讨论业务需求，不容易产生歧义；<br>
 四、使用ORM框架，避免了关联查询，针对单表SQL的慢查询优化比多表关联sql要简单；<br>
-五、ORM框架使用了SQL预编译功能，提高了SQL执行效率，另外也避免了SQL注入（后文详解）；<br>
+五、ORM框架使用了SQL预编译功能，提高了SQL执行效率，另外也避免了SQL注入（前文详解）；<br>
 六、避免关联查询会带来很多好处，参照<<高性能MySQL第3版 6.3.3章节：分解关联查询>>：
 <img src="../images/orm-mysql6-3-3.jpg" width="100%">
 
