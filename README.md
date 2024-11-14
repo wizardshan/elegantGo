@@ -12,8 +12,6 @@ Go编程：优雅永不过时
 - 4、[entGo框架CRUD事务优化](md/orm-curd-2.md)
 - 5、[entGo框架CRUD通用代码自动化生成](md/orm-curd-3.md)
 
-- 9、参数相关的安全漏洞：SQL注入
-- 10、参数相关的安全漏洞：XSS 
 
 
 
@@ -30,7 +28,6 @@ Go编程：优雅永不过时
 - 13、项目结构分层的自动化生成
 - 14、项目结构实践中的完善，user_id,重复提交**
 
-the right status code is 4xx ("you messed up") or 5xx ("I messed up").
 
 面向对象的难点：对象族
 

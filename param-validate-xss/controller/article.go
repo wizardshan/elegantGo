@@ -19,7 +19,8 @@ func (ctr *Article) Search(c *gin.Context) {
 
 	request := new(request.ArticleSearch)
 	if err := c.ShouldBind(request); err != nil {
-		panic(err)
+		c.JSON(http.StatusOK, gin.H{"err": err.Error()})
+		return
 	}
 
 	// 种两个用于演示的cookie

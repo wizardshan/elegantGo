@@ -9,11 +9,11 @@ type KeywordField struct {
 }
 
 func (ctr *Article) Search(c *gin.Context) {
-
-	request := new(request.ArticleSearch)
-	if err := c.Validate(request); err != nil {
-		panic(err)
-	}
+    request := new(request.ArticleSearch)
+    if err := c.ShouldBind(request); err != nil {
+        c.JSON(http.StatusOK, gin.H{"err": err.Error()})
+        return
+    }
 
 	// 种两个用于演示的cookie
 	c.SetCookie("token", "token123456", 86400*30, "/", "127.0.0.1", false, false)
