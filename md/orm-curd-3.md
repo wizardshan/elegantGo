@@ -49,7 +49,7 @@ func (repo *{{.entName}}) fetchOne(ctx context.Context, db *ent.Client, optionFu
 	return builder.FirstX(ctx)
 }
 ```
-[源码链接](../chapter-orm-crud-3)
+[源码链接](../orm-crud-3)
 
 具体生成哪些通用的操作方法，可以参照Java的MyBatis-Plus框架，写一个大而全的repo模板。
 ```go
@@ -65,8 +65,6 @@ updateBatchById  // 根据ID 批量更新
 
 **Go Generation**<br>
 Go Generation是解决结构重复性代码的利器，我们使用代码生成工具来生成一些重复的、机械的代码，例如序列化和反序列化代码、API定义代码、数据库访问代码等。这些代码通常具有固定的模板和格式，并且不需要手动编写。使用代码生成工具可以自动创建这些代码，同时也可以使代码更加一致和易于维护，从而减少编写代码的时间和出错的机会。
-
-后文中会多次使用代码自动化生成的模式，请大家仔细体会。
 
 
 

@@ -99,9 +99,7 @@ func (ctr *Post) Comments(c *gin.Context) {
 	c.JSON(http.StatusOK, comments)
 }
 ```
-[源码链接](../chapter-orm-crud-1)
-
-
+[源码链接](../orm-crud-1)
 
 众所周知增删改查在日常开发中占了很大的工作量，搬砖活不可避免，通过控制反转的思想提高增删改查的开发效率，我们可以做一个高效的CRUD程序员。
 

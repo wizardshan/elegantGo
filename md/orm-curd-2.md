@@ -76,7 +76,7 @@ go:generate go run -mod=mod entgo.io/ent/cmd/ent generate --feature sql/upsert .
 **2、ORDER BY rand()**<br>
 代码参照controller层User.Rand方法。
 
-[源码链接](../chapter-orm-crud-2)
+[源码链接](../orm-crud-2)
 
 我们通过定义CRUD通用方法大大提高了增删改查开发效率，现在又出了新的问题，针对每张表定义CURD通用方法又成了效率低下的重复工作，我们略读repository层，user、post、comment的通用方法结构非常类似，这属于结构重复性代码，那我们又该怎么优化呢，请看下文分解。
 
