@@ -38,7 +38,7 @@ type Comment struct {
 我们用代码来探索这个问题
 ```
 帖子表posts：
-id(自增) hash_id(加密id) user_id(用户id) title(标题) content(内容) views(浏览量) create_time(创建时间) update_time(更新时间)
+id(自增) hash_id(加密id) user_id(用户id) title(标题) content(内容) view(浏览量) create_time(创建时间) update_time(更新时间)
 
 用户表users：
 id(自增)  mobile(手机号) password(密码) nickname(昵称) avatar(头像) bio(个人简介) create_time(创建时间) update_time(更新时间)
@@ -53,7 +53,7 @@ id(自增)  user_id(用户id) post_id(帖子id) content(内容) create_time(创�
 先用手写SQL的方式来实现：
 ```json
 帖子列表:
-posts表联users表查询：SELECT posts.`id`, posts.`hash_id`, posts.`user_id`, posts.`title`, posts.`content`, posts.`views`, posts.`create_time`, posts.`update_time`, users.`nickname`, users.`avatar` FROM posts, users WHERE posts.user_id=users.id ORDER BY posts.create_time DESC
+posts表联users表查询：SELECT posts.`id`, posts.`hash_id`, posts.`user_id`, posts.`title`, posts.`content`, posts.`view`, posts.`create_time`, posts.`update_time`, users.`nickname`, users.`avatar` FROM posts, users WHERE posts.user_id=users.id ORDER BY posts.create_time DESC
 [
     {
         "ID": 1,
@@ -61,7 +61,7 @@ posts表联users表查询：SELECT posts.`id`, posts.`hash_id`, posts.`user_id`,
         "UserID": 1,
         "Title": "标题1",
         "Content": "内容1",
-        "Views": 100,
+        "View": 100,
         "CreateTime": "2024-08-01T00:00:00Z",
         "UpdateTime": "2024-08-02T00:00:00Z",
         "Nickname": "昵称1",
@@ -74,7 +74,7 @@ posts表联users表查询：SELECT posts.`id`, posts.`hash_id`, posts.`user_id`,
         "UserID": 2,
         "Title": "标题2",
         "Content": "内容2",
-        "Views": 200,
+        "View": 200,
         "CreateTime": "2024-08-01T00:00:00Z",
         "UpdateTime": "2024-08-02T00:00:00Z",
         "Nickname": "昵称2",
@@ -92,7 +92,7 @@ comments表联users表查询：SELECT comments.`id`, comments.`user_id`, comment
     "UserID": 1,
     "Title": "标题1",
     "Content": "内容1",
-    "Views": 100,
+    "View": 100,
     "CreateTime": "2024-08-01T00:00:00Z",
     "UpdateTime": "2024-08-02T00:00:00Z",
     "Nickname": "昵称1",
@@ -111,7 +111,7 @@ comments表联users表查询：SELECT comments.`id`, comments.`user_id`, comment
     ]
 }
 ```
-[源码链接](../chapter-orm-1)
+[源码链接](../orm-1)
 
 当对接接口的程序员看到这两个JSON结构，会有两个疑问：<br/>
 1、post数据里包含Nickname、Avatar属性，这两个属性是post自带属性吗？<br/>
@@ -146,7 +146,7 @@ comments表联users表查询：SELECT comments.`id`, comments.`user_id`, comment
     ]
 }
 ```
-[源码链接](../chapter-orm-2)
+[源码链接](../orm-2)
 
 Nickname、Avatar属性名称加上模型名称前缀User，重新命名为UserNickname、UserAvatar，从而解决了属性归属的不确定性。
 
@@ -194,7 +194,7 @@ public class Post {
 
 客户端开发过程：<br/>
 Post、Comment模型，增加UserLevel属性<br/>
-[源码链接](../chapter-orm-3)
+[源码链接](../orm-3)
 
 >思考：为什么users表增加1个level字段导致服务端要修改3条SQL、2个模型，并且连带客户端也要修改2个模型？
 
@@ -272,7 +272,7 @@ Post、Comment模型，增加UserLevel属性<br/>
     ]
 }
 ```
-[源码链接](../chapter-orm-4)
+[源码链接](../orm-4)
 
 ```java
 //客户端对接帖子详情接口过程（Android举例）
@@ -345,7 +345,7 @@ User模型增加Level属性<br/>
       "UserID": 1,
       "Title": "标题1",
       "Content": "内容1",
-      "Views": 100,
+      "View": 100,
       "CreateTime": "2024-08-01T00:00:00Z",
       "UpdateTime": "2024-08-02T00:00:00Z",
       "User": null,
@@ -370,7 +370,7 @@ User模型增加Level属性<br/>
       "UserID": 2,
       "Title": "标题2",
       "Content": "内容2",
-      "Views": 200,
+      "View": 200,
       "CreateTime": "2024-08-01T00:00:00Z",
       "UpdateTime": "2024-08-02T00:00:00Z",
       "User": null,

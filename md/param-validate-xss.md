@@ -26,6 +26,7 @@ func (ctr *Article) Search(c *gin.Context) {
 }
 ```
 [源码链接](../param-validate-xss)
+
 正常传参请求：
 
 ```

@@ -5,6 +5,8 @@ Go编程：优雅永不过时
 - 3、[参数校验：抽象到具体的思维方式](md/param-complex-validate.md)
 - 4、[参数相关的安全漏洞：SQL注入](md/param-validate-sql-injection.md)
 - 5、[参数相关的安全漏洞：XSS](md/param-validate-xss.md)
+- 6、[被误解的ORM，只是单纯的不手写SQL？](md/orm.md)
+
 
 - 1、[被误解的ORM，只是单纯的不手写SQL？](md/orm.md)
 - 2、[entGo框架高效实现ORM](md/orm-entgo.md)
@@ -52,20 +54,6 @@ console.log(new Date().toISOString())
 7、无缝感知的cache
 
 
-https://help.aliyun.com/document_detail/472990.html
-
-**整体方面：**<br>
-这是日常开发中很常见的数据流水线，流程如下：<br>
-1、获取原始数据 <br>
-2、原始数据有效性校验<br>
-3、原始数据转换成业务数据<br>
-4、业务数据的应用<br>
-
->思考几分钟，1234步骤是否覆盖了日常开发中90%的业务流程，例如从数据库获取数据、从第三方接口获取数据。
-
-UnmarshalJSON方法揉杂了数据的格式化、有效性校验、数据转化、业务逻辑判断等多种意图的代码，当业务有所变动时，定位需要改动的代码第一步就是通读整个方法，同时当出现问题定位bug时，第一步也是通读整个方法，前者就是代码的可读性差，后者就是代码的可维护行差。
-
-对于复杂问题的解决办法
 
 
 <img src="../images/postman-complex-parameters.jpg">
